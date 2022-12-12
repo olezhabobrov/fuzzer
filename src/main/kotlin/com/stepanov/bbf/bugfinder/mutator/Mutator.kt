@@ -1,28 +1,13 @@
 package com.stepanov.bbf.bugfinder.mutator
 
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocationGenerator
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
-import com.stepanov.bbf.bugfinder.manager.Bug
-import com.stepanov.bbf.bugfinder.manager.BugManager
-import com.stepanov.bbf.bugfinder.manager.BugType
-import com.stepanov.bbf.bugfinder.mutator.javaTransformations.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.LocalTCE
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.TCETransformation
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplacer
 import com.stepanov.bbf.reduktor.parser.PSICreator
-import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.apache.log4j.Logger
-import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
-import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -56,11 +41,12 @@ class Mutator(val project: Project) {
 
     //TODO!! Implement java mutations
     private fun startJavaMutations() {
-        println("STARTING JAVA MUTATIONS")
-        executeMutation(ChangeRandomJavaASTNodesFromAnotherTrees(), 100)
-        println("END JAVA MUTATIONS")
-        log.debug("Verify = ${verify()}")
-        return
+        TODO("")
+//        println("STARTING JAVA MUTATIONS")
+//        executeMutation(ChangeRandomJavaASTNodesFromAnotherTrees(), 100)
+//        println("END JAVA MUTATIONS")
+//        log.debug("Verify = ${verify()}")
+//        return
     }
 
     private fun startKotlinMutations() {
