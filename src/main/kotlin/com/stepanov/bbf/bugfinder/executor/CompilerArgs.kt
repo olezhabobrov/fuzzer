@@ -129,6 +129,7 @@ object CompilerArgs {
     val pathToJsKotlinLib = createJSLib()
     val pathToTmpFile = getPropValueWithoutQuotes("TMPFILE")
     val pathToTmpDir = pathToTmpFile.substringBeforeLast("/")
+    val pathToMutatedDir = getPropValueWithoutQuotes("ALL_MUTATED_DIR")
 
     //RESULT
     val resultsDir = getPropValueWithoutQuotes("RESULTS")
@@ -168,6 +169,7 @@ object CompilerArgs {
         getPropAsBoolean("REDUCE_DIFF_BEHAVIOR")
     val shouldReduceDiffCompile =
         getPropAsBoolean("REDUCE_DIFF_COMPILE")
+    val checkCompilationWhileMutating = getPropAsBoolean("CHECK_COMPILATION")
 
     //REDUKTOR
     val shouldFilterDuplicateCompilerBugs =
