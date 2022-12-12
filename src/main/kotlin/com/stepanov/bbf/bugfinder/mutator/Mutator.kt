@@ -17,7 +17,7 @@ class Mutator(val project: Project) {
         if (Random.nextInt(0, 100) < probPercentage) {
             //Update ctx
             Transformation.updateCtx()
-            Transformation.ctx ?: return
+            Transformation.ctx ?: TODO("Figure out why ctx is null")
             log.debug("Cur transformation ${t::class.simpleName}")
             t.transform()
             processor.curFile.changePsiFile(processor.curFile.text)

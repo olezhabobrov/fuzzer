@@ -40,7 +40,7 @@ class MutationProcessor(
                 }
                 if (CompilerArgs.shouldSaveMutatedFiles) {
                     require(filenameOpt != null)
-                    project.saveInOneFile(CompilerArgs.pathToMutatedDir + filenameOpt)
+                    project.saveMutation(curFile, CompilerArgs.pathToMutatedDir + filenameOpt)
                 }
                 return replCopy
             } catch (e: Error) {

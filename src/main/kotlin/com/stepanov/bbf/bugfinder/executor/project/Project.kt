@@ -129,6 +129,10 @@ class Project(
         File(pathToSave).writeText(text)
     }
 
+    fun saveMutation(file: BBFFile, pathToSave: String) {
+        File(CompilerArgs.pathToMutatedDir).mkdirs()
+        File(pathToSave).writeText(file.psiFile.text)
+    }
 
     fun isBackendIgnores(backend: String): Boolean = configuration.ignoreBackends.contains(backend)
 
