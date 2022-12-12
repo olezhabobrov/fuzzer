@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.util
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.tryToCreateExpression
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
@@ -35,9 +36,10 @@ class ExpressionReplacer : Transformation() {
     private val generatedFunCalls = mutableMapOf<FunctionDescriptor, KtExpression?>()
     private var rig: RandomInstancesGenerator? = null
 
+
     override fun transform() {
         val ktFile = file as KtFile
-        val ctx = PSICreator.analyze(checker.curFile.psiFile, checker.project) ?: return
+        val ctx = PSICreator.analyze(processor.curFile.psiFile, processor.project) ?: return
         rig = RandomInstancesGenerator(ktFile, ctx)
         RandomTypeGenerator.setFileAndContext(ktFile, ctx)
         var nodesToChange = updateReplacement(ktFile.getAllChildren(), ctx).shuffled()
@@ -50,13 +52,15 @@ class ExpressionReplacer : Transformation() {
         }
     }
 
+
     private fun replaceExpression(exp: KtExpression, expType: KotlinType): Boolean {
+        useCounter++
         if (expType.getNameWithoutError() in blockListOfTypes) return false
         val processedScope = ScopeCalculator(file as KtFile, project).run {
             processScope(rig!!, calcScope(exp).shuffled(), generatedFunCalls)
         }
         val randomExpressionToReplace = getRandomExpressionToReplace(expType, processedScope) ?: return false
-        return checker.replaceNodeIfPossible(exp, randomExpressionToReplace)
+        return processor.replaceNode(exp, randomExpressionToReplace, "ExpressionReplacer$useCounter.kt")
     }
 
     private fun handleCallSeq(postfix: List<CallableDescriptor>, scope: List<ScopeCalculator.ScopeComponent>): KtExpression? {

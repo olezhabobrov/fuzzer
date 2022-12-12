@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeElement
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
+import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.util.getAllParentsWithoutNode
@@ -13,7 +14,7 @@ import org.apache.log4j.Logger
 open class MutationChecker(
     compilers: List<CommonCompiler>,
     val project: Project,
-    var curFile: BBFFile,
+    val curFile: BBFFile,
 ) : CompilationChecker(compilers) {
 
     constructor(compiler: CommonCompiler, project: Project, curFile: BBFFile) : this(listOf(compiler), project, curFile)
@@ -21,6 +22,45 @@ open class MutationChecker(
     constructor(compilers: List<CommonCompiler>, project: Project) : this(compilers, project, project.files.first())
 
     fun checkCompiling() = checkCompilingWithBugSaving(project, curFile)
+
+    /**
+     * Probably unsafe.
+     * Not checking if it compiles
+     */
+    fun replaceNode(node: ASTNode, replacement: ASTNode, filenameOpt: String?): ASTNode? {
+        log.debug("[UNSAFE] Trying to replace $node on $replacement")
+        if (node.text.isEmpty() || node == replacement) {
+            return node
+        }
+        for (p in node.getAllParentsWithoutNode()) {
+            try {
+                if (node.treeParent.elementType.index == DUMMY_HOLDER_INDEX) continue
+                val oldText = curFile.text
+                val replCopy = replacement.copyElement()
+                if ((node as TreeElement).treeParent !== p) {
+                    continue
+                }
+                p.replaceChild(node, replCopy)
+                if (oldText == curFile.text)
+                    continue
+                if (CompilerArgs.checkCompilationWhileMutating) {
+                    // TODO: send file to be checked
+
+                }
+                if (CompilerArgs.shouldSaveMutatedFiles) {
+                    require(filenameOpt != null)
+                    project.saveInOneFile(CompilerArgs.pathToMutatedDir + filenameOpt)
+                }
+                return replCopy
+            } catch (e: Error) {
+            }
+        }
+        return null
+    }
+
+    fun replaceNode(node: PsiElement, replacement: PsiElement, filenameOpt: String? = null): Boolean =
+        replaceNode(node.node, replacement.node, filenameOpt) != null
+
 
     fun replaceNodeIfPossibleWithNode(node: ASTNode, replacement: ASTNode): ASTNode? {
         log.debug("Trying to replace $node on $replacement")
