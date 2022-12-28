@@ -5,18 +5,22 @@ import com.stepanov.bbf.bugfinder.vertx.MutationOptions
 import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import java.lang.RuntimeException
 import kotlin.random.Random
 
-class Mutator(val strategy: MutationStrategy): AbstractVerticle() {
+class Mutator: AbstractVerticle() {
+
+    private var strategy: MutationStrategy? = null
 
     override fun start() {
         val eb = vertx.eventBus()
-        eb.consumer<MutationOptions>(VertxAddresses.startMutations) { options ->
+        eb.consumer<MutationStrategy>(mutateAddress) { newStrategy ->
+            strategy = newStrategy.body()
             startMutate()
         }
     }
 
-    fun executeMutation(t: Transformation) {
+    private fun executeMutation(t: Transformation) {
         if (Random.nextInt(0, 100) < t.probPercentage) {
             //Update ctx
             t.updateCtx()
@@ -29,16 +33,18 @@ class Mutator(val strategy: MutationStrategy): AbstractVerticle() {
     }
 
     fun startMutate() {
-        strategy.transformations.forEach {
+        strategy?.transformations?.forEach {
             executeMutation(it)
-        }
+        } ?: throw RuntimeException("Called startMutate but no strategy provided")
     }
 
     companion object {
         var instanceCounter = 0
     }
 
-    val instanceNumber: Int = ++instanceCounter
+    private val instanceNumber: Int = ++instanceCounter
+
+    val mutateAddress = VertxAddresses.mutate + "#${instanceNumber}"
 
     private val log = Logger.getLogger("bugFinderLogger")
 }

@@ -20,6 +20,7 @@ fun main() {
     }
 
     val vertx = Vertx.vertx()
-    vertx.deployVerticle(Coordinator())
-
+    val coordinator = Coordinator()
+    vertx.deployVerticle(coordinator)
+    coordinator.sendStrategyAndMutate()
 }

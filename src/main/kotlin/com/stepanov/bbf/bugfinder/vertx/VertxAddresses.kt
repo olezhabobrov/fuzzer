@@ -2,6 +2,8 @@ package com.stepanov.bbf.bugfinder.vertx
 
 object VertxAddresses {
 
+    const val mutate = "mutate"
+
     const val startMutations = "startMutations"
 
     const val compileCheck = "compileCheck"

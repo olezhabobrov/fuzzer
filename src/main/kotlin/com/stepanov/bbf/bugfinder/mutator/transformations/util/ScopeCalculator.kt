@@ -84,22 +84,23 @@ class ScopeCalculator(private val file: KtFile, private val project: Project) {
             func: CallableDescriptor,
             scopeElements: List<ScopeCalculator.ScopeComponent>
         ): KtExpression? {
-            Transformation.log.debug("GENERATION of call of type $func")
-            val name = func.name
-            val valueParams = func.valueParameters.map { vp ->
-                val fromUsages = scopeElements.filter { usage ->
-                    vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
-                }
-                if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
-                else rig.generateValueOfType(vp.type)
-                //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
-            }
-            if (valueParams.any { it.isEmpty() }) {
-                Transformation.log.debug("CANT GENERATE PARAMS FOR $func")
-                return null
-            }
-            val inv = "$name(${valueParams.joinToString()})"
-            return Factory.psiFactory.tryToCreateExpression(inv)
+//            Transformation.log.debug("GENERATION of call of type $func")
+//            val name = func.name
+//            val valueParams = func.valueParameters.map { vp ->
+//                val fromUsages = scopeElements.filter { usage ->
+//                    vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
+//                }
+//                if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
+//                else rig.generateValueOfType(vp.type)
+//                //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
+//            }
+//            if (valueParams.any { it.isEmpty() }) {
+//                Transformation.log.debug("CANT GENERATE PARAMS FOR $func")
+//                return null
+//            }
+//            val inv = "$name(${valueParams.joinToString()})"
+//            return Factory.psiFactory.tryToCreateExpression(inv)
+            TODO()
         }
     }
 
@@ -252,22 +253,23 @@ class ScopeCalculator(private val file: KtFile, private val project: Project) {
             scopeElements: List<ScopeComponent>,
             rig: RandomInstancesGenerator
         ): KtExpression? {
-            Transformation.log.debug("GENERATING call of type $func")
-            val name = func.name
-            val valueParams = func.valueParameters.map { vp ->
-                val fromUsages = scopeElements.filter { usage ->
-                    vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
-                }
-                if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
-                else rig.generateValueOfType(vp.type)
-                //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
-            }
-            if (valueParams.any { it.isEmpty() }) {
-                Transformation.log.debug("CANT GENERATE PARAMS FOR $func")
-                return null
-            }
-            val inv = "$name(${valueParams.joinToString()})"
-            return Factory.psiFactory.tryToCreateExpression(inv)
+            TODO()
+//            Transformation.log.debug("GENERATING call of type $func")
+//            val name = func.name
+//            val valueParams = func.valueParameters.map { vp ->
+//                val fromUsages = scopeElements.filter { usage ->
+//                    vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
+//                }
+//                if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
+//                else rig.generateValueOfType(vp.type)
+//                //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
+//            }
+//            if (valueParams.any { it.isEmpty() }) {
+//                Transformation.log.debug("CANT GENERATE PARAMS FOR $func")
+//                return null
+//            }
+//            val inv = "$name(${valueParams.joinToString()})"
+//            return Factory.psiFactory.tryToCreateExpression(inv)
         }
 
     }

@@ -33,7 +33,7 @@ import kotlin.random.Random
 
 //Class which trying to replace expression of one type by expressions from available context
 class ExpressionReplacer(project: Project, file: BBFFile,
-                         amountOfTransformations: Int, probPercentage: Int = 100):
+                         amountOfTransformations: Int = 1, probPercentage: Int = 100):
     Transformation(project, file,
     amountOfTransformations, probPercentage) {
 
