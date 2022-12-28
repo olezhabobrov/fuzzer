@@ -22,8 +22,7 @@ open class BugFinder(protected val dir: String) {
         compilers: List<CommonCompiler>,
         conditions: List<(PsiFile) -> Boolean> = listOf()
     ) {
-        // TODO: pass all these args to processor
-        Mutator(project).startMutate()
+        TODO()
     }
 
     protected val log = Logger.getLogger("bugFinderLogger")
