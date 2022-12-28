@@ -9,6 +9,7 @@ import com.stepanov.bbf.reduktor.executor.error.Error
 import com.stepanov.bbf.reduktor.util.getAllChildrenNodes
 import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import com.stepanov.bbf.reduktor.util.replaceThis
+import kotlinx.serialization.Serializable
 import org.apache.log4j.Logger
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
@@ -17,6 +18,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import java.io.File
 
+@Serializable
 class KotlincInvokeStatus(
     val combinedOutput: String,
     val isCompileSuccess: Boolean,

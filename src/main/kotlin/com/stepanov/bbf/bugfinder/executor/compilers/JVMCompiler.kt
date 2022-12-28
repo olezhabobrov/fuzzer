@@ -8,9 +8,16 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.util.Stream
 import com.stepanov.bbf.bugfinder.util.copyFullJarImpl
 import com.stepanov.bbf.bugfinder.util.writeRuntimeToJar
+import com.stepanov.bbf.bugfinder.vertx.CompileRequestMessage
+import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
 import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import com.stepanov.bbf.reduktor.util.MsgCollector
+import io.vertx.core.eventbus.Message
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.Json.Default.decodeFromString
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
@@ -25,6 +32,20 @@ import java.util.jar.JarInputStream
 import java.util.jar.JarOutputStream
 
 open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
+
+    override fun start() {
+        super.start()
+        val eb = vertx.eventBus()
+
+        eb.consumer<String>(VertxAddresses.compile) { requestJson ->
+            val project = createProjectFromRequest(requestJson)
+            val result = Json.encodeToString(compile(project))
+            requestJson.reply(result)
+        }
+
+
+    }
+
     override val compilerInfo: String
         get() = "JVM $arguments"
 
@@ -162,6 +183,11 @@ open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
         )
     }
     //commonExec("java -classpath ${CompilerArgs.jvmStdLibPaths.joinToString(":")} -jar $path", streamType)
+
+    private fun createProjectFromRequest(requestJson: Message<String>): Project {
+        val request = Json.decodeFromJsonElement<CompileRequestMessage>(Json.parseToJsonElement(requestJson.body()))
+        return Project.createFromCode(request.project.text)
+    }
 
     private fun analyzeErrorMessage(msg: String): Boolean = !msg.split("\n").any { it.contains(": error:") }
 
