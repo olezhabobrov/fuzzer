@@ -29,6 +29,9 @@ object CompilerArgs {
     fun getPropAsBoolean(name: String): Boolean = getPropValue(name)?.toBoolean()
         ?: throw IllegalArgumentException("Cannot init $name property")
 
+    fun getPropAsInt(name: String): Int = getPropValue(name)?.toInt()
+        ?: throw IllegalArgumentException("Cannot init $name property")
+
     fun getStdLibPath(libToSearch: String): String {
         val kotlinVersion = File("build.gradle")
             .readText()
@@ -191,6 +194,11 @@ object CompilerArgs {
         getStdLibPath("kotlin-stdlib-jdk8"),
         getStdLibPath("kotlin-stdlib-jdk7")
     )
+
+    //Vert.x
+    val mutatorsNumber = getPropAsInt("MUTATORS_NUMBER")
+    val compilersNumber = getPropAsInt("COMPILERS_NUMBER")
+//    val FILE_SOURCE = RANDOM
 
     val jsStdLibPaths = listOf(
         getStdLibPath("kotlin-stdlib-js"),

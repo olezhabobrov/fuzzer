@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
@@ -30,7 +32,10 @@ import java.lang.StringBuilder
 import kotlin.random.Random
 
 //Class which trying to replace expression of one type by expressions from available context
-class ExpressionReplacer : Transformation() {
+class ExpressionReplacer(project: Project, file: BBFFile,
+                         amountOfTransformations: Int, probPercentage: Int = 100):
+    Transformation(project, file,
+    amountOfTransformations, probPercentage) {
 
     private val blockListOfTypes = listOf("Nothing", "Nothing?")
     private val generatedFunCalls = mutableMapOf<FunctionDescriptor, KtExpression?>()
@@ -39,18 +44,18 @@ class ExpressionReplacer : Transformation() {
 
     override fun transform() {
         val ktFile = file as KtFile
-        val ctx = PSICreator.analyze(processor.curFile.psiFile, processor.project) ?: return
+        val ctx = PSICreator.analyze(file.psiFile, project) ?: return
         rig = RandomInstancesGenerator(ktFile, ctx)
         RandomTypeGenerator.setFileAndContext(ktFile, ctx)
         var nodesToChange = updateReplacement(ktFile.getAllChildren(), ctx).shuffled()
         for (ind in nodesToChange.indices) {
-            if (ind >= nodesToChange.size) break
             if (nodesToChange[ind].second!!.isUnit() && Random.getTrue(80)) continue
             else if (Random.getTrue(60)) continue
             replaceExpression(nodesToChange[ind].first, nodesToChange[ind].second!!)
-            nodesToChange = updateReplacement(ktFile.getAllChildren(), ctx).shuffled()
+            break
         }
     }
+
 
 
     private fun replaceExpression(exp: KtExpression, expType: KotlinType): Boolean {
@@ -60,7 +65,7 @@ class ExpressionReplacer : Transformation() {
             processScope(rig!!, calcScope(exp).shuffled(), generatedFunCalls)
         }
         val randomExpressionToReplace = getRandomExpressionToReplace(expType, processedScope) ?: return false
-        return processor.replaceNode(exp, randomExpressionToReplace, "ExpressionReplacer$useCounter.kt")
+        return MutationProcessor.replaceNode(exp, randomExpressionToReplace, file, "ExpressionReplacer$useCounter.kt")
     }
 
     private fun handleCallSeq(postfix: List<CallableDescriptor>, scope: List<ScopeCalculator.ScopeComponent>): KtExpression? {
@@ -140,46 +145,6 @@ class ExpressionReplacer : Transformation() {
         }
         return null
     }
-
-//    fun handleCallSeq(postfix: List<CallableDescriptor>, scope: List<ScopeCalculator.ScopeComponent>): KtExpression? {
-//        val res = StringBuilder()
-//        var prefix = ""
-//        postfix.map { desc ->
-//            val expr = when (desc) {
-//                is PropertyDescriptor -> desc.name.asString()
-//                is FunctionDescriptor -> generateCallExpr(desc, scope)?.text
-//                else -> ""
-//            }
-//            expr ?: return null
-//            res.append(prefix)
-//            prefix = if (desc.returnType?.isNullable() == true) "?." else "."
-//            res.append(expr)
-//        }
-//        return Factory.psiFactory.createExpression(res.toString())
-//    }
-//
-//    //We are not expecting typeParams
-//    private fun generateCallExpr(
-//        func: CallableDescriptor,
-//        scopeElements: List<ScopeCalculator.ScopeComponent>
-//    ): KtExpression? {
-//        log.debug("GENERATING call of type $func")
-//        val name = func.name
-//        val valueParams = func.valueParameters.map { vp ->
-//            val fromUsages = scopeElements.filter { usage ->
-//                vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
-//            }
-//            if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
-//            else rig!!.generateValueOfType(vp.type)
-//            //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
-//        }
-//        if (valueParams.any { it.isEmpty() }) {
-//            log.debug("CANT GENERATE PARAMS FOR $func")
-//            return null
-//        }
-//        val inv = "$name(${valueParams.joinToString()})"
-//        return Factory.psiFactory.tryToCreateExpression(inv)
-//    }
 
     private fun updateReplacement(nodes: List<PsiElement>, ctx: BindingContext) =
         nodes
