@@ -5,13 +5,23 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplacer
+import com.stepanov.bbf.bugfinder.vertx.MutationOptions
+import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
 import com.stepanov.bbf.reduktor.parser.PSICreator
+import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.psi.KtFile
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
-class Mutator(val project: Project) {
+class Mutator(val project: Project): AbstractVerticle() {
+
+    override fun start() {
+        val eb = vertx.eventBus()
+        eb.consumer<MutationOptions>(VertxAddresses.startMutations) { options ->
+            startMutate()
+        }
+    }
 
     private fun executeMutation(t: Transformation, probPercentage: Int = 50) {
         if (Random.nextInt(0, 100) < probPercentage) {
@@ -29,7 +39,7 @@ class Mutator(val project: Project) {
         for (bbfFile in project.files) {
             log.debug("Mutation of ${bbfFile.name} started")
 //            Transformation.checker.curFile = bbfFile
-            Transformation.processor = MutationProcessor(project, bbfFile)
+            Transformation.processor = MutationProcessor(project, bbfFile, vertx.eventBus(), instanceCounter)
             when (bbfFile.getLanguage()) {
                 LANGUAGE.JAVA -> startJavaMutations()
                 LANGUAGE.KOTLIN -> startKotlinMutations()
@@ -78,5 +88,14 @@ class Mutator(val project: Project) {
     private val log = Logger.getLogger("bugFinderLogger")
     private val processor
         get() = Transformation.processor
+
+
+    companion object {
+        var instanceCounter = 0
+    }
+
+    init {
+        instanceCounter++
+    }
 
 }

@@ -2,18 +2,30 @@ package com.stepanov.bbf.bugfinder.executor
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.util.Stream
+import com.stepanov.bbf.bugfinder.vertx.CompileRequestMessage
+import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
+import io.vertx.core.AbstractVerticle
+import kotlinx.serialization.Serializable
 import org.apache.commons.exec.*
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import java.io.ByteArrayOutputStream
 
+@Serializable
 data class CompilationResult(val status: Int, val pathToCompiled: String)
 
 enum class COMPILE_STATUS {
     OK, ERROR, BUG
 }
 
-abstract class CommonCompiler {
+abstract class CommonCompiler: AbstractVerticle() {
+
+    override fun start() {
+        val eb = vertx.eventBus()
+        eb.consumer<CompileRequestMessage>(VertxAddresses.compileCheck) {
+
+        }
+    }
 
     abstract val arguments: String
     abstract fun checkCompiling(project: Project): Boolean
