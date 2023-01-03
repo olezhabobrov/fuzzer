@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
         Logger.getLogger("transformationManagerLog").level = Level.OFF
     }
     val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
-    SingleFileBugFinder("/home/olezhka/fuzzer/tmp/arrays/inferredPropertyType.kt").findBugsInFile()
+    SingleFileBugFinder("/home/olezhka/fuzzer/tmp/arrays/comparisonTrue.kt").findBugsInFile()
     exitProcess(0)
 //    val results = mutableMapOf<String, Pair<Double, Double>>()
 //    var fl = false
