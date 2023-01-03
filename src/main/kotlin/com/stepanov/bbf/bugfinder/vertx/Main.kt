@@ -22,5 +22,6 @@ fun main() {
     val vertx = Vertx.vertx()
     val coordinator = Coordinator()
     vertx.deployVerticle(coordinator)
-    coordinator.sendStrategyAndMutate()
+//    coordinator.sendStrategyAndMutate()
+//    vertx.eventBus().send(VertxAddresses.sendStrategy, 0)
 }

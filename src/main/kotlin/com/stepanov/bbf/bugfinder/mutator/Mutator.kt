@@ -18,6 +18,9 @@ class Mutator: AbstractVerticle() {
             strategy = newStrategy.body()
             startMutate()
         }
+//        eb.consumer<String>(mutateAddress) { res ->
+//            println("got ${res.body()}")
+//        }
     }
 
     private fun executeMutation(t: Transformation) {

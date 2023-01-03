@@ -12,5 +12,5 @@ object VertxAddresses {
 
     const val compile = "compile"
 
-    const val getExecutionTime = "getExecutionTime"
+    const val sendStrategy = "sendStrategy"
 }
