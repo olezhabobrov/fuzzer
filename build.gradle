@@ -122,7 +122,7 @@ dependencies {
     implementation "io.github.java-diff-utils:java-diff-utils:$diff_version"
 
     // Vert.x
-    implementation "io.vertx:vertx-stack-depchain:$vertxVersion"
+    implementation "io.vertx:vertx-core:$vertxVersion"
 //    implementation "io.vertx:vertx-lang-kotlin"
 //    implementation kotlin("stdlib-jdk8")
 //    testImplementation "io.vertx:vertx-junit5"
