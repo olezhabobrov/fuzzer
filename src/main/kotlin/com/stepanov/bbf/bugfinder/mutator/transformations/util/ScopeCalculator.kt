@@ -10,6 +10,7 @@ import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllChildren
 import com.stepanov.bbf.reduktor.util.getAllChildrenWithItself
+import org.apache.log4j.Logger
 import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.psi.*
@@ -38,6 +39,7 @@ class ScopeCalculator(private val file: KtFile, private val project: Project) {
     }
 
     companion object {
+        internal val log = Logger.getLogger("mutatorLogger")
 
         fun processScope(
             rig: RandomInstancesGenerator,
@@ -78,29 +80,29 @@ class ScopeCalculator(private val file: KtFile, private val project: Project) {
             return processedScope
         }
 
+
         //We are not expecting typeParams
         fun generateCallExpr(
             rig: RandomInstancesGenerator,
             func: CallableDescriptor,
             scopeElements: List<ScopeCalculator.ScopeComponent>
         ): KtExpression? {
-//            Transformation.log.debug("GENERATION of call of type $func")
-//            val name = func.name
-//            val valueParams = func.valueParameters.map { vp ->
-//                val fromUsages = scopeElements.filter { usage ->
-//                    vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
-//                }
-//                if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
-//                else rig.generateValueOfType(vp.type)
-//                //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
-//            }
-//            if (valueParams.any { it.isEmpty() }) {
-//                Transformation.log.debug("CANT GENERATE PARAMS FOR $func")
-//                return null
-//            }
-//            val inv = "$name(${valueParams.joinToString()})"
-//            return Factory.psiFactory.tryToCreateExpression(inv)
-            TODO()
+            log.debug("GENERATION of call of type $func")
+            val name = func.name
+            val valueParams = func.valueParameters.map { vp ->
+                val fromUsages = scopeElements.filter { usage ->
+                    vp.type.getNameWithoutError().trim() == usage.type.getNameWithoutError().trim()
+                }
+                if (fromUsages.isNotEmpty() && Random.getTrue(80)) fromUsages.random().psiElement.text
+                else rig.generateValueOfType(vp.type)
+                //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
+            }
+            if (valueParams.any { it.isEmpty() }) {
+                log.debug("CANT GENERATE PARAMS FOR $func")
+                return null
+            }
+            val inv = "$name(${valueParams.joinToString()})"
+            return Factory.psiFactory.tryToCreateExpression(inv)
         }
     }
 

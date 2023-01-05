@@ -43,16 +43,16 @@ class ExpressionReplacer(project: Project, file: BBFFile,
 
 
     override fun transform() {
-        val ktFile = file as KtFile
+        val ktFile = file.psiFile as KtFile
         val ctx = PSICreator.analyze(file.psiFile, project) ?: return
         rig = RandomInstancesGenerator(ktFile, ctx)
         RandomTypeGenerator.setFileAndContext(ktFile, ctx)
         var nodesToChange = updateReplacement(ktFile.getAllChildren(), ctx).shuffled()
         for (ind in nodesToChange.indices) {
             if (nodesToChange[ind].second!!.isUnit() && Random.getTrue(80)) continue
-            else if (Random.getTrue(60)) continue
-            replaceExpression(nodesToChange[ind].first, nodesToChange[ind].second!!)
-            break
+//            else if (Random.getTrue(60)) continue
+            if (replaceExpression(nodesToChange[ind].first, nodesToChange[ind].second!!))
+                break
         }
     }
 
@@ -61,7 +61,7 @@ class ExpressionReplacer(project: Project, file: BBFFile,
     private fun replaceExpression(exp: KtExpression, expType: KotlinType): Boolean {
         useCounter++
         if (expType.getNameWithoutError() in blockListOfTypes) return false
-        val processedScope = ScopeCalculator(file as KtFile, project).run {
+        val processedScope = ScopeCalculator(file.psiFile as KtFile, project).run {
             processScope(rig!!, calcScope(exp).shuffled(), generatedFunCalls)
         }
         val randomExpressionToReplace = getRandomExpressionToReplace(expType, processedScope) ?: return false

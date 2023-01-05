@@ -65,9 +65,10 @@ dependencies {
     implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: '30.0.4'
 
     //Log
-    implementation "log4j:log4j:1.2.17"
+//    implementation "log4j:log4j:1.2.17"
+    implementation 'ch.qos.logback:logback-classic:1.4.5'
     implementation "org.slf4j:slf4j-api:1.7.28"
-    implementation "org.slf4j:slf4j-log4j12:1.7.28"
+//    implementation "org.slf4j:slf4j-log4j12:1.7.28"
     implementation "net.sourceforge.argparse4j:argparse4j:0.8.1"
 
     //Github
