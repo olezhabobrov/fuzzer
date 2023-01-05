@@ -5,7 +5,7 @@ import com.stepanov.bbf.bugfinder.vertx.MutationOptions
 import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
-import java.lang.RuntimeException
+import kotlin.RuntimeException
 import kotlin.random.Random
 
 class Mutator: AbstractVerticle() {
