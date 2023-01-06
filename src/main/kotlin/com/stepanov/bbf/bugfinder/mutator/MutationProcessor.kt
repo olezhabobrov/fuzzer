@@ -36,8 +36,9 @@ object MutationProcessor {
 
                 }
                 if (CompilerArgs.shouldSaveMutatedFiles) {
-                    require(filenameOpt != null)
-                    saveMutation(curFile, CompilerArgs.pathToMutatedDir + filenameOpt)
+//                    require(filenameOpt != null)
+                    if (filenameOpt != null)
+                        saveMutation(curFile, CompilerArgs.pathToMutatedDir + filenameOpt)
                 }
                 return replCopy
             } catch (e: Error) {
