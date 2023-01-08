@@ -48,41 +48,43 @@ class ExpressionObfuscator(project: Project, file: BBFFile,
         randomInstanceGenerator = RandomInstancesGenerator(ktFile, ctx)
         usageExamples = TCEUsagesCollector.collectUsageCases(file.psiFile as KtFile, ctx, project).toMutableList()
         //TODO make dependent from size of program
-        repeat(Random.nextInt(10, 20)) { it ->
-            ctx = PSICreator.analyze(file.psiFile) ?: return
-            val (expr, exprType) = getRandomExpressionForObfuscation(ctx) ?: return@repeat
-            calcAvailableVariables(expr, ctx)
-            val callList = StdLibraryGenerator.gen(exprType.makeNotNullable(), exprType.makeNotNullable())
-            if (callList.isEmpty()) {
-                return@repeat
-            }
-            val randomDescr = callList.random()
-            val callSequence = createCallSequence(expr, randomDescr) ?: return@repeat
-            val replacedCallSequence = MutationProcessor.replaceNode(expr.node, callSequence.node, file)
-            if (replacedCallSequence != null) {
-                ctx = PSICreator.analyze(file.psiFile)!!
-                replacedCallSequence.psi.getAllPSIChildrenOfType<KtExpression>()
-                    .map { it to it.getType(ctx) }
-                    .filter { it.second != null && it.first !is KtCallExpression }
-                    .reversed()
-                    .forEach { (e, t) ->
-                        if (Random.getTrue(50)) return@forEach
-                        val tName = t!!.getNameWithoutError()
-                        val sameTypeAvailableExpressionsFromGeneratedUsages =
-                            usageExamples
-                                .filter { it.third?.getNameWithoutError() == tName }
-                                .map { it.first.text }
-                        val sameTypeAvailableExpressionsFromAvProperties =
-                            availableVars
-                                .filter { it.second?.getNameWithoutError() == tName }
-                                .map { it.first.name!! }
-                        val allSameTypeAvailableExpressions =
-                            sameTypeAvailableExpressionsFromAvProperties + sameTypeAvailableExpressionsFromGeneratedUsages
-                        allSameTypeAvailableExpressions.randomOrNull()?.let {
-                            val exp = Factory.psiFactory.createExpressionIfPossible(it) ?: return@forEach
-                            MutationProcessor.replaceNode(e, exp, file)
+        run repeatBlock@{
+            repeat(Random.nextInt(10, 20)) { it ->
+                ctx = PSICreator.analyze(file.psiFile) ?: return
+                val (expr, exprType) = getRandomExpressionForObfuscation(ctx) ?: return@repeat
+                calcAvailableVariables(expr, ctx)
+                val callList = StdLibraryGenerator.gen(exprType.makeNotNullable(), exprType.makeNotNullable())
+                if (callList.isEmpty()) {
+                    return@repeat
+                }
+                val randomDescr = callList.random()
+                val callSequence = createCallSequence(expr, randomDescr) ?: return@repeat
+                val replacedCallSequence = MutationProcessor.replaceNode(expr.node, callSequence.node, file)
+                if (replacedCallSequence != null) {
+                    ctx = PSICreator.analyze(file.psiFile) ?: return@repeatBlock
+                    replacedCallSequence.psi.getAllPSIChildrenOfType<KtExpression>()
+                        .map { it to it.getType(ctx) }
+                        .filter { it.second != null && it.first !is KtCallExpression }
+                        .reversed()
+                        .forEach { (e, t) ->
+                            if (Random.getTrue(50)) return@forEach
+                            val tName = t!!.getNameWithoutError()
+                            val sameTypeAvailableExpressionsFromGeneratedUsages =
+                                usageExamples
+                                    .filter { it.third?.getNameWithoutError() == tName }
+                                    .map { it.first.text }
+                            val sameTypeAvailableExpressionsFromAvProperties =
+                                availableVars
+                                    .filter { it.second?.getNameWithoutError() == tName }
+                                    .map { it.first.name!! }
+                            val allSameTypeAvailableExpressions =
+                                sameTypeAvailableExpressionsFromAvProperties + sameTypeAvailableExpressionsFromGeneratedUsages
+                            allSameTypeAvailableExpressions.randomOrNull()?.let {
+                                val exp = Factory.psiFactory.createExpressionIfPossible(it) ?: return@forEach
+                                MutationProcessor.replaceNode(e, exp, file)
+                            }
                         }
-                    }
+                }
             }
         }
     }

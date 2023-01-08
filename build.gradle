@@ -181,7 +181,5 @@ task(runInfBBF, dependsOn: 'classes', type: JavaExec) {
 tasks.register('runCoordinator', JavaExec) {
     main = 'com.stepanov.bbf.bugfinder.vertx.MainKt'
     classpath = sourceSets.main.runtimeClasspath
-    args("run", "com.stepanov.bbf.bugfinder.vertx.Coordinator",
-            "--redeploy=src/**/*", "--launcher-class=io.vertx.core.Launcher",
-            "--on-redeploy=${projectDir}/gradlew classes")
+    jvmArgs project.property("org.gradle.jvmargs").split("\\s")
 }
