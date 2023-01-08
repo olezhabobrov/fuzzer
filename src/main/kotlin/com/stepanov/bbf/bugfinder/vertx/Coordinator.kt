@@ -4,6 +4,7 @@ import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.MutationStrategy
 import com.stepanov.bbf.bugfinder.mutator.Mutator
+import com.stepanov.bbf.bugfinder.mutator.transformations.ExpressionObfuscator
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplacer
 import com.stepanov.bbf.bugfinder.vertx.codecs.MutationStrategyCodec
 import io.vertx.core.AbstractVerticle
@@ -48,8 +49,8 @@ class Coordinator: AbstractVerticle() {
     private fun getStrategy(): MutationStrategy {
         // TODO: create strategy from smth
 //        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
-        val project = Project.createFromCode(File("/home/olezhka/fuzzer/tmp/arrays/comparisonTrue.kt").readText())
-        return MutationStrategy(listOf(ExpressionReplacer(project, project.files.first(), 5)))
+        val project = Project.createFromCode(File("/home/olezhka/fuzzer/tmp/arrays/MultiDeclForComponentMemberExtensions1.kt").readText())
+        return MutationStrategy(listOf(ExpressionObfuscator(project, project.files.first(), 5)))
     }
 
 }
