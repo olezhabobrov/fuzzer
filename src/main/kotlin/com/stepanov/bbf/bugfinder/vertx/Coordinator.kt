@@ -50,7 +50,7 @@ class Coordinator: AbstractVerticle() {
         // TODO: create strategy from smth
 //        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
         val project = Project.createFromCode(File("/home/olezhka/fuzzer/tmp/arrays/MultiDeclForComponentMemberExtensions1.kt").readText())
-        return MutationStrategy(listOf(ExpressionObfuscator(project, project.files.first(), 5)))
+        return MutationStrategy(listOf(ExpressionReplacer(project, project.files.first(), 5)))
     }
 
 }
