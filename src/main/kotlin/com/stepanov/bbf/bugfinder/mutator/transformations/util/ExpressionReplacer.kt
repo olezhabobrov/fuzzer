@@ -50,7 +50,7 @@ class ExpressionReplacer(project: Project, file: BBFFile,
         var nodesToChange = updateReplacement(ktFile.getAllChildren(), ctx).shuffled()
         for (ind in nodesToChange.indices) {
             if (nodesToChange[ind].second!!.isUnit() && Random.getTrue(80)) continue
-//            else if (Random.getTrue(60)) continue
+            else if (Random.getTrue(60)) continue
             if (replaceExpression(nodesToChange[ind].first, nodesToChange[ind].second!!))
                 break
         }
