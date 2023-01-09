@@ -1,8 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
-import com.stepanov.bbf.bugfinder.vertx.MutationOptions
-import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import kotlin.RuntimeException

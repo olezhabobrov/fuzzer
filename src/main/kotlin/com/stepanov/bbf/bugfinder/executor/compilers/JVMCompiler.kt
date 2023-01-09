@@ -9,14 +9,13 @@ import com.stepanov.bbf.bugfinder.util.Stream
 import com.stepanov.bbf.bugfinder.util.copyFullJarImpl
 import com.stepanov.bbf.bugfinder.util.writeRuntimeToJar
 import com.stepanov.bbf.bugfinder.vertx.CompileRequestMessage
-import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import com.stepanov.bbf.reduktor.util.MsgCollector
 import io.vertx.core.eventbus.Message
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json.Default.decodeFromString
 import kotlinx.serialization.json.decodeFromJsonElement
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
