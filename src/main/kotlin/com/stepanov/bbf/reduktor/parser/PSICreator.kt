@@ -124,7 +124,8 @@ object PSICreator {
                 JvmResolveUtil.analyze(env)
             }
         } catch (e: Exception) {
-            println(e)
+            e.printStackTrace()
+//            println(e)
             null
         } catch (e: Error) {
             null
