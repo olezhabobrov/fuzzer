@@ -32,19 +32,6 @@ import java.util.jar.JarOutputStream
 
 open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
 
-    override fun start() {
-        super.start()
-        val eb = vertx.eventBus()
-
-        eb.consumer<String>(VertxAddresses.compile) { requestJson ->
-            val project = createProjectFromRequest(requestJson)
-            val result = Json.encodeToString(compile(project))
-            requestJson.reply(result)
-        }
-
-
-    }
-
     override val compilerInfo: String
         get() = "JVM $arguments"
 

@@ -21,10 +21,7 @@ enum class COMPILE_STATUS {
 abstract class CommonCompiler: AbstractVerticle() {
 
     override fun start() {
-        val eb = vertx.eventBus()
-        eb.consumer<CompileRequestMessage>(VertxAddresses.compileCheck) {
-
-        }
+        TODO()
     }
 
     abstract val arguments: String
