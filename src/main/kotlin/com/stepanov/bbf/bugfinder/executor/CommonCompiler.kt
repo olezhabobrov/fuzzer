@@ -3,7 +3,7 @@ package com.stepanov.bbf.bugfinder.executor
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.util.Stream
 import com.stepanov.bbf.bugfinder.vertx.CompileRequestMessage
-import com.stepanov.bbf.bugfinder.vertx.VertxAddresses
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import kotlinx.serialization.Serializable
