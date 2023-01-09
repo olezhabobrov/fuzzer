@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.vertx.codecs
 
-import com.stepanov.bbf.bugfinder.mutator.MutationStrategy
+import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.MessageCodec
 

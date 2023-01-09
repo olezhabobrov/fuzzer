@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
+import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
+import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
@@ -17,9 +19,6 @@ class Mutator: AbstractVerticle() {
             strategy = newStrategy.body()
             startMutate()
         }
-//        eb.consumer<String>(mutateAddress) { res ->
-//            println("got ${res.body()}")
-//        }
     }
 
     private fun executeMutation(t: Transformation) {
@@ -34,18 +33,26 @@ class Mutator: AbstractVerticle() {
         }
     }
 
+    private fun sendMutatedProject() {
+        vertx.eventBus().send(resultAddress,
+            MutationResult(strategy!!.project, strategy!!.number)
+        )
+    }
+
+    // TODO: make private
     fun startMutate() {
         strategy?.transformations?.forEach {
             executeMutation(it)
         } ?: throw RuntimeException("Called startMutate but no strategy provided")
+        sendMutatedProject()
     }
 
     companion object {
         var instanceCounter = 0
+        val resultAddress = VertxAddresses.mutatedProject// + "#${instanceNumber}"
     }
 
     private val instanceNumber: Int = ++instanceCounter
-
     val mutateAddress = VertxAddresses.mutate + "#${instanceNumber}"
 
     private val log = Logger.getLogger("bugFinderLogger")
