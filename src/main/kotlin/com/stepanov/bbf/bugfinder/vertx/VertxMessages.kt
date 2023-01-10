@@ -1,6 +1,5 @@
 package com.stepanov.bbf.bugfinder.vertx
 
-import com.stepanov.bbf.bugfinder.executor.CompilationResult
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import kotlinx.serialization.Serializable

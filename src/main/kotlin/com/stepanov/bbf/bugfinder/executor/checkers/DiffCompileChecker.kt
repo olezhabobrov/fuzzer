@@ -17,7 +17,7 @@ class DiffCompileChecker(
     override fun checkTest(): Boolean {
         val preCheck = isAlreadyCheckedOrWrong()
         if (preCheck.first) return preCheck.second
-        if (compilers.any { it.isCompilerBug(project) }) {
+        if (compilers.any { TODO() }) {
             alreadyChecked[projectHash] = false
             return false
         }
@@ -29,8 +29,8 @@ class DiffCompileChecker(
     private fun isDiffCompile(): Boolean = isDiffCompile(project)
 
     private fun isDiffCompile(project: Project): Boolean {
-        val compilersToStatus = compilers.map { it to it.checkCompiling(project) }
-        return compilersToStatus.map { it.second }.toSet().size != 1
+        val compilersToStatus = compilers.map { TODO() }
+        return compilersToStatus.map { TODO() }.toSet().size != 1
     }
 
     @Deprecated("")

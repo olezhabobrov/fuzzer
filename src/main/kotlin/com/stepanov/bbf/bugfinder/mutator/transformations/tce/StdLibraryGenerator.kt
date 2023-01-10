@@ -41,10 +41,6 @@ object StdLibraryGenerator {
             psi.getAllPSIChildrenOfType<KtProperty>().map { it.typeReference?.getAbbreviatedTypeOrType(ctx) }[0]!!
         val module = kType.constructor.declarationDescriptor!!.module
         val stringPackages =
-            if (CompilerArgs.getCompilersList().any { it.compilerInfo.contains("JS") }) {
-                module.getSubPackagesOf(FqName("kotlin")) { true } +
-                        listOf(FqName("kotlin"))
-            } else {
                 module.getSubPackagesOf(FqName("kotlin")) { true } +
                         listOf(
                             FqName("kotlin"),
@@ -53,7 +49,6 @@ object StdLibraryGenerator {
                             FqName("java.nio.file"),
                             FqName("java.nio")
                         )
-            }
 
         val packages = stringPackages
             .map { module.getPackage(it) }

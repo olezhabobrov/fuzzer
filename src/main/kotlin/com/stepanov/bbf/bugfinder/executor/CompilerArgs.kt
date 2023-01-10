@@ -1,6 +1,5 @@
 package com.stepanov.bbf.bugfinder.executor
 
-import com.stepanov.bbf.bugfinder.executor.compilers.JSCompiler
 import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.util.BBFProperties
 import org.apache.commons.io.IOUtils
@@ -101,27 +100,6 @@ object CompilerArgs {
         findAndSaveLib("kotlin.js", jarFile)
         findAndSaveLib("kotlin.meta.js", jarFile)
         return "${System.getProperty("user.dir")}/tmp/lib/"
-    }
-
-    fun getCompilersList(): List<CommonCompiler> {
-        val compilers = mutableListOf<CommonCompiler>()
-        //Init compilers
-        val compilersConf = BBFProperties.getStringGroupWithoutQuotes("BACKENDS")
-        compilersConf.filter { it.key.contains("JVM") }.forEach {
-            compilers.add(
-                JVMCompiler(
-                    it.value
-                )
-            )
-        }
-        compilersConf.filter { it.key.contains("JS") }.forEach {
-            compilers.add(
-                JSCompiler(
-                    it.value
-                )
-            )
-        }
-        return compilers
     }
 
     val baseDir = getPropValueWithoutQuotes("MUTATING_DIR")

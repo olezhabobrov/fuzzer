@@ -3,11 +3,9 @@ package com.stepanov.bbf.bugfinder.manager
 import com.stepanov.bbf.bugfinder.Reducer
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.executor.*
-import com.stepanov.bbf.bugfinder.util.FilterDuplcatesCompilerErrors
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import org.apache.log4j.Logger
 import java.io.File
-import kotlin.system.exitProcess
 
 enum class BugType {
     BACKEND,
@@ -48,19 +46,19 @@ data class Bug(val compilers: List<CommonCompiler>, val msg: String, val crashed
                     BugType.DIFFBEHAVIOR -> "diffBehavior"
                     BugType.DIFFCOMPILE -> "diffCompile"
                     BugType.DIFFABI -> "diffABI"
-                    BugType.FRONTEND, BugType.BACKEND -> compilers.first().compilerInfo.filter { it != ' ' }
+//                    BugType.FRONTEND, BugType.BACKEND -> compilers.first().compilerInfo.filter { it != ' ' }
                     else -> ""
                 }
 
     fun copy() = Bug(compilers, msg, crashedProject.copy(), type)
 
     override fun toString(): String {
-        return "${type.name}\n${compilers.map { it.compilerInfo }}\nText:\n${crashedProject}"
+        return "${type.name}\n${compilers.map { TODO() }}\nText:\n${crashedProject}"
     }
 
     override fun equals(other: Any?): Boolean =
         other is Bug && other.crashedProject == this.crashedProject && other.type == this.type &&
-                other.compilers.map { it.compilerInfo } == this.compilers.map { it.compilerInfo }
+                other.compilers.map { TODO() } == this.compilers.map { TODO() }
 
     override fun hashCode(): Int {
         var result = compilers.hashCode()
@@ -174,23 +172,7 @@ object BugManager {
 
     fun haveDuplicates(bug: Bug): Boolean {
         val dirWithSameBugs = bug.getDirWithSameTypeBugs()
-        return when (bug.type) {
-            BugType.DIFFCOMPILE -> FilterDuplcatesCompilerErrors.haveSameDiffCompileErrors(
-                bug.crashedProject,
-                dirWithSameBugs,
-                bug.compilers,
-                true
-            )
-            BugType.FRONTEND, BugType.BACKEND -> FilterDuplcatesCompilerErrors.simpleHaveDuplicatesErrors(
-                bug.crashedProject,
-                dirWithSameBugs,
-                bug.compilers.first()
-            )
-            BugType.DIFFABI -> FilterDuplcatesCompilerErrors.haveSameDiffABIErrors(bug)
-            BugType.DIFFBEHAVIOR -> false
-            BugType.UNKNOWN -> false
-            BugType.PERFORMANCE -> false
-        }
+        TODO()
     }
 
     private fun parseTypeOfBugByMsg(msg: String): BugType =
