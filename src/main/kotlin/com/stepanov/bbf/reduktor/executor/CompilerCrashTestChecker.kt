@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import java.io.File
 
-@Serializable
 class KotlincInvokeStatus(
     val combinedOutput: String,
     val isCompileSuccess: Boolean,

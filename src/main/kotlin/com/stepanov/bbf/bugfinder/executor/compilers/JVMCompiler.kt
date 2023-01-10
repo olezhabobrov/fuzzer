@@ -17,6 +17,12 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 open class JVMCompiler: CommonCompiler() {
+    override fun tryToCompile(project: Project): KotlincInvokeStatus {
+        val path = project.saveOrRemoveToTmp(true)
+        val trashDir = "${CompilerArgs.pathToTmpDir}/trash/"
+        val args = prepareArgs(project, path, trashDir)
+        return executeCompiler(project, args)
+    }
 
     // TODO: add some additional arguments maybe
     private fun prepareArgs(project: Project, path: String, destination: String): K2JVMCompilerArguments {
@@ -87,13 +93,6 @@ open class JVMCompiler: CommonCompiler() {
         )
         //println(status.combinedOutput)
         return status
-    }
-
-    override fun tryToCompile(project: Project): KotlincInvokeStatus {
-        val path = project.saveOrRemoveToTmp(true)
-        val trashDir = "${CompilerArgs.pathToTmpDir}/trash/"
-        val args = prepareArgs(project, path, trashDir)
-        return executeCompiler(project, args)
     }
 
 }

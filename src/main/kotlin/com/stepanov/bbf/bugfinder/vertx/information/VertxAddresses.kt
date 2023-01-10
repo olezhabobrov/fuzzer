@@ -4,9 +4,9 @@ object VertxAddresses {
 
     const val mutate = "mutate"
 
-    const val compileCheck = "compileCheck"
+    const val mutatedProject = "mutatedProject"
 
     const val compile = "compile"
 
-    const val mutatedProject = "mutatedProject"
+    const val compileResult = "compileResult"
 }
