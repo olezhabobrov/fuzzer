@@ -1,28 +1,34 @@
 package com.stepanov.bbf.bugfinder.executor
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.util.Stream
-import com.stepanov.bbf.bugfinder.vertx.CompileRequestMessage
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
-import com.stepanov.bbf.reduktor.util.MsgCollector
 import io.vertx.core.AbstractVerticle
-import kotlinx.serialization.Serializable
-import org.apache.commons.exec.*
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
-import java.io.ByteArrayOutputStream
-
-enum class COMPILE_STATUS {
-    OK, ERROR, BUG
-}
 
 abstract class CommonCompiler: AbstractVerticle() {
 
     override fun start() {
-        TODO()
+        establishConsumers()
     }
 
     abstract fun tryToCompile(project: Project): KotlincInvokeStatus
+
+    private fun establishConsumers() {
+        val eb = vertx.eventBus()
+        eb.consumer<Project>(compileAddress) { msg ->
+            val compileResult = tryToCompile(msg.body())
+            eb.send(resultAddress, compileResult)
+        }
+    }
+
+    companion object {
+        var counter = 0
+        val resultAddress = VertxAddresses.compileResult
+    }
+
+    private val instanceNumber = ++counter
+
+    private val compileAddress = VertxAddresses.compile + "${instanceNumber}"
 
 }
 

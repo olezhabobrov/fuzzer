@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.vertx
 
+import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.mutator.Mutator
@@ -7,6 +8,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplace
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.vertx.codecs.MutationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.MutationStrategyCodec
+import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.DeploymentOptions
 import java.io.File
@@ -23,9 +25,15 @@ class Coordinator: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<MutationResult>(Mutator.resultAddress) { result ->
+        val eb = vertx.eventBus()
+        eb.consumer<MutationResult>(Mutator.resultAddress) { result ->
             val mutatedProject = result.body()
             // TODO: do smth
+        }
+
+        eb.consumer<KotlincInvokeStatus>(CommonCompiler.resultAddress) { result ->
+            val compileResult = result.body()
+            // TODO: report bugs
         }
     }
 
