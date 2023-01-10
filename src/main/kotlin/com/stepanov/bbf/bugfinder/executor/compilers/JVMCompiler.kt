@@ -2,93 +2,29 @@ package com.stepanov.bbf.bugfinder.executor.compilers
 
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
-import com.stepanov.bbf.bugfinder.executor.CompilationResult
 import com.stepanov.bbf.bugfinder.executor.project.Directives
 import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.util.Stream
-import com.stepanov.bbf.bugfinder.util.copyFullJarImpl
-import com.stepanov.bbf.bugfinder.util.writeRuntimeToJar
-import com.stepanov.bbf.bugfinder.vertx.CompileRequestMessage
-import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import com.stepanov.bbf.reduktor.util.MsgCollector
-import io.vertx.core.eventbus.Message
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 import org.apache.commons.io.FileUtils
-import org.apache.log4j.Logger
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.config.Services
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import java.util.jar.JarInputStream
-import java.util.jar.JarOutputStream
 
-open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
+open class JVMCompiler: CommonCompiler() {
 
-    override val compilerInfo: String
-        get() = "JVM $arguments"
-
-    override var pathToCompiled: String = "tmp/tmp.jar"
-
-
-    override fun checkCompiling(project: Project): Boolean {
-        val status = tryToCompile(project)
-        return !MsgCollector.hasCompileError && !status.hasTimeout && !MsgCollector.hasException
-    }
-
-    override fun getErrorMessageWithLocation(project: Project): Pair<String, List<CompilerMessageSourceLocation>> {
-        val status = tryToCompile(project)
-        return status.combinedOutput to status.locations
-    }
-
-    override fun isCompilerBug(project: Project): Boolean =
-        tryToCompile(project).hasException
-
-    override fun compile(project: Project, numberOfExecutions: Int, includeRuntime: Boolean): CompilationResult {
-        val projectWithMainFun = project.addMainAndExecBoxNTimes(numberOfExecutions)
-        return getCompilationResult(projectWithMainFun, includeRuntime)
-    }
-
-    override fun compile(project: Project, includeRuntime: Boolean): CompilationResult {
-        val projectWithMainFun = project.addMain()
-        return getCompilationResult(projectWithMainFun, includeRuntime)
-    }
-
-    private fun getCompilationResult(projectWithMainFun: Project, includeRuntime: Boolean): CompilationResult {
-        val path = projectWithMainFun.saveOrRemoveToTmp(true)
-        val tmpJar = "$pathToCompiled.jar"
-        val args = prepareArgs(projectWithMainFun, path, tmpJar)
-        val status = executeCompiler(projectWithMainFun, args)
-        if (status.hasException || status.hasTimeout || !status.isCompileSuccess) return CompilationResult(-1, "")
-        val res = File(pathToCompiled)
-        val input = JarInputStream(File(tmpJar).inputStream())
-        val output = JarOutputStream(res.outputStream(), input.manifest)
-        copyFullJarImpl(output, File(tmpJar))
-        if (includeRuntime)
-            CompilerArgs.jvmStdLibPaths.forEach { writeRuntimeToJar(it, output) }
-        output.finish()
-        input.close()
-        File(tmpJar).delete()
-        return CompilationResult(0, pathToCompiled)
-    }
-
+    // TODO: add some additional arguments maybe
     private fun prepareArgs(project: Project, path: String, destination: String): K2JVMCompilerArguments {
         val destFile = File(destination)
         if (destFile.isFile) destFile.delete()
         else if (destFile.isDirectory) FileUtils.cleanDirectory(destFile)
         val projectArgs = project.getProjectSettingsAsCompilerArgs("JVM") as K2JVMCompilerArguments
-        val compilerArgs =
-            if (arguments.isEmpty())
-                "$path -d $destination".split(" ")
-            else
-                "$path $arguments -d $destination".split(" ")
+        val compilerArgs = "$path -d $destination".split(" ")
         projectArgs.apply { K2JVMCompiler().parseArguments(compilerArgs.toTypedArray(), this) }
         //projectArgs.compileJava = true
         projectArgs.classpath =
@@ -160,22 +96,4 @@ open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
         return executeCompiler(project, args)
     }
 
-    override fun exec(path: String, streamType: Stream, mainClass: String): String {
-        val mc =
-            mainClass.ifEmpty { JarInputStream(File(path).inputStream()).manifest.mainAttributes.getValue("Main-class") }
-        return commonExec(
-            "java -classpath ${CompilerArgs.jvmStdLibPaths.joinToString(":")}:$path $mc",
-            streamType
-        )
-    }
-    //commonExec("java -classpath ${CompilerArgs.jvmStdLibPaths.joinToString(":")} -jar $path", streamType)
-
-    private fun createProjectFromRequest(requestJson: Message<String>): Project {
-        val request = Json.decodeFromJsonElement<CompileRequestMessage>(Json.parseToJsonElement(requestJson.body()))
-        return Project.createFromCode(request.project.text)
-    }
-
-    private fun analyzeErrorMessage(msg: String): Boolean = !msg.split("\n").any { it.contains(": error:") }
-
-    private val log = Logger.getLogger("compilerErrorsLog")
 }

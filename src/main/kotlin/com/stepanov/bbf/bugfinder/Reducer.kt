@@ -1,7 +1,6 @@
 package com.stepanov.bbf.bugfinder
 
 import com.intellij.psi.PsiFile
-import com.stepanov.bbf.bugfinder.executor.checkers.DiffBehaviorChecker
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.executor.checkers.DiffCompileChecker
 import com.stepanov.bbf.bugfinder.executor.checkers.MultiCompilerCrashChecker

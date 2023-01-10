@@ -15,6 +15,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.reduktor.executor.CompilerTestChecker
 import com.stepanov.bbf.reduktor.util.*
 import org.apache.log4j.Logger
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 
 open class MultiCompilerCrashChecker(
     override val project: Project,
@@ -111,9 +112,10 @@ open class MultiCompilerCrashChecker(
     override fun checkTest(): Boolean {
         val firstCheck = isAlreadyCheckedOrWrong()
         if (firstCheck.first) return firstCheck.second
-        val isBug = compiler!!.isCompilerBug(project)
-        alreadyChecked[project.toString().trim().hashCode()] = isBug
-        return isBug
+        TODO()
+//        val isBug = compiler!!.isCompilerBug(project)
+//        alreadyChecked[project.toString().trim().hashCode()] = isBug
+//        return isBug
     }
 
     @Deprecated("")
@@ -130,9 +132,10 @@ open class MultiCompilerCrashChecker(
                 return false
             }
         }
-        val isBug = compiler!!.isCompilerBug(text)
-        alreadyChecked[hash] = isBug
-        return isBug
+        TODO()
+//        val isBug = compiler!!.isCompilerBug(text)
+//        alreadyChecked[hash] = isBug
+//        return isBug
     }
 
     @Deprecated("")
@@ -181,8 +184,8 @@ open class MultiCompilerCrashChecker(
         return replaceNodeIfPossible(tree, node, tmp.node)
     }
 
-    override fun getErrorMessage(): String = compiler!!.getErrorMessage(project)
-    override fun getErrorMessageWithLocation() = compiler!!.getErrorMessageWithLocation(project)
+    override fun getErrorMessage(): String {TODO()}
+    override fun getErrorMessageWithLocation(): Pair<String, List<CompilerMessageSourceLocation>> {TODO()}
 
     override val alreadyChecked: HashMap<Int, Boolean> = HashMap()
     open val log = Logger.getLogger("reducerLogger")

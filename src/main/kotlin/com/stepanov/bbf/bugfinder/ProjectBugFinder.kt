@@ -1,17 +1,5 @@
 package com.stepanov.bbf.bugfinder
 
-import com.stepanov.bbf.bugfinder.executor.*
-import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
-import com.stepanov.bbf.bugfinder.executor.compilers.KJCompiler
-import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
-import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
-import com.stepanov.bbf.bugfinder.preprocessor.KtProjectPreprocessor
-import com.stepanov.bbf.bugfinder.util.*
-import com.stepanov.bbf.reduktor.parser.PSICreator
-import java.io.File
-import kotlin.random.Random
-
 class ProjectBugFinder(dir: String) : BugFinder(dir) {
 
 //    fun findBugsInKJProjects() {

@@ -86,10 +86,6 @@ fun KtNamedFunction.initBodyByValue(psiFactory: KtPsiFactory, value: String) {
 
 fun PsiElement.find(el: PsiElement): PsiElement? = this.node.getAllChildrenNodes().find { it.psi == el }?.psi
 
-//Returns true if all compilers compiling
-fun List<CommonCompiler>.checkCompilingForAllBackends(project: Project): Boolean =
-    this.map { it.checkCompiling(project) }.all { it }
-
 
 fun writeRuntimeToJar(lib: String, stream: JarOutputStream) {
     val stdlibPath = File(lib)
