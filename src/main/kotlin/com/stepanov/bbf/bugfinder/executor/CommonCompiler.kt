@@ -4,11 +4,13 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
+import org.apache.log4j.Logger
 
 abstract class CommonCompiler: AbstractVerticle() {
 
     override fun start() {
         establishConsumers()
+        log.debug("Compiler deployed")
     }
 
     abstract fun tryToCompile(project: Project): KotlincInvokeStatus
@@ -28,7 +30,8 @@ abstract class CommonCompiler: AbstractVerticle() {
 
     private val instanceNumber = ++counter
 
-    private val compileAddress = VertxAddresses.compile + "${instanceNumber}"
+    val compileAddress = VertxAddresses.compile + "${instanceNumber}"
 
+    protected val log = Logger.getLogger("compilerLogger")
 }
 

@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.executor.checkers
 
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
-import com.stepanov.bbf.bugfinder.executor.COMPILE_STATUS
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile

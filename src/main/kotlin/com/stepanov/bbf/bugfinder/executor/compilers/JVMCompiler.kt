@@ -17,6 +17,12 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 open class JVMCompiler: CommonCompiler() {
+
+    override fun start() {
+        log.debug("Started JVMCompiler")
+        super.start()
+    }
+
     override fun tryToCompile(project: Project): KotlincInvokeStatus {
         val path = project.saveOrRemoveToTmp(true)
         val trashDir = "${CompilerArgs.pathToTmpDir}/trash/"

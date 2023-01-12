@@ -91,6 +91,8 @@ dependencies {
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-daemon-embeddable', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_version}"
+    // TODO: not local file
+    implementation files("/home/oleg/.konan/kotlin-native-prebuilt-linux-x86_64-1.7.21/konan/lib/kotlin-native-compiler-embeddable.jar")
 
     //Reduktor
     implementation "commons-io:commons-io:2.6"
