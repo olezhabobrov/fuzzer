@@ -105,26 +105,26 @@ class BugManager: AbstractVerticle() {
             println("SAVING ${bug.type} BUG")
             if (ReportProperties.getPropAsBoolean("SAVE_STATS") == true) saveStats()
             //Check if bug is real project bug
-            val newBug = bug.copy()//checkIfBugIsProject(bug)
-            log.debug("Start to reduce ${newBug.crashedProject}")
-            val reduced =
-                try {
-                    Reducer.reduce(newBug)
-                } catch (e: Exception) {
-                    newBug.crashedProject.copy()
-                }
-            val reducedBug = Bug(newBug.compilers, newBug.msg, reduced, newBug.type)
-            log.debug("Reduced: ${reducedBug.crashedProject}")
-            val newestBug = reducedBug//checkIfBugIsProject(reducedBug)
+//            val newBug = bug.copy()//checkIfBugIsProject(bug)
+//            log.debug("Start to reduce ${newBug.crashedProject}")
+//            val reduced =
+//                try {
+//                    Reducer.reduce(newBug)
+//                } catch (e: Exception) {
+//                    newBug.crashedProject.copy()
+//                }
+//            val reducedBug = Bug(newBug.compilers, newBug.msg, reduced, newBug.type)
+//            log.debug("Reduced: ${reducedBug.crashedProject}")
+//            val newestBug = reducedBug//checkIfBugIsProject(reducedBug)
             //Try to find duplicates
-            if (/*newBug.crashedProject.texts.size == 1 &&*/
-                CompilerArgs.shouldFilterDuplicateCompilerBugs &&
-                haveDuplicates(newestBug)
-            ) {
-                StatisticCollector.incField("Duplicates")
-                return
-            }
-            bugs.add(newestBug)
+//            if (/*newBug.crashedProject.texts.size == 1 &&*/
+//                CompilerArgs.shouldFilterDuplicateCompilerBugs &&
+//                haveDuplicates(newestBug)
+//            ) {
+//                StatisticCollector.incField("Duplicates")
+//                return
+//            }
+//            bugs.add(newestBug)
             //Report bugs
             if (ReportProperties.getPropAsBoolean("TEXT_REPORTER") == true) {
                 TextReporter.dump(bugs)
@@ -132,8 +132,8 @@ class BugManager: AbstractVerticle() {
             if (ReportProperties.getPropAsBoolean("FILE_REPORTER") == true) {
                 val bugList =
                     if (bug.type == BugType.FRONTEND || bug.type == BugType.BACKEND)
-                        listOf(bug, newestBug)
-                    else listOf(newestBug)
+                        listOf(bug, bug)
+                    else listOf(bug)
                 FileReporter.dump(bugList)
             }
         } catch (e: Exception) {
