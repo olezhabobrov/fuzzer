@@ -1,31 +1,37 @@
 package com.stepanov.bbf.bugfinder.vertx
 
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
+import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplacer
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
+import com.stepanov.bbf.bugfinder.vertx.codecs.KotlincInvokeStatusCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.MutationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.MutationStrategyCodec
+import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.DeploymentOptions
+import io.vertx.core.eventbus.EventBus
 import java.io.File
 
 class Coordinator: AbstractVerticle() {
 
     private val mutators = mutableListOf<Mutator>()
+    private val compilers = mutableListOf<CommonCompiler>()
+    private lateinit var eb: EventBus
 
     override fun start() {
+        eb = vertx.eventBus()
         registerCodecs()
         establishConsumers()
-        deployMutators()
-        // TODO: deploy compilers
+//        deployMutators()
+        deployCompilers()
     }
 
     private fun establishConsumers() {
-        val eb = vertx.eventBus()
         eb.consumer<MutationResult>(Mutator.resultAddress) { result ->
             val mutatedProject = result.body()
             // TODO: do smth
@@ -39,7 +45,7 @@ class Coordinator: AbstractVerticle() {
 
     private fun sendStrategyAndMutate(index: Int = 0) {
 //        vertx.eventBus().send(mutators[index].mutateAddress, "Some message")
-        vertx.eventBus().send(mutators[index].mutateAddress, getStrategy())
+        eb.send(mutators[index].mutateAddress, getExampleStrategy())
     }
 
     private fun deployMutators() {
@@ -52,16 +58,31 @@ class Coordinator: AbstractVerticle() {
             DeploymentOptions().setWorker(true)
         ) { res ->
             if (res.succeeded()) {
-                println("Deployed")
                 sendStrategyAndMutate()
             } else {
                 error("Mutator wasn't deployed")
             }
-
         }
     }
 
-    private fun getStrategy(): MutationStrategy {
+    private fun deployCompilers() {
+        // TODO: case of several mutators
+        // TODO: not one random file
+
+        val compiler = JVMCompiler()
+        compilers.add(compiler)
+        vertx.deployVerticle(compiler,
+            DeploymentOptions().setWorker(true)
+        ) { res ->
+            if (res.succeeded()) {
+                vertx.eventBus().send(compilers.first().compileAddress, getExampleStrategy().project)
+            } else {
+                error("Compiler wasn't deployed")
+            }
+        }
+    }
+
+    private fun getExampleStrategy(): MutationStrategy {
         // TODO: create strategy from smth
 //        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
         val project = Project.createFromCode(File("/home/olezhka/fuzzer/tmp/arrays/MultiDeclForComponentMemberExtensions1.kt").readText())
@@ -69,9 +90,10 @@ class Coordinator: AbstractVerticle() {
     }
 
     private fun registerCodecs() {
-        vertx.eventBus().registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
-        vertx.eventBus().registerDefaultCodec(MutationResult::class.java, MutationResultCodec())
-
+        eb.registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
+        eb.registerDefaultCodec(MutationResult::class.java, MutationResultCodec())
+        eb.registerDefaultCodec(KotlincInvokeStatus::class.java, KotlincInvokeStatusCodec())
+        eb.registerDefaultCodec(Project::class.java, ProjectCodec())
     }
 
 }
