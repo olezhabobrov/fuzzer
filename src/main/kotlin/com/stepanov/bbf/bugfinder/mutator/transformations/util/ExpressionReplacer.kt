@@ -44,7 +44,10 @@ class ExpressionReplacer(project: Project, file: BBFFile,
 
     override fun transform() {
         val ktFile = file.psiFile as KtFile
-        val ctx = PSICreator.analyze(file.psiFile, project) ?: return
+        val ctx = PSICreator.analyze(file.psiFile, project) ?: run {
+            log.debug("PSICreator.analyze returned null")
+            return
+        }
         rig = RandomInstancesGenerator(ktFile, ctx)
         RandomTypeGenerator.setFileAndContext(ktFile, ctx)
         var nodesToChange = updateReplacement(ktFile.getAllChildren(), ctx).shuffled()
