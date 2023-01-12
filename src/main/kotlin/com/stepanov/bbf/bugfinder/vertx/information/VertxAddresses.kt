@@ -9,4 +9,6 @@ object VertxAddresses {
     const val compile = "compile"
 
     const val compileResult = "compileResult"
+
+    const val bugManager = "bugManager"
 }

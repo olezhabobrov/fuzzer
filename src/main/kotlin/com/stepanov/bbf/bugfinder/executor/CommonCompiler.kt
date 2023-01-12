@@ -2,6 +2,7 @@ package com.stepanov.bbf.bugfinder.executor
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.reduktor.executor.CompilationResult
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
@@ -19,7 +20,7 @@ abstract class CommonCompiler: AbstractVerticle() {
         val eb = vertx.eventBus()
         eb.consumer<Project>(compileAddress) { msg ->
             val compileResult = tryToCompile(msg.body())
-            eb.send(resultAddress, compileResult)
+            eb.send(resultAddress, CompilationResult(compileResult, this, msg.body()))
         }
     }
 

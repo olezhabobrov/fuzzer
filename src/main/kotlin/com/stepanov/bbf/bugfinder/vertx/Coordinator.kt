@@ -3,14 +3,15 @@ package com.stepanov.bbf.bugfinder.vertx
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.manager.Bug
+import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplacer
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
-import com.stepanov.bbf.bugfinder.vertx.codecs.KotlincInvokeStatusCodec
-import com.stepanov.bbf.bugfinder.vertx.codecs.MutationResultCodec
-import com.stepanov.bbf.bugfinder.vertx.codecs.MutationStrategyCodec
-import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
+import com.stepanov.bbf.bugfinder.vertx.codecs.*
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.reduktor.executor.CompilationResult
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.DeploymentOptions
@@ -30,6 +31,7 @@ class Coordinator: AbstractVerticle() {
         establishConsumers()
         deployMutators()
         deployCompilers()
+        deployBugManager()
         log.debug("Coordinator deployed")
     }
 
@@ -40,10 +42,14 @@ class Coordinator: AbstractVerticle() {
             sendProjectToCompiler(mutatedProject.project)
         }
 
-        eb.consumer<KotlincInvokeStatus>(CommonCompiler.resultAddress) { result ->
+        eb.consumer<CompilationResult>(CommonCompiler.resultAddress) { result ->
             log.debug("Got compilation result")
             val compileResult = result.body()
-            // TODO: report bugs
+            if (compileResult.invokeStatus.hasCompilerCrash()) {
+                log.debug("Found some bug, sending it to BugManager")
+                val bug = Bug(compileResult)
+                vertx.eventBus().send(VertxAddresses.bugManager, bug)
+            }
         }
     }
 
@@ -84,7 +90,7 @@ class Coordinator: AbstractVerticle() {
             workerOptions()
         ) { res ->
             if (res.succeeded()) {
-                vertx.eventBus().send(CommonCompiler.compileAddress, getExampleStrategy().project)
+                log.debug("Compilers deployed")
             } else {
                 error("Compiler wasn't deployed")
             }
@@ -92,6 +98,9 @@ class Coordinator: AbstractVerticle() {
         log.debug("Compilers deployed")
     }
 
+    private fun deployBugManager() {
+        vertx.deployVerticle(BugManager(), workerOptions())
+    }
     private fun getExampleStrategy(): MutationStrategy {
         // TODO: create strategy from smth
 //        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
@@ -102,8 +111,9 @@ class Coordinator: AbstractVerticle() {
     private fun registerCodecs() {
         eb.registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
         eb.registerDefaultCodec(MutationResult::class.java, MutationResultCodec())
-        eb.registerDefaultCodec(KotlincInvokeStatus::class.java, KotlincInvokeStatusCodec())
+        eb.registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
         eb.registerDefaultCodec(Project::class.java, ProjectCodec())
+        eb.registerDefaultCodec(Bug::class.java, BugCodec())
     }
 
     private fun workerOptions() = DeploymentOptions().setWorker(true) // TODO: exception handling, timeouts, etc

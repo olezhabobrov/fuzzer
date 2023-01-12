@@ -4,6 +4,10 @@ import com.stepanov.bbf.bugfinder.Reducer
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.executor.*
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.reduktor.executor.CompilationResult
+import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
+import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import java.io.File
 
@@ -31,6 +35,13 @@ data class Bug(val compilers: List<CommonCompiler>, val msg: String, val crashed
         msg,
         crashedProject,
         type
+    )
+
+    constructor(res: CompilationResult): this(
+        listOf(res.compiler),
+        res.invokeStatus.combinedOutput,
+        res.project,
+        res.invokeStatus.bugType()
     )
 
     val compilerVersion = compilers.joinToString(", ")
@@ -72,56 +83,17 @@ data class Bug(val compilers: List<CommonCompiler>, val msg: String, val crashed
 }
 
 
-object BugManager {
+class BugManager: AbstractVerticle() {
+
     private val bugs = mutableListOf<Bug>()
 
-    fun saveBug(
-        compilers: List<CommonCompiler>,
-        msg: String,
-        crashedProject: Project,
-        type: BugType = BugType.UNKNOWN
-    ) {
-        val bug =
-            if (type == BugType.UNKNOWN)
-                Bug(
-                    compilers,
-                    msg,
-                    crashedProject,
-                    parseTypeOfBugByMsg(msg)
-                )
-            else
-                Bug(compilers, msg, crashedProject, type)
-        saveBug(bug)
+    override fun start() {
+        establishConsumers()
+        log.debug("Bug manager deployed")
     }
 
-//    private fun checkIfBugIsProject(bug: Bug): Bug =
-//        if (bug.crashedProject.files.size > 1) {
-//            val checker =
-//                CompilationChecker(bug.compilers)
-//            if (bug.crashedProject.language == LANGUAGE.KOTLIN) {
-//                val oneFileBugs = checker.checkAndGetCompilerBugs(bug.crashedProject.moveAllCodeInOneFile())
-//                if (oneFileBugs.isNotEmpty()) Bug(
-//                    bug.compilers,
-//                    bug.msg,
-//                    bug.crashedProject.moveAllCodeInOneFile(),
-//                    bug.type
-//                )
-//                else bug
-//            } else {
-//                val text = bug.crashedProject.files.map { it.psiFile.text }.joinToString("\n")
-//                if (checker.checkAndGetCompilerBugs(Project.createFromCode(text)).isNotEmpty())
-//                    Bug(
-//                        bug.compilers,
-//                        bug.msg,
-//                        Project.createFromCode(text),
-//                        bug.type
-//                    )
-//                else bug
-//            }
-//        } else bug
+    private fun saveBug(bug: Bug) {
 
-
-    fun saveBug(bug: Bug) {
         try {
             val field = when (bug.type) {
                 BugType.BACKEND -> "Backend"
@@ -189,6 +161,12 @@ object BugManager {
         f.writeText(newText)
     }
 
-    private val log = Logger.getLogger("bugFinderLogger")
+    private fun establishConsumers() {
+        vertx.eventBus().consumer<Bug>(VertxAddresses.bugManager) { msg ->
+            saveBug(msg.body())
+        }
+    }
+
+    private val log = Logger.getLogger("bugManagerLogger")
 }
 
