@@ -15,6 +15,7 @@ import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
+import org.apache.log4j.Logger
 import java.io.File
 
 class Coordinator: AbstractVerticle() {
@@ -27,17 +28,20 @@ class Coordinator: AbstractVerticle() {
         eb = vertx.eventBus()
         registerCodecs()
         establishConsumers()
-//        deployMutators()
+        deployMutators()
         deployCompilers()
+        log.debug("Coordinator deployed")
     }
 
     private fun establishConsumers() {
         eb.consumer<MutationResult>(Mutator.resultAddress) { result ->
+            log.debug("Got mutation result")
             val mutatedProject = result.body()
-            // TODO: do smth
+            sendProjectToCompiler(mutatedProject.project)
         }
 
         eb.consumer<KotlincInvokeStatus>(CommonCompiler.resultAddress) { result ->
+            log.debug("Got compilation result")
             val compileResult = result.body()
             // TODO: report bugs
         }
@@ -45,7 +49,11 @@ class Coordinator: AbstractVerticle() {
 
     private fun sendStrategyAndMutate(index: Int = 0) {
 //        vertx.eventBus().send(mutators[index].mutateAddress, "Some message")
-        eb.send(mutators[index].mutateAddress, getExampleStrategy())
+        eb.send(Mutator.mutateAddress, getExampleStrategy())
+    }
+
+    private fun sendProjectToCompiler(project: Project) {
+        eb.send(CommonCompiler.compileAddress, project)
     }
 
     private fun deployMutators() {
@@ -55,7 +63,7 @@ class Coordinator: AbstractVerticle() {
         val mutator = Mutator()
         mutators.add(mutator)
         vertx.deployVerticle(mutator,
-            DeploymentOptions().setWorker(true)
+            workerOptions()
         ) { res ->
             if (res.succeeded()) {
                 sendStrategyAndMutate()
@@ -63,6 +71,7 @@ class Coordinator: AbstractVerticle() {
                 error("Mutator wasn't deployed")
             }
         }
+        log.debug("Mutators deployed")
     }
 
     private fun deployCompilers() {
@@ -72,14 +81,15 @@ class Coordinator: AbstractVerticle() {
         val compiler = JVMCompiler()
         compilers.add(compiler)
         vertx.deployVerticle(compiler,
-            DeploymentOptions().setWorker(true)
+            workerOptions()
         ) { res ->
             if (res.succeeded()) {
-                vertx.eventBus().send(compilers.first().compileAddress, getExampleStrategy().project)
+                vertx.eventBus().send(CommonCompiler.compileAddress, getExampleStrategy().project)
             } else {
                 error("Compiler wasn't deployed")
             }
         }
+        log.debug("Compilers deployed")
     }
 
     private fun getExampleStrategy(): MutationStrategy {
@@ -96,4 +106,7 @@ class Coordinator: AbstractVerticle() {
         eb.registerDefaultCodec(Project::class.java, ProjectCodec())
     }
 
+    private fun workerOptions() = DeploymentOptions().setWorker(true) // TODO: exception handling, timeouts, etc
+
+    private val log = Logger.getLogger("coordinatorLogger")
 }
