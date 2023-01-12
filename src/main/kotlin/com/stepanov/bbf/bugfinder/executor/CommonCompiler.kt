@@ -26,11 +26,10 @@ abstract class CommonCompiler: AbstractVerticle() {
     companion object {
         var counter = 0
         val resultAddress = VertxAddresses.compileResult
+        val compileAddress = VertxAddresses.compile // + "${instanceNumber}"
     }
 
     private val instanceNumber = ++counter
-
-    val compileAddress = VertxAddresses.compile + "${instanceNumber}"
 
     protected val log = Logger.getLogger("compilerLogger")
 }

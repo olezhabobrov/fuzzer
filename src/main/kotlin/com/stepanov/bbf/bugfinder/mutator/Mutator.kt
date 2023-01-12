@@ -34,6 +34,7 @@ class Mutator: AbstractVerticle() {
     }
 
     private fun sendMutatedProject() {
+        log.debug("Sending back project, mutated by mutation strategy #${strategy?.number}")
         vertx.eventBus().send(resultAddress,
             MutationResult(strategy!!.project, strategy!!.number)
         )
@@ -41,6 +42,7 @@ class Mutator: AbstractVerticle() {
 
     // TODO: make private
     fun startMutate() {
+        log.debug("Starting mutating for strategy #${strategy?.number}")
         strategy?.transformations?.forEach {
             executeMutation(it)
         } ?: throw RuntimeException("Called startMutate but no strategy provided")
@@ -50,10 +52,9 @@ class Mutator: AbstractVerticle() {
     companion object {
         var instanceCounter = 0
         val resultAddress = VertxAddresses.mutatedProject// + "#${instanceNumber}"
+        val mutateAddress = VertxAddresses.mutate // + "#${instanceNumber}"
     }
-
     private val instanceNumber: Int = ++instanceCounter
-    val mutateAddress = VertxAddresses.mutate + "#${instanceNumber}"
 
     private val log = Logger.getLogger("bugFinderLogger")
 }
