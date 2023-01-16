@@ -1,5 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -11,11 +14,14 @@ import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import kotlin.random.Random
 
-class ShuffleFunctionArguments : Transformation() {
+class ShuffleFunctionArguments(project: Project, file: BBFFile,
+                               amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
-        val ctx = PSICreator.analyze(file)!!
-        file.getAllPSIChildrenOfType<KtCallExpression>()
+        val ctx = PSICreator.analyze(file.psiFile)!!
+        file.psiFile.getAllPSIChildrenOfType<KtCallExpression>()
             .filter { Random.getTrue(10) }
             .forEach { call ->
                 if (call.valueArgumentList == null || call.valueArguments.size < 2) return@forEach
@@ -25,7 +31,7 @@ class ShuffleFunctionArguments : Transformation() {
                         blindShuffling(call, callTarget)
                     else
                         smartShuffling(call, callTarget)
-                if (newValueArgs != null) checker.replaceNodeIfPossible(call.valueArgumentList!!, newValueArgs)
+                if (newValueArgs != null) MutationProcessor.replaceNode(call.valueArgumentList!!, newValueArgs, file)
             }
     }
 
@@ -40,7 +46,7 @@ class ShuffleFunctionArguments : Transformation() {
             callValueParams.mapIndexed { index, arg ->
                 val argExpr = arg.getArgumentExpression()?.copy()
                 arg.getArgumentName()?.let { argExpr to it.text }
-                    ?: argExpr to valueParams[index].first
+                    ?: (argExpr to valueParams[index].first)
             }
         val shuffledArgs = callArgToParamName.shuffled().joinToString { "${it.second} = ${it.first?.text}" }
         return try {

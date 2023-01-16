@@ -1,5 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -9,10 +12,13 @@ import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 
-class ChangeReturnValueToConstant : Transformation() {
+class ChangeReturnValueToConstant(project: Project, file: BBFFile,
+                                  amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
-        val functions = file.getAllPSIChildrenOfType<KtNamedFunction>().filter { getRandomBoolean() }
+        val functions = file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>().filter { getRandomBoolean() }
         for (f in functions) {
             val key = typeConstants.keys.find { f.typeReference?.text?.startsWith(it) == true } ?: continue
             val returns = f.node.getAllChildrenNodes()
@@ -21,9 +27,9 @@ class ChangeReturnValueToConstant : Transformation() {
                     .map { it.psi as KtReturnExpression }
                     .toList()
             for (r in returns) {
-                val replacement = KtPsiFactory(file.project).createExpression(typeConstants[key]!!)
+                val replacement = KtPsiFactory(file.psiFile.project).createExpression(typeConstants[key]!!)
                 if (r.returnedExpression != null) {
-                    checker.replaceNodeIfPossible(r.returnedExpression!!, replacement)
+                    MutationProcessor.replaceNode(r.returnedExpression!!, replacement, file)
                 }
             }
         }

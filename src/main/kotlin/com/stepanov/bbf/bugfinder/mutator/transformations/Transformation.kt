@@ -24,6 +24,8 @@ abstract class Transformation(
         ctx = PSICreator.analyze(file.psiFile, project)
     }
 
-    internal val log = Logger.getLogger("mutatorLogger")
+    companion object {
+        val log = Logger.getLogger("mutatorLogger")
+    }
 
 }

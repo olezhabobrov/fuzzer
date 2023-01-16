@@ -18,11 +18,3 @@ object Factory {
             null
         }
 }
-//abstract class Factory {
-//    companion object {
-//
-//        val psiFactory = KtPsiFactory(file.project)
-//    }
-//
-//    val psiFactory = KtPsiFactory(file.project)
-//}

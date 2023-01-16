@@ -2,6 +2,8 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiFile
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory
 import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.replaceThis
@@ -9,13 +11,16 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
 
-class ChangeRandomASTNodes : Transformation() {
+class ChangeRandomASTNodes(project: Project, file: BBFFile,
+                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         val numOfSwaps = Random.nextInt(numOfSwaps.first, numOfSwaps.second)
         for (i in 0 until numOfSwaps) {
             log.debug("Swap $i of $numOfSwaps")
-            val children = file.node.getAllChildrenNodes()
+            val children = file.psiFile.node.getAllChildrenNodes()
             swapRandomNodes(children, psiFactory)
         }
     }
@@ -38,12 +43,7 @@ class ChangeRandomASTNodes : Transformation() {
                 else break
             }
             log.debug("SWAPING ${randomNode1} and ${randomNode2}")
-            val new = swap(randomNode1, randomNode2, psiFactory)
-            val res = files?.let {
-                TODO()
-                //checker.checkCompiling(Project.createFromCode(it))
-            } ?: checker.checkTextCompiling(file.text)
-            if (!res) swap(new.first, new.second, psiFactory)
+            swap(randomNode1, randomNode2, psiFactory)
         }
 
         private fun swap(randomNode1: ASTNode, randomNode2: ASTNode, psiFactory: KtPsiFactory): Pair<ASTNode, ASTNode> {
