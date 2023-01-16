@@ -45,13 +45,13 @@ class ChangeConstants(project: Project, file: BBFFile,
             Type.INTEGER -> psiFactory.createExpression("${Random().nextInt()}")
         }
         if (isRandom && Random().nextBoolean() || !isRandom)
-            MutationProcessor.replaceNode(exp, replacement, file)
+            MutationProcessor.replaceNodeReturnNode(exp, replacement, file)
     }
 
 
     private fun changeStringConst(exp: KtStringTemplateEntry, isRandom: Boolean = true) =
             if (isRandom && Random().nextBoolean() || !isRandom)
-                MutationProcessor.replaceNode(exp,
+                MutationProcessor.replaceNodeReturnNode(exp,
                         psiFactory.createExpression(Random().getRandomVariableName(NAME_SIZE)), file)
             else false
 

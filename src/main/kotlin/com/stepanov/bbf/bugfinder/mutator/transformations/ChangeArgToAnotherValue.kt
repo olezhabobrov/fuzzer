@@ -48,7 +48,7 @@ class ChangeArgToAnotherValue(project: Project, file: BBFFile,
                         } else {
                             null
                         } ?: randomInstancesGenerator.generateValueOfTypeAsExpression(argType)
-                    replacement?.let { MutationProcessor.replaceNode(argPSI, it, file) }
+                    replacement?.let { MutationProcessor.replaceNodeReturnNode(argPSI, it, file) }
                 }
             }
         }

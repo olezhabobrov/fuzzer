@@ -68,7 +68,7 @@ class ExpressionReplacer(project: Project, file: BBFFile,
             processScope(rig!!, calcScope(exp).shuffled(), generatedFunCalls)
         }
         val randomExpressionToReplace = getRandomExpressionToReplace(expType, processedScope) ?: return false
-        return MutationProcessor.replaceNode(exp, randomExpressionToReplace, file, "ExpressionReplacer$useCounter.kt")
+        return MutationProcessor.replaceNodeReturnNode(exp, randomExpressionToReplace, file, "ExpressionReplacer$useCounter.kt")
     }
 
     private fun handleCallSeq(postfix: List<CallableDescriptor>, scope: List<ScopeCalculator.ScopeComponent>): KtExpression? {

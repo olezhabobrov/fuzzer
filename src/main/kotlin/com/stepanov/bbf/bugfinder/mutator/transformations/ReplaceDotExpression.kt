@@ -7,9 +7,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.tryToCreateExp
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class ReplaceDotExpression(project: Project, file: BBFFile,
                            amountOfTransformations: Int = 1, probPercentage: Int = 100):
@@ -22,7 +20,7 @@ class ReplaceDotExpression(project: Project, file: BBFFile,
                 val left = it.receiverExpression.text
                 val right = it.selectorExpression?.text ?: return@forEach
                 val safeCallExpression = Factory.psiFactory.tryToCreateExpression("$left?.$right") ?: return@forEach
-                MutationProcessor.replaceNode(it, safeCallExpression, file)
+                MutationProcessor.replaceNodeReturnNode(it, safeCallExpression, file)
             }
     }
 }

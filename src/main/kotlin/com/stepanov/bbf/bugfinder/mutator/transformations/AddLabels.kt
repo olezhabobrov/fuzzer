@@ -21,7 +21,7 @@ class AddLabels(project: Project, file: BBFFile,
         for (randomLoop in randomLoops) {
             val labelRandomName = Random.getRandomVariableName(1).toLowerCaseAsciiOnly()
             val newLabeledExpression = Factory.psiFactory.createLabeledExpression("$labelRandomName@${randomLoop.text}")
-            MutationProcessor.replaceNode(randomLoop, newLabeledExpression, file)
+            MutationProcessor.replaceNodeReturnNode(randomLoop, newLabeledExpression, file)
         }
     }
 }

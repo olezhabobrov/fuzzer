@@ -62,7 +62,7 @@ class ChangeOperators(project: Project, file: BBFFile,
                     else
                         psiFactory.createExpression(replacement)
 
-            MutationProcessor.replaceNode(replace.psi, replacementNode, file)
+            MutationProcessor.replaceNodeReturnNode(replace.psi, replacementNode, file)
         }
     }
 

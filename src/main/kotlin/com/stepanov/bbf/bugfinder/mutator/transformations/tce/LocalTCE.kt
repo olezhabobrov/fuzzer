@@ -2,8 +2,10 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.tce
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -16,21 +18,23 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
-class LocalTCE : Transformation() {
+class LocalTCE(project: Project, file: BBFFile,
+               amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     private val blockListOfTypes = listOf("Unit", "Nothing", "Nothing?")
-    private var psi = file.copy() as KtFile
+    private var psi = file.psiFile.copy() as KtFile
     lateinit var usageExamples: MutableList<Triple<KtExpression, String, KotlinType?>>
 
     override fun transform() {
         val ctx = PSICreator.analyze(psi) ?: return
-        RandomTypeGenerator.setFileAndContext(file as KtFile, ctx)
-        usageExamples = TCEUsagesCollector.collectUsageCases(psi, ctx, checker.project).toMutableList()
+        RandomTypeGenerator.setFileAndContext(file.psiFile as KtFile, ctx)
+        usageExamples = TCEUsagesCollector.collectUsageCases(psi, ctx, project).toMutableList()
         addRandomUnitCalls()
         replaceNodesOfFile(psi.getAllPSIChildrenOfType(), ctx)
-        checker.curFile.changePsiFile(psi.text)
+        file.changePsiFile(psi.text)
     }
 
     private fun addRandomUnitCalls() {
@@ -42,9 +46,6 @@ class LocalTCE : Transformation() {
                     .filter { it.nextSibling.let { it is PsiWhiteSpace && it.text.contains("\n") } }
                     .randomOrNull() ?: continue
             randomPlaceToInsert.addAfterThisWithWhitespace(call.first.copy(), "\n")
-            if (!checker.checkCompilingWithFileReplacement(psi, checker.curFile)) {
-                psi = backupFile
-            }
         }
     }
 
@@ -75,9 +76,9 @@ class LocalTCE : Transformation() {
                 continue
             }
             log.debug("replacement of ${node.first.text} of type ${node.second} is ${replacement.text}")
-            checker.replaceNodeIfPossibleWithNodeWithFileReplacement(
+            MutationProcessor.replaceNodeWithNodeWithFileReplacement(
                 psi,
-                checker.curFile,
+                file,
                 node.first.node,
                 replacement.copy().node
             )?.let { replacementsList.add(it.psi) }
@@ -104,15 +105,15 @@ class LocalTCE : Transformation() {
             sameTypeExpression?.let {
                 log.debug("TRYING TO REPLACE CONSTANT ${constant.first.text}")
                 if (constant.first.parent is KtPrefixExpression) {
-                    checker.replacePSINodeIfPossibleWithFileReplacement(
+                    MutationProcessor.replacePSINodeWithFileReplacement(
                         psi,
-                        checker.curFile,
+                        file,
                         constant.first.parent,
                         it.first
                     )
-                } else checker.replacePSINodeIfPossibleWithFileReplacement(
+                } else MutationProcessor.replacePSINodeWithFileReplacement(
                     psi,
-                    checker.curFile,
+                    file,
                     constant.first,
                     it.first
                 )

@@ -17,7 +17,7 @@ class ChangeVarToNull(project: Project, file: BBFFile,
     override fun transform() {
         file.psiFile.getAllPSIChildrenOfType<KtExpression>()
                 .filter { getRandomBoolean(16) }
-                .forEach { MutationProcessor.replaceNode(it, psiFactory.createExpression("null"), file) }
+                .forEach { MutationProcessor.replaceNodeReturnNode(it, psiFactory.createExpression("null"), file) }
     }
 
 }

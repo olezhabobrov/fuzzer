@@ -22,7 +22,7 @@ class AddBracketsToExpression(project: Project, file: BBFFile,
                 if (it is KtWhenExpression) return@forEach
                 try {
                     val newExpr = psiFactory.createExpression("(${it.text})")
-                    MutationProcessor.replaceNode(it, newExpr, file)
+                    MutationProcessor.replaceNodeReturnNode(it, newExpr, file)
                 } catch (e: Exception) {
                     return@forEach
                 }

@@ -54,7 +54,7 @@ class AddDefaultValueToArg(project: Project, file: BBFFile,
                     if (value.trim().isEmpty()) continue
                     if (emptyConstructor) value = value.substringBefore('<') + value.substringAfterLast('>')
                     val psiValue = psiFactory.createParameter("${valueParam.text.substringBefore('=')} = $value")
-                    MutationProcessor.replaceNode(valueParam, psiValue, file)
+                    MutationProcessor.replaceNodeReturnNode(valueParam, psiValue, file)
                 }
             }
     }

@@ -63,6 +63,6 @@ class MutationExample(project: Project, file: BBFFile,
                     it to it.getType(bindingContext!!)!!
                 }
         val newValue = rig!!.generateValueOfTypeAsExpression(stringConstantType)!!
-        MutationProcessor.replaceNode(stringConstant, newValue, file)
+        MutationProcessor.replaceNodeReturnNode(stringConstant, newValue, file)
     }
 }

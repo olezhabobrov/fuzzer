@@ -54,7 +54,7 @@ class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
             return
         val params = exp.indexExpressions.joinToString(separator = ",") { it.text }
         val newCall = createCall(base.text, "get", params)
-        MutationProcessor.replaceNode(exp, newCall, file)
+        MutationProcessor.replaceNodeReturnNode(exp, newCall, file)
         //exp.replaceThis(newCall)
     }
 
@@ -70,7 +70,7 @@ class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
         }
         exp.baseExpression?.let {
             //exp.replaceThis(createCall(it.text, newCall))
-            MutationProcessor.replaceNode(exp, createCall(it.text, newCall), file)
+            MutationProcessor.replaceNodeReturnNode(exp, createCall(it.text, newCall), file)
         }
     }
 
@@ -79,7 +79,7 @@ class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
         val right = exp.right ?: return
         if (exp.operationToken == KtTokens.EQEQ) {
             val newExp = psiFactory.createExpression("(${left.text})?.equals(${right.text}) ?: (${right.text} === null)")
-            MutationProcessor.replaceNode(exp, newExp, file)
+            MutationProcessor.replaceNodeReturnNode(exp, newExp, file)
             //exp.replaceThis(newExp)
             return
         } else if (exp.operationToken in allowedEqs) {
@@ -88,7 +88,7 @@ class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
                 val params = "${left.indexExpressions.joinToString(separator = ",") { it.text }}, ${right.text}"
                 val newCall = createCall(arrayExp.text, "set", params)
                 //exp.replaceThis(newCall)
-                MutationProcessor.replaceNode(exp, newCall, file)
+                MutationProcessor.replaceNodeReturnNode(exp, newCall, file)
                 return
             }
         }
@@ -106,7 +106,7 @@ class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
 //            KtTokens.DIVEQ -> "divAssign"
             else -> return
         }
-        MutationProcessor.replaceNode(exp, createCallWithBraces(left.text, newCall, right.text), file)
+        MutationProcessor.replaceNodeReturnNode(exp, createCallWithBraces(left.text, newCall, right.text), file)
         //exp.replaceThis(createCallWithBraces(left.text, newCall, right.text))
     }
 

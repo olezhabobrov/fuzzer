@@ -129,7 +129,7 @@ class AddInheritance(project: Project, file: BBFFile,
                 } ?: continue
             //Getting value of needed type
             val value = RandomInstancesGenerator(file.psiFile as KtFile, ctx).generateValueOfTypeAsExpression(returnType) ?: continue
-            MutationProcessor.replaceNode(todo, value, file)
+            MutationProcessor.replaceNodeReturnNode(todo, value, file)
         }
         return
     }
