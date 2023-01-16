@@ -1,5 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import org.jetbrains.kotlin.psi.*
 
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
@@ -7,13 +10,16 @@ import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import java.util.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class ChangeConstants : Transformation() {
+class ChangeConstants(project: Project, file: BBFFile,
+                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     enum class Type { BOOLEAN, INTEGER, DOUBLE }
 
     override fun transform() {
-        val constants = file.getAllPSIChildrenOfType<KtConstantExpression>()
-        val stringConstants = file.getAllPSIChildrenOfType<KtStringTemplateEntry>()
+        val constants = file.psiFile.getAllPSIChildrenOfType<KtConstantExpression>()
+        val stringConstants = file.psiFile.getAllPSIChildrenOfType<KtStringTemplateEntry>()
         constants.forEach {
             when {
                 it.text == "true" || it.text == "false" -> changeExpression(it,
@@ -39,14 +45,14 @@ class ChangeConstants : Transformation() {
             Type.INTEGER -> psiFactory.createExpression("${Random().nextInt()}")
         }
         if (isRandom && Random().nextBoolean() || !isRandom)
-            checker.replaceNodeIfPossible(exp, replacement)
+            MutationProcessor.replaceNode(exp, replacement, file)
     }
 
 
     private fun changeStringConst(exp: KtStringTemplateEntry, isRandom: Boolean = true) =
             if (isRandom && Random().nextBoolean() || !isRandom)
-                checker.replaceNodeIfPossible(exp,
-                        psiFactory.createExpression(Random().getRandomVariableName(NAME_SIZE)))
+                MutationProcessor.replaceNode(exp,
+                        psiFactory.createExpression(Random().getRandomVariableName(NAME_SIZE)), file)
             else false
 
     private val NAME_SIZE = 5

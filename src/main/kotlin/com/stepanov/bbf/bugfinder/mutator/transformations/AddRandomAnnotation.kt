@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.addImport
@@ -17,7 +19,10 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.types.KotlinType
 import kotlin.random.Random
 
-class AddRandomAnnotation : Transformation() {
+class AddRandomAnnotation(project: Project, file: BBFFile,
+                          amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     private var randomInstancesGenerator: RandomInstancesGenerator? = null
 
@@ -32,27 +37,26 @@ class AddRandomAnnotation : Transformation() {
     private val RANDOM_CONST = 50
 
     private fun insert(t: PsiElement, type: KotlinType?, kl: KtClass?) {
-        //println("trying to insert ${type ?: kl!!.name}")
+        log.debug("trying to insert ${type ?: kl!!.name}")
         val instance =
             type?.let { randomInstancesGenerator!!.generateValueOfType(type) }
                 ?: randomInstancesGenerator!!.generateRandomInstanceOfClass(kl!!)?.first?.text
         //println("instance = $instance")
         if (instance == null || instance.isEmpty()) return
         val newNode: PsiElement
-        if (t == file) {
+        if (t == file.psiFile) {
             val psiInstance = Factory.psiFactory.createFileAnnotation(instance)
-            newNode = file.addToTheTop(psiInstance)
+            newNode = file.psiFile.addToTheTop(psiInstance)
         } else {
             val psiInstance = Factory.psiFactory.createAnnotationEntry("@$instance")
             val psiWhiteSpace = Factory.psiFactory.createWhiteSpace("\n")
             newNode = t.addAfter(psiInstance, null)
             newNode.addBefore(psiWhiteSpace, null)
         }
-        if (!checker.checkCompiling()) newNode.delete()
     }
 
     fun tryToInsertAnn() {
-        val annClassFromFile = file.getAllPSIChildrenOfType<KtClass>().filter { it.isAnnotation() }.randomOrNull()
+        val annClassFromFile = file.psiFile.getAllPSIChildrenOfType<KtClass>().filter { it.isAnnotation() }.randomOrNull()
         if (annClassFromFile != null && Random.nextBoolean()) {
             val target =
                 annClassFromFile.annotationEntries
@@ -73,7 +77,7 @@ class AddRandomAnnotation : Transformation() {
         val annClassFromLib = annClassesFromLib.random()
         val classId = annClassFromLib.classId?.packageFqName?.asString()
         if (classId != null && classId != "kotlin") {
-            (file as KtFile).addImport(annClassFromLib.classId!!.asString().replace('/', '.').substringBeforeLast('.'), true)
+            (file.psiFile as KtFile).addImport(annClassFromLib.classId!!.asString().replace('/', '.').substringBeforeLast('.'), true)
         }
         val targetValueArgs =
             annClassFromLib.annotations.findAnnotation(FqName("kotlin.annotation.Target"))?.allValueArguments
@@ -85,30 +89,30 @@ class AddRandomAnnotation : Transformation() {
     }
 
     override fun transform() {
-        val ctx = PSICreator.analyze(file, project) ?: return
-        randomInstancesGenerator = RandomInstancesGenerator(file as KtFile, ctx)
+        val ctx = PSICreator.analyze(file.psiFile, project) ?: return
+        randomInstancesGenerator = RandomInstancesGenerator(file.psiFile as KtFile, ctx)
         repeat(RANDOM_CONST) { tryToInsertAnn() }
     }
 
 
     private fun getTargetsByTarget(target: String): List<PsiElement> =
         when (target) {
-            "CLASS" -> file.getAllPSIChildrenOfType<KtClass>()
-            "ANNOTATION_CLASS" -> file.getAllPSIChildrenOfType<KtClass>().filter { it.isAnnotation() }
-            "TYPE_PARAMETER" -> file.getAllPSIChildrenOfType<KtTypeParameter>()
-            "PROPERTY" -> file.getAllPSIChildrenOfType<KtProperty>()
-            "FIELD" -> file.getAllPSIChildrenOfType<KtClass>().flatMap { it.getProperties() }
-            "LOCAL_VARIABLE" -> file.getAllPSIChildrenOfType<KtNamedFunction>()
+            "CLASS" -> file.psiFile.getAllPSIChildrenOfType<KtClass>()
+            "ANNOTATION_CLASS" -> file.psiFile.getAllPSIChildrenOfType<KtClass>().filter { it.isAnnotation() }
+            "TYPE_PARAMETER" -> file.psiFile.getAllPSIChildrenOfType<KtTypeParameter>()
+            "PROPERTY" -> file.psiFile.getAllPSIChildrenOfType<KtProperty>()
+            "FIELD" -> file.psiFile.getAllPSIChildrenOfType<KtClass>().flatMap { it.getProperties() }
+            "LOCAL_VARIABLE" -> file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
                 .flatMap { it.getAllPSIChildrenOfType<KtProperty>() }
-            "VALUE_PARAMETER" -> file.getAllPSIChildrenOfType<KtValueArgument>()
-            "CONSTRUCTOR" -> file.getAllPSIChildrenOfTwoTypes<KtPrimaryConstructor, KtSecondaryConstructor>()
-            "FUNCTION" -> file.getAllPSIChildrenOfType<KtNamedFunction>().filter { it.isTopLevel }
-            "PROPERTY_GETTER" -> file.getAllPSIChildrenOfType<KtProperty>().mapNotNull { it.getter }
-            "PROPERTY_SETTER" -> file.getAllPSIChildrenOfType<KtProperty>().mapNotNull { it.setter }
-            "TYPE" -> file.getAllPSIChildrenOfType<KtTypeReference>()
-            "EXPRESSION" -> file.getAllPSIChildrenOfType<KtExpression>()
-            "FILE" -> listOf(file)
-            "TYPEALIAS" -> file.getAllPSIChildrenOfType<KtTypeAlias>()
+            "VALUE_PARAMETER" -> file.psiFile.getAllPSIChildrenOfType<KtValueArgument>()
+            "CONSTRUCTOR" -> file.psiFile.getAllPSIChildrenOfTwoTypes<KtPrimaryConstructor, KtSecondaryConstructor>()
+            "FUNCTION" -> file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>().filter { it.isTopLevel }
+            "PROPERTY_GETTER" -> file.psiFile.getAllPSIChildrenOfType<KtProperty>().mapNotNull { it.getter }
+            "PROPERTY_SETTER" -> file.psiFile.getAllPSIChildrenOfType<KtProperty>().mapNotNull { it.setter }
+            "TYPE" -> file.psiFile.getAllPSIChildrenOfType<KtTypeReference>()
+            "EXPRESSION" -> file.psiFile.getAllPSIChildrenOfType<KtExpression>()
+            "FILE" -> listOf(file.psiFile)
+            "TYPEALIAS" -> file.psiFile.getAllPSIChildrenOfType<KtTypeAlias>()
             else -> listOf()
         }
 

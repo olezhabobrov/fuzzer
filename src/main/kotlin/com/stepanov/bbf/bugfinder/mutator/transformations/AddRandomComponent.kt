@@ -1,5 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomFunctionGenerator
@@ -19,21 +21,23 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import kotlin.random.Random
 
-class AddRandomComponent : Transformation() {
+class AddRandomComponent(project: Project, file: BBFFile,
+                         amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
-    private val ktFile = file as KtFile
-    private val ctx = PSICreator.analyze(ktFile, project)
+    private val ktFile = file.psiFile as KtFile
     private var randomInstanceGenerator: RandomInstancesGenerator? = null
     private val rtg = RandomTypeGenerator
     private lateinit var table: FileFieldsTable
 
     override fun transform() {
-        if (ctx == null) return
+        val ctx = PSICreator.analyze(ktFile, project) ?: return
         randomInstanceGenerator = RandomInstancesGenerator(ktFile, ctx)
         table = FileFieldsTable(ktFile, ctx)
         rtg.setFileAndContext(ktFile, ctx)
         repeat(Random.nextInt(20, 50)) {
-            val randomClass = file.getAllPSIChildrenOfType<KtClassOrObject>()/*.first()*/.randomOrNull() ?: return
+            val randomClass = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()/*.first()*/.randomOrNull() ?: return
             val gRandomClass = GClass.fromPsi(randomClass)
             if (Random.nextBoolean()) addRandomProperty(randomClass, gRandomClass)
             else addRandomFunction(randomClass, gRandomClass)
@@ -55,11 +59,6 @@ class AddRandomComponent : Transformation() {
         if (generatedProp == null) return
         //println(generatedProp.text + "\n")
         val addedProperty = psiClass.addPsiToBody(generatedProp) as? KtProperty ?: return
-        if (!checker.checkCompiling()) {
-            //println("CANT COMPILE =(")
-            addedProperty.delete()
-            return
-        }
         val updatedCtx = PSICreator.analyze(ktFile) ?: return
         val propertyType = addedProperty.typeReference?.getAbbreviatedTypeOrType(updatedCtx) ?: return
         val initializer = addedProperty.initializer
@@ -74,9 +73,6 @@ class AddRandomComponent : Transformation() {
         if (setter != null && setter.hasInitializer() && !setter.isPrivate()) {
             generateValueOfType(propertyType)?.let { addedProperty.setInitializer(it) }
             generateValueOfType(propertyType)?.let { setter.initializer!!.replaceThis(it) }
-        }
-        if (!checker.checkCompiling()) {
-            addedProperty.delete()
         }
     }
 
@@ -97,10 +93,6 @@ class AddRandomComponent : Transformation() {
         val generatedFunc = randomFunctionGenerator.generate() as? KtNamedFunction ?: return
         //println(generatedFunc.text)
         val addedGeneratedFunc = psiClass.addPsiToBody(generatedFunc) as? KtNamedFunction ?: return
-        if (!checker.checkCompiling()) {
-            addedGeneratedFunc.delete()
-            return
-        }
         val updatedCtx = PSICreator.analyze(ktFile) ?: return
         table = FileFieldsTable(ktFile, updatedCtx)
         val addedFuncDescriptor =
@@ -126,9 +118,6 @@ class AddRandomComponent : Transformation() {
             addedGeneratedFunc.initBodyByTODO(Factory.psiFactory)
         } catch (e: Error) {
             addedGeneratedFunc.initBodyByTODO(Factory.psiFactory)
-        }
-        if (!checker.checkCompiling()) {
-            addedGeneratedFunc.delete()
         }
     }
 }

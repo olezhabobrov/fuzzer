@@ -2,6 +2,8 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ScopeCalculator
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -11,11 +13,14 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
-class AddExpressionToLoop : Transformation() {
+class AddExpressionToLoop(project: Project, file: BBFFile,
+                          amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
-        val ctx = PSICreator.analyze(file) ?: return
-        val expressions = file.getAllPSIChildrenOfType<KtExpression>().filter { it.getType(ctx) != null }
-        file.getAllPSIChildrenOfType<KtLoopExpression>()
+        val ctx = PSICreator.analyze(file.psiFile) ?: return
+        val expressions = file.psiFile.getAllPSIChildrenOfType<KtExpression>().filter { it.getType(ctx) != null }
+        file.psiFile.getAllPSIChildrenOfType<KtLoopExpression>()
             .reversed()
             .filter { Random.getTrue(20) }
             .filter { it.body is KtBlockExpression }
@@ -42,13 +47,10 @@ class AddExpressionToLoop : Transformation() {
         try {
             val newBlock = Factory.psiFactory.createBlock(newText)
             blockBody.replaceThis(newBlock)
-            if (!checker.checkCompiling()) {
-                newBlock.replaceThis(blockCopy)
-            }
         } catch (e: Exception) {
-            return
+            log.debug("Caught exception: ${e.stackTraceToString()}")
         } catch (e: Error) {
-            return
+            log.debug("Caught error: ${e.stackTraceToString()}")
         }
         return
     }

@@ -1,6 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -15,9 +18,12 @@ import org.jetbrains.kotlin.types.KotlinType
 import kotlin.random.Random
 
 
-class AddCasts : Transformation() {
+class AddCasts(project: Project, file: BBFFile,
+               amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
-        val ktFile = file as KtFile
+        val ktFile = file.psiFile as KtFile
         val ctx = PSICreator.analyze(ktFile, project) ?: return
         RandomTypeGenerator.setFileAndContext(ktFile, ctx)
         val currentModule =
@@ -103,7 +109,7 @@ class AddCasts : Transformation() {
                 null
             }
         val replacementResult =
-            if (newExpression == null) false else checker.replaceNodeIfPossible(expression, newExpression)
+            if (newExpression == null) false else MutationProcessor.replaceNode(expression, newExpression, file)
         if (!replacementResult) {
             val newExpressionInBrackets =
                 try {
@@ -111,7 +117,7 @@ class AddCasts : Transformation() {
                 } catch (e: Exception) {
                     null
                 } ?: return false
-            return checker.replaceNodeIfPossible(expression, newExpressionInBrackets)
+            return MutationProcessor.replaceNode(expression, newExpressionInBrackets, file)
         } else {
             return true
         }

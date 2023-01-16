@@ -1,5 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.util.filterDuplicatesBy
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
@@ -11,16 +14,18 @@ import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
-class AddCallableReference : Transformation() {
+class AddCallableReference(project: Project, file: BBFFile,
+                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
-        var ctx = PSICreator.analyze(file) ?: return
+        var ctx = PSICreator.analyze(file.psiFile) ?: return
         val callsWithFunTypes =
-            file.getAllPSIChildrenOfType<KtCallExpression>()
+            file.psiFile.getAllPSIChildrenOfType<KtCallExpression>()
                 .filter { it.valueArguments.any { it.getArgumentExpression()?.getType(ctx)?.isFunctionType == true } }
         val potentialCallableReferences =
-            checker.project.files.flatMap {
+            project.files.flatMap {
                 it.psiFile.getAllPSIChildrenOfType<KtReferenceExpression>()
                     .filter { it !is KtCallExpression }
                     .filterDuplicatesBy { it.text }
@@ -39,7 +44,7 @@ class AddCallableReference : Transformation() {
                 lambdaArgument.delete()
             }
         }
-        ctx = PSICreator.analyze(file) ?: return
+        ctx = PSICreator.analyze(file.psiFile) ?: return
         for (c in callsWithFunTypes) {
             if (Random.getTrue(50)) continue
             c.valueArguments.forEach { arg ->
@@ -47,10 +52,11 @@ class AddCallableReference : Transformation() {
                 if (!argType.isFunctionType) return@forEach
                 for (ref in potentialCallableReferences.shuffled()) {
                     val newCallable = Factory.psiFactory.createCallableReferenceExpression("::${ref.text}")
-                    print("TRYING TO REPLACE ${arg.text} on ${newCallable?.text} ")
+                    log.debug("TRYING TO REPLACE ${arg.text} on ${newCallable?.text} ")
                     if (newCallable != null) {
-                        val res = checker.replaceNodeIfPossible(arg, newCallable)
-                        println(res)
+                        if (MutationProcessor.replaceNode(arg, newCallable, file)) {
+                            log.debug("Successfully replaced")
+                        }
                     }
                 }
             }
@@ -58,7 +64,7 @@ class AddCallableReference : Transformation() {
     }
 
     private fun tryToReplaceCallableReferences(potentialCallableReferences: List<KtReferenceExpression>) {
-        val callableReferences = file.getAllPSIChildrenOfType<KtCallableReferenceExpression>()
+        val callableReferences = file.psiFile.getAllPSIChildrenOfType<KtCallableReferenceExpression>()
         val potentialCallableReferencesAsCallableReferences =
             potentialCallableReferences.mapNotNull { Factory.psiFactory.createCallableReferenceExpression("::${it.text}") }
         for (c in callableReferences) {
@@ -66,9 +72,7 @@ class AddCallableReference : Transformation() {
                 if (c.text == potCallableReference.text) continue
                 val copy = potCallableReference.copy()
                 c.replaceThis(copy)
-                if (!checker.checkCompiling()) {
-                    copy.replaceThis(c)
-                } else break
+                break
             }
         }
     }

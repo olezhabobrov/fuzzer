@@ -1,7 +1,10 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.FillerGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.*
@@ -19,16 +22,19 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isNullable
 import kotlin.random.Random
 
-class ChangeArgToAnotherValue : Transformation() {
+class ChangeArgToAnotherValue(project: Project, file: BBFFile,
+                              amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
 
     override fun transform() {
-        val ctx = PSICreator.analyze(file, project) ?: return
+        val ctx = PSICreator.analyze(file.psiFile, project) ?: return
         val randomInstancesGenerator = RandomInstancesGenerator(file as KtFile, ctx)
-        for (func in file.getAllPSIChildrenOfType<KtNamedFunction>()) {
+        for (func in file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()) {
             val funcDescriptor =
                 func.getDeclarationDescriptorIncludingConstructors(ctx) as? FunctionDescriptor ?: continue
-            val callers = file.getAllPSIChildrenOfType<KtCallExpression>()
+            val callers = file.psiFile.getAllPSIChildrenOfType<KtCallExpression>()
                 .filter { it.getResolvedCall(ctx)?.resultingDescriptor?.findPsi() == func }
             for (call in callers.filter { Random.getTrue(30) }) {
                 val valueArgs = call.getResolvedCall(ctx)?.valueArguments?.entries ?: continue
@@ -42,7 +48,7 @@ class ChangeArgToAnotherValue : Transformation() {
                         } else {
                             null
                         } ?: randomInstancesGenerator.generateValueOfTypeAsExpression(argType)
-                    replacement?.let { checker.replaceNodeIfPossible(argPSI, it) }
+                    replacement?.let { MutationProcessor.replaceNode(argPSI, it, file) }
                 }
             }
         }
@@ -54,9 +60,9 @@ class ChangeArgToAnotherValue : Transformation() {
         type: KotlinType,
         ctx: BindingContext
     ): KtExpression? {
-        val fillerGenerator = FillerGenerator(file as KtFile, ctx, mutableListOf())
+        val fillerGenerator = FillerGenerator(file.psiFile as KtFile, ctx, mutableListOf())
         val potentialReplacement =
-            (file as KtFile).getAvailableValuesToInsertIn(node, ctx)
+            (file.psiFile as KtFile).getAvailableValuesToInsertIn(node, ctx)
                 .filter { it.second != null }
                 .map { it.first to it.second!! }
                 .randomOrNull() ?: return null

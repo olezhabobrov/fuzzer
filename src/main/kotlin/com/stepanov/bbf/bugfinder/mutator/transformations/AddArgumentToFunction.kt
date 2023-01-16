@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.util.*
@@ -20,13 +22,15 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 //TODO add field to class
-class AddArgumentToFunction : Transformation() {
+class AddArgumentToFunction(project: Project, file: BBFFile,
+                            amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         repeat(MAGIC_CONST) {
             try {
-                val ktFile = file as? KtFile ?: return
-                val fileBackup = ktFile.copy() as KtFile
+                val ktFile = file.psiFile as? KtFile ?: return
                 val ctx = PSICreator.analyze(ktFile) ?: return
                 RandomTypeGenerator.setFileAndContext(ktFile, ctx)
                 val randomFunc = ktFile.getAllPSIChildrenOfType<KtNamedFunction>().randomOrNull() ?: return
@@ -80,11 +84,10 @@ class AddArgumentToFunction : Transformation() {
                         }
                     }
                 }
-                if (!checker.checkCompiling()) {
-                    checker.curFile.changePsiFile(fileBackup, genCtx = false)
-                }
             } catch (e: Exception) {
+                log.debug("Caught exception: ${e.stackTraceToString()}")
             } catch (e: Error) {
+                log.debug("Caught error: ${e.stackTraceToString()}")
             }
         }
     }
@@ -109,5 +112,5 @@ class AddArgumentToFunction : Transformation() {
 
     private fun SourceElement.getPsi(): PsiElement? = (this as? PsiSourceElement)?.psi
 
-    private val MAGIC_CONST = file.getAllPSIChildrenOfType<KtNamedFunction>().size / 2
+    private val MAGIC_CONST = file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>().size / 2
 }

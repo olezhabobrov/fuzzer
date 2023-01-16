@@ -1,8 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.tryToCreateExpression
@@ -15,19 +16,19 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.replace
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.isBoolean
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
-class AddLoop : Transformation() {
+class AddLoop(project: Project, file: BBFFile,
+              amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         repeat(RANDOM_CONST) {
-            val backup = file.copy() as PsiFile
             try {
                 addRandomLoops()
             } catch (e: Exception) {
-                checker.curFile.changePsiFile(backup, false)
+                log.debug("Caught exception: ${e.stackTraceToString()}")
             }
         }
     }
@@ -35,8 +36,7 @@ class AddLoop : Transformation() {
     private fun addRandomLoops() {
         val beginOfLoop = Random.nextInt(file.text.split("\n").size - 2)
         val endOfLoop = Random.nextInt(beginOfLoop + 1, file.text.split("\n").size - 1)
-        val fileBackup = file.copy() as PsiFile
-        val nodesBetweenWhS = file.getNodesBetweenWhitespaces(beginOfLoop, endOfLoop)
+        val nodesBetweenWhS = file.psiFile.getNodesBetweenWhitespaces(beginOfLoop, endOfLoop)
         if (nodesBetweenWhS.isEmpty() || nodesBetweenWhS.all { it is PsiWhiteSpace }) return
         val randomLoop = generateRandomLoop(beginOfLoop to endOfLoop) ?: return
         nodesBetweenWhS.first { it !is PsiWhiteSpace }.replaceThis(randomLoop)
@@ -44,24 +44,20 @@ class AddLoop : Transformation() {
         nodesBetweenWhS
             .filter { it.parent !in nodesBetweenWhS && it !in whiteSpaces }
             .map { it.delete() }
-        if (!checker.checkCompiling()) {
-            checker.curFile.changePsiFile(fileBackup, false)
-        }
     }
 
     private fun generateRandomLoop(placeToInsert: Pair<Int, Int>): KtExpression? {
         val beginningNode =
-            file.getNodesBetweenWhitespaces(placeToInsert.first, placeToInsert.first)
+            file.psiFile.getNodesBetweenWhitespaces(placeToInsert.first, placeToInsert.first)
                 .firstOrNull { it is KtExpression } ?: return null
-        val ctx = PSICreator.analyze(file, checker.project) ?: return null
-        val rig = RandomInstancesGenerator(file as KtFile, ctx)
-        RandomTypeGenerator.setFileAndContext(file as KtFile, ctx)
+        val ctx = PSICreator.analyze(file.psiFile, project) ?: return null
+        val rig = RandomInstancesGenerator(file.psiFile as KtFile, ctx)
+        RandomTypeGenerator.setFileAndContext(file.psiFile as KtFile, ctx)
         val scope =
-            ScopeCalculator(file as KtFile, project)
+            ScopeCalculator(file.psiFile as KtFile, project)
                 .calcScope(beginningNode)
                 .map { it.psiElement to it.type }
-        //val scope = (file as KtFile).getAvailableValuesToInsertIn(beginningNode, ctx).filter { it.second != null }
-        val nodesBetweenWhS = file.getNodesBetweenWhitespaces(placeToInsert.first, placeToInsert.second)
+        val nodesBetweenWhS = file.psiFile.getNodesBetweenWhitespaces(placeToInsert.first, placeToInsert.second)
         val body = nodesBetweenWhS.filter { it.parent !in nodesBetweenWhS }.joinToString("") { it.text }
         return if (Random.getTrue(75)) {
             generateForExpression(scope, rig, body)

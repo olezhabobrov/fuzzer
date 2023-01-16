@@ -1,6 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.lang.ASTNode
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -9,10 +12,13 @@ import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 import java.util.*
 
-class ChangeOperators : Transformation() {
+class ChangeOperators(project: Project, file: BBFFile,
+                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
-        val operators = file.node.getAllChildrenNodes()
+        val operators = file.psiFile.node.getAllChildrenNodes()
                 .filter { it.treeParent.elementType == KtNodeTypes.OPERATION_REFERENCE || it.elementType == KtTokens.DOT }
         operators.forEach {
             when (it.text) {
@@ -56,7 +62,7 @@ class ChangeOperators : Transformation() {
                     else
                         psiFactory.createExpression(replacement)
 
-            checker.replaceNodeIfPossible(replace.psi, replacementNode)
+            MutationProcessor.replaceNode(replace.psi, replacementNode, file)
         }
     }
 
