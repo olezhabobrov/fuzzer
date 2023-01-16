@@ -1,5 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.replaceThis
@@ -8,14 +10,16 @@ import org.jetbrains.kotlin.psi.KtFunctionType
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.isFunctionalExpression
 
-class AddReificationToTypeParam: Transformation() {
+class AddReificationToTypeParam(project: Project, file: BBFFile,
+                                amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
         val funcsWithTypeParams =
-            file.getAllPSIDFSChildrenOfType<KtNamedFunction>()
+            file.psiFile.getAllPSIDFSChildrenOfType<KtNamedFunction>()
                 .filter { it.typeParameters.isNotEmpty() }
                 .reversed()
         for (f in funcsWithTypeParams) {
-            val backup = f.copy() as KtNamedFunction
             if (!f.hasModifier(KtTokens.INLINE_KEYWORD))
                 f.addModifier(KtTokens.INLINE_KEYWORD)
             for (vp in f.valueParameters) {
@@ -27,9 +31,6 @@ class AddReificationToTypeParam: Transformation() {
             for (tp in f.typeParameters) {
                 val newTp = Factory.psiFactory.createTypeParameter("reified ${tp.text}")
                 tp.replaceThis(newTp)
-            }
-            if (!checker.checkCompiling()) {
-                f.replaceThis(backup)
             }
         }
     }

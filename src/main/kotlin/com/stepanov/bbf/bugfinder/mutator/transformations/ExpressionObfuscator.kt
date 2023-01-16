@@ -3,11 +3,9 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.TCEUsagesCollector
-import com.stepanov.bbf.bugfinder.mutator.transformations.util.FileFieldsTable
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getNameWithoutError
 import com.stepanov.bbf.bugfinder.util.getTrue
@@ -29,9 +27,7 @@ import org.jetbrains.kotlin.types.typeUtil.isNothing
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 import java.lang.StringBuilder
-import java.util.ArrayList
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class ExpressionObfuscator(project: Project, file: BBFFile,
                            amountOfTransformations: Int = 1, probPercentage: Int = 100):

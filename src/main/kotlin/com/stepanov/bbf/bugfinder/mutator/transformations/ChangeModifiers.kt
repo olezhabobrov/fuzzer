@@ -1,5 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
@@ -10,10 +12,13 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.addRemoveModifier.setModifierList
 import java.util.*
 
-class ChangeModifiers : Transformation() {
+class ChangeModifiers(project: Project, file: BBFFile,
+                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
         for (i in 0..RANDOM_CONST) {
-            val modifiersLists = file.getAllPSIChildrenOfType<KtModifierList>().filter { Random().nextBoolean() }
+            val modifiersLists = file.psiFile.getAllPSIChildrenOfType<KtModifierList>().filter { Random().nextBoolean() }
             for (modList in modifiersLists) {
                 val workingList =
                         when (modList.parent) {
@@ -37,12 +42,8 @@ class ChangeModifiers : Transformation() {
                     val keyword = KtTokens.MODIFIER_KEYWORDS_ARRAY.find { it.value == workingList[newModIndex] }
                             ?: continue
                     val oldKeyword = KtTokens.MODIFIER_KEYWORDS_ARRAY.find { it.value == m.text } ?: continue
-                    val oldModList = parent.modifierList!!.copy() as KtModifierList
                     parent.removeModifier(oldKeyword)
                     parent.addModifier(keyword)
-                    if (!checker.checkCompilingWithBugSaving(file)) {
-                        parent.setModifierList(oldModList)
-                    }
                 }
             }
         }

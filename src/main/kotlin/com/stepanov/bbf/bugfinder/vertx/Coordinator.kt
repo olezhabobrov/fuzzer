@@ -108,6 +108,8 @@ class Coordinator: AbstractVerticle() {
         return MutationStrategy(listOf(ExpressionReplacer(project, project.files.first(), 1)))
     }
 
+    private fun getRandomStrategy(): Nothing = TODO()
+
     private fun registerCodecs() {
         eb.registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
         eb.registerDefaultCodec(MutationResult::class.java, MutationResultCodec())

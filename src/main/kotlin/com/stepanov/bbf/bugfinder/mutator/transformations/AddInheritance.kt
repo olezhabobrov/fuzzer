@@ -1,7 +1,10 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.ClassBodyGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
@@ -29,21 +32,24 @@ import kotlin.random.Random
 //Don't forget to add import for projects
 //Deal with TypeParameters
 
-class AddInheritance : Transformation() {
+class AddInheritance(project: Project, file: BBFFile,
+                     amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     private val RANDOM_CONST = 2
 
     override fun transform() = repeat(RANDOM_CONST) { transform1() }
 
     private fun transform1() {
-        val ktFile = file as KtFile
+        val ktFile = file.psiFile as KtFile
         val rtg = RandomTypeGenerator
         val ctx = PSICreator.analyze(ktFile, project) ?: return
         rtg.setFileAndContext(ktFile, ctx)
         val currentModule =
             ktFile.getBoxFuncs()?.firstOrNull().getDeclarationDescriptorIncludingConstructors(ctx)?.module ?: return
         val userClassesDescriptors = StdLibraryGenerator.getUserClassesDescriptorsFromProject(project, currentModule)
-        val randomClass = file.getAllPSIChildrenOfType<KtClassOrObject>().randomOrNull() ?: return
+        val randomClass = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().randomOrNull() ?: return
         val randomClassDescriptor =
             randomClass.getDeclarationDescriptorIncludingConstructors(ctx) as? ClassDescriptor ?: return
         val randomClassCopy = randomClass.copy() as KtClassOrObject
@@ -105,17 +111,12 @@ class AddInheritance : Transformation() {
             } catch (e: Error) {
                 null
             } ?: return
-        val backupClass = randomClass.copy()
         randomClass.replaceThis(newClassAsPSI)
-        if (!checker.checkCompiling()) {
-            newClassAsPSI.replaceThis(backupClass)
-        } else {
-            replaceTODO(newClassAsPSI)
-        }
+        replaceTODO(newClassAsPSI)
     }
 
     private fun replaceTODO(randomClass: KtClassOrObject) {
-        val ctx = PSICreator.analyze(file, project) ?: return
+        val ctx = PSICreator.analyze(file.psiFile, project) ?: return
         val todos =
             randomClass.getAllPSIChildrenOfType<KtCallExpression>().filter { it.calleeExpression?.text == "TODO" }
         for (todo in todos) {
@@ -127,8 +128,8 @@ class AddInheritance : Transformation() {
                     (parent as KtNamedFunction).typeReference?.getAbbreviatedTypeOrType(ctx)
                 } ?: continue
             //Getting value of needed type
-            val value = RandomInstancesGenerator(file as KtFile, ctx).generateValueOfTypeAsExpression(returnType) ?: continue
-            checker.replaceNodeIfPossible(todo, value)
+            val value = RandomInstancesGenerator(file.psiFile as KtFile, ctx).generateValueOfTypeAsExpression(returnType) ?: continue
+            MutationProcessor.replaceNode(todo, value, file)
         }
         return
     }

@@ -2,6 +2,9 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.util.generateDefValuesAsString
 import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getType
@@ -19,21 +22,23 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType as ktGetType
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 //TODO lib calls
-class AddFunInvocations : Transformation() {
+class AddFunInvocations(project: Project, file: BBFFile,
+                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         for (i in 0 until randomConst) {
             val res = tryToAddCalls()
-            if (file.text.trim() != res.text) {
-                checker.curFile.changePsiFile(res.copy() as KtFile)
-                //file = res.copy() as KtFile
+            if (file.psiFile.text.trim() != res.text) {
+                file.changePsiFile(res.copy() as KtFile)
             }
         }
     }
 
     private fun tryToAddCalls(): KtFile {
         val creator = PSICreator
-        val psi = creator.getPSIForText(file.text)
+        val psi = creator.getPSIForText(file.psiFile.text)
         val ctx = creator.analyze(psi) ?: return psi
         val whitespaces = psi.getAllPSIDFSChildrenOfType<PsiWhiteSpace>().filter { it.text.contains("\n") }
         if (whitespaces.isEmpty()) return psi
@@ -115,8 +120,7 @@ class AddFunInvocations : Transformation() {
         val block = psiFactory.createBlock(node.text)
         block.lBrace?.delete()
         block.rBrace?.delete()
-        checker.addNodeIfPossibleWithNodeWithFileReplacement(tree, checker.curFile, this, block)
-        //checker.addNodeIfPossible(this, block)
+        MutationProcessor.addNodeToNodeWithFileReplacement(tree, file, this, block)
     }
 
     private fun getInsertableExpressions(

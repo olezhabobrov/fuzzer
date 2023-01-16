@@ -1,5 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.reduktor.util.replaceThis
 
 import com.stepanov.bbf.bugfinder.util.*
@@ -10,11 +13,14 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 import java.util.*
 
-class AddSameFunctions() : Transformation() {
+class AddSameFunctions(project: Project, file: BBFFile,
+                       amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         if (context == null) return
-        val functions = file.getAllPSIChildrenOfType<KtNamedFunction>()//.filter { Random().nextBoolean() }
+        val functions = file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()//.filter { Random().nextBoolean() }
         for (func in functions.filter { Random().nextBoolean() }) {
             val retType = func.typeReference?.text ?: func.getType(context).toString()
             val newRtv = generateDefValuesAsString(retType)
@@ -52,7 +58,7 @@ class AddSameFunctions() : Transformation() {
                 val newBlockFragment = psiFactory.createBlock(newFunc.text)
                 newBlockFragment.lBrace?.delete()
                 newBlockFragment.rBrace?.delete()
-                checker.addNodeIfPossible(func, newBlockFragment, true)
+                MutationProcessor.addNode(func, newBlockFragment, true)
             }
         }
     }
@@ -95,5 +101,5 @@ class AddSameFunctions() : Transformation() {
     private val containers = listOf("List" to 1, "ArrayList" to 1, "Array" to 1, "Set" to 1, "Map" to 2,
             "Pair" to 2, "HashMap" to 2, "HashSet" to 1)
 
-    private val context = PSICreator.analyze(checker.curFile.psiFile)//checker.curFile.ctx
+    private val context = PSICreator.analyze(file.checker.curFilepsiFile)//checker.curFile.ctx
 }

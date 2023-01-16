@@ -1,5 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtClass
@@ -10,10 +12,13 @@ import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import java.util.*
 
-class AddPossibleModifiers : Transformation() {
+class AddPossibleModifiers(project: Project, file: BBFFile,
+                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
-        val values = file.node.getAllChildrenNodes()
+        val values = file.psiFile.node.getAllChildrenNodes()
                 .asSequence()
                 .filter { it.elementType == KtNodeTypes.CLASS || it.elementType == KtNodeTypes.PROPERTY
                         || it.elementType == KtNodeTypes.FUN }
@@ -37,8 +42,6 @@ class AddPossibleModifiers : Transformation() {
                 val keyword = KtTokens.MODIFIER_KEYWORDS_ARRAY.find { it.value == curWorkingList[num] } ?: return@forEach
                 if (el.hasModifier(keyword)) return@forEach
                 el.addModifier(keyword)
-                if (!checker.checkCompilingWithBugSaving(file))
-                    el.removeModifier(keyword)
             }
         }
     }

@@ -1,7 +1,10 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.FillerGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.util.*
 
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -16,14 +19,17 @@ import kotlin.random.Random
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 
-class AddDefaultValueToArg : Transformation() {
+class AddDefaultValueToArg(project: Project, file: BBFFile,
+                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     //TODO MAYBE INIT AND REINIT SOME PROPERTIES
     override fun transform() {
-        val ctx = PSICreator.analyze(file) ?: return
-        val generator = RandomInstancesGenerator(file as KtFile, ctx)
+        val ctx = PSICreator.analyze(file.psiFile) ?: return
+        val generator = RandomInstancesGenerator(file.psiFile as KtFile, ctx)
         val prevParams = mutableListOf<Triple<KtExpression, String, KotlinType?>>()
-        file.getAllPSIChildrenOfType<KtParameterList>()
+        file.psiFile.getAllPSIChildrenOfType<KtParameterList>()
             .filter { it.parameters.isNotEmpty() }
             .forEach { f ->
                 for ((ind, valueParam) in f.parameters.withIndex()) {
@@ -34,7 +40,7 @@ class AddDefaultValueToArg : Transformation() {
                     if (valueParam.hasDefaultValue() && Random.getTrue(50)) continue
                     if (vpType.isTypeParameter()) continue
                     val emptyConstructor = vpType.hasTypeParam()
-                    val fillGenerator = FillerGenerator(file as KtFile, ctx, prevParams.getAllWithoutLast().toMutableList())
+                    val fillGenerator = FillerGenerator(file.psiFile as KtFile, ctx, prevParams.getAllWithoutLast().toMutableList())
                     var value =
                         if (vpType.isNullable() && Random.getTrue(20)) {
                             "null"
@@ -48,7 +54,7 @@ class AddDefaultValueToArg : Transformation() {
                     if (value.trim().isEmpty()) continue
                     if (emptyConstructor) value = value.substringBefore('<') + value.substringAfterLast('>')
                     val psiValue = psiFactory.createParameter("${valueParam.text.substringBefore('=')} = $value")
-                    checker.replaceNodeIfPossible(valueParam, psiValue)
+                    MutationProcessor.replaceNode(valueParam, psiValue, file)
                 }
             }
     }
