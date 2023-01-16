@@ -12,12 +12,8 @@ import java.io.File
 
 object MutationProcessor {
 
-    /**
-     * Probably unsafe.
-     * Not checking if it compiles
-     */
-    fun replaceNode(node: ASTNode, replacement: ASTNode, curFile: BBFFile, filenameOpt: String? = null): ASTNode? {
-        log.debug("[UNSAFE] Trying to replace $node on $replacement")
+    fun replaceNodeReturnNode(node: ASTNode, replacement: ASTNode, curFile: BBFFile, filenameOpt: String? = null): ASTNode? {
+        log.debug("Trying to replace $node on $replacement")
         if (node.text.isEmpty() || node == replacement) {
             return node
         }
@@ -49,8 +45,8 @@ object MutationProcessor {
         return null
     }
 
-    fun replaceNode(node: PsiElement, replacement: PsiElement, curFile: BBFFile, filenameOpt: String? = null): Boolean =
-        replaceNode(node.node, replacement.node, curFile, filenameOpt) != null
+    fun replaceNodeReturnNode(node: PsiElement, replacement: PsiElement, curFile: BBFFile, filenameOpt: String? = null): Boolean =
+        replaceNodeReturnNode(node.node, replacement.node, curFile, filenameOpt) != null
 
     fun checkCompiling(): Boolean {
         TODO()
@@ -112,6 +108,26 @@ object MutationProcessor {
             originalFile.changePsiFile(originalPsi, false)
         }
     }
+
+    fun replaceNodeWithNodeWithFileReplacement(
+        newFile: PsiFile,
+        originalFile: BBFFile,
+        node: ASTNode,
+        replacement: ASTNode
+    ) = makeASTModificationWithFileReplacement(newFile, originalFile) {
+        replaceNodeReturnNode(
+            node,
+            replacement,
+            originalFile
+        )
+    } as ASTNode?
+
+    fun replacePSINodeWithFileReplacement(
+        newFile: PsiFile,
+        originalFile: BBFFile,
+        psiElement: PsiElement,
+        replacement: PsiElement
+    ) = replaceNodeWithNodeWithFileReplacement(newFile, originalFile, psiElement.node, replacement.node)
 
     private val DUMMY_HOLDER_INDEX: Short = 86
     private val log = Logger.getLogger("mutatorLogger")

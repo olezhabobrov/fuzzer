@@ -8,12 +8,10 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerato
 import com.stepanov.bbf.bugfinder.util.addAfterThisWithWhitespace
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
-import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class AddRandomControlStatements(project: Project, file: BBFFile,
                                  amountOfTransformations: Int = 1, probPercentage: Int = 100):
@@ -48,7 +46,7 @@ class AddRandomControlStatements(project: Project, file: BBFFile,
         if (Random.getTrue(90)) {
             randomExp.addAfterThisWithWhitespace(randomControlExpr, "\n")
         } else {
-            MutationProcessor.replaceNode(randomExp, randomControlExpr, file)
+            MutationProcessor.replaceNodeReturnNode(randomExp, randomControlExpr, file)
         }
     }
 

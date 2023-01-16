@@ -109,7 +109,7 @@ class AddCasts(project: Project, file: BBFFile,
                 null
             }
         val replacementResult =
-            if (newExpression == null) false else MutationProcessor.replaceNode(expression, newExpression, file)
+            if (newExpression == null) false else MutationProcessor.replaceNodeReturnNode(expression, newExpression, file)
         if (!replacementResult) {
             val newExpressionInBrackets =
                 try {
@@ -117,7 +117,7 @@ class AddCasts(project: Project, file: BBFFile,
                 } catch (e: Exception) {
                     null
                 } ?: return false
-            return MutationProcessor.replaceNode(expression, newExpressionInBrackets, file)
+            return MutationProcessor.replaceNodeReturnNode(expression, newExpressionInBrackets, file)
         } else {
             return true
         }

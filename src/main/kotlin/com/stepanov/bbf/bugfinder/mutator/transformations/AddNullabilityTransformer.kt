@@ -23,7 +23,7 @@ class AddNullabilityTransformer(project: Project, file: BBFFile,
 
     fun addNullability(ref: KtTypeReference) {
         val newRef = psiFactory.createTypeIfPossible("(${ref.typeElement?.text})?") ?: return
-        MutationProcessor.replaceNode(ref, newRef, file)
+        MutationProcessor.replaceNodeReturnNode(ref, newRef, file)
     }
 
 }

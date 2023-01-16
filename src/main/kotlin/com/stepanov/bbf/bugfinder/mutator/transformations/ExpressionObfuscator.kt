@@ -54,7 +54,7 @@ class ExpressionObfuscator(project: Project, file: BBFFile,
             }
             val randomDescr = callList.random()
             val callSequence = createCallSequence(expr, randomDescr) ?: return@repeat
-            val replacedCallSequence = MutationProcessor.replaceNode(expr.node, callSequence.node, file)
+            val replacedCallSequence = MutationProcessor.replaceNodeReturnNode(expr.node, callSequence.node, file)
             if (replacedCallSequence != null) {
                 ctx = PSICreator.analyze(file.psiFile) ?: run {
                     log.debug("PSICreator couldn't analyze psiFile")
@@ -80,7 +80,7 @@ class ExpressionObfuscator(project: Project, file: BBFFile,
                             sameTypeAvailableExpressionsFromAvProperties + sameTypeAvailableExpressionsFromGeneratedUsages
                         allSameTypeAvailableExpressions.randomOrNull()?.let {
                             val exp = Factory.psiFactory.createExpressionIfPossible(it) ?: return@forEach
-                            MutationProcessor.replaceNode(e, exp, file)
+                            MutationProcessor.replaceNodeReturnNode(e, exp, file)
                         }
                     }
             }

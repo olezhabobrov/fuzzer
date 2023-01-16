@@ -18,7 +18,7 @@ class AddBlockToExpression(project: Project, file: BBFFile,
         val expr = file.psiFile.getAllPSIChildrenOfType<KtExpression>()
         expr.forEach {
             generateRandomBooleanExpression(it)?.let { blockExpr ->
-                MutationProcessor.replaceNode(it, blockExpr, file)
+                MutationProcessor.replaceNodeReturnNode(it, blockExpr, file)
             }
         }
     }

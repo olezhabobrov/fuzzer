@@ -54,7 +54,7 @@ class AddCallableReference(project: Project, file: BBFFile,
                     val newCallable = Factory.psiFactory.createCallableReferenceExpression("::${ref.text}")
                     log.debug("TRYING TO REPLACE ${arg.text} on ${newCallable?.text} ")
                     if (newCallable != null) {
-                        if (MutationProcessor.replaceNode(arg, newCallable, file)) {
+                        if (MutationProcessor.replaceNodeReturnNode(arg, newCallable, file)) {
                             log.debug("Successfully replaced")
                         }
                     }

@@ -5,7 +5,6 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.resolve.BindingContext
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 import com.stepanov.bbf.bugfinder.util.generateDefValuesAsString
@@ -30,7 +29,7 @@ class ReinitProperties(project: Project, file: BBFFile,
             if (newValue.isEmpty()) return@forEach
             val newProp = it.copy() as KtProperty
             newProp.initializer = psiFactory.createExpression(newValue)
-            MutationProcessor.replaceNode(it, newProp, file)
+            MutationProcessor.replaceNodeReturnNode(it, newProp, file)
         }
     }
 

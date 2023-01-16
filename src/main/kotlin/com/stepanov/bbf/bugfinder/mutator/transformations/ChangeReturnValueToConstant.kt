@@ -29,7 +29,7 @@ class ChangeReturnValueToConstant(project: Project, file: BBFFile,
             for (r in returns) {
                 val replacement = KtPsiFactory(file.psiFile.project).createExpression(typeConstants[key]!!)
                 if (r.returnedExpression != null) {
-                    MutationProcessor.replaceNode(r.returnedExpression!!, replacement, file)
+                    MutationProcessor.replaceNodeReturnNode(r.returnedExpression!!, replacement, file)
                 }
             }
         }

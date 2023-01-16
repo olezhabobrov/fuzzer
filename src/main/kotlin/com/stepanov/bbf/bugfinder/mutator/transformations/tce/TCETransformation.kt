@@ -2,9 +2,10 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.tce
 
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
-import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
 import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
@@ -26,11 +27,14 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 //TODO make work for projects
-class TCETransformation : Transformation() {
+class TCETransformation(project: Project, file: BBFFile,
+                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     private val blockListOfTypes = listOf("Unit", "Nothing", "Nothing?")
     private val randomConst = 3
-    private var psi = PSICreator.getPSIForText(file.text, false)
+    private var psi = file.psiFile as KtFile
     lateinit var usageExamples: List<Triple<KtExpression, String, KotlinType?>>
 
     override fun transform() {
@@ -51,7 +55,6 @@ class TCETransformation : Transformation() {
             if (proj.language != LANGUAGE.KOTLIN) continue
             if (proj.files.size != 1)
                 proj = proj.convertToSingleFileProject()
-            if (!JVMCompiler().checkCompiling(proj)) continue
             val psi2 = proj.files.first().psiFile
             val anonProj = Project.createFromCode(psi2.text)
             //TODO!! anonProj.files.size >= 1
@@ -68,24 +71,16 @@ class TCETransformation : Transformation() {
             val targetNode = sameTypeNodes.random().psi as KtNamedFunction
             if (targetNode.getAllPSIChildrenOfType<KtExpression>().isEmpty()) continue
             log.debug("Trying to insert ${targetNode.text}")
-            val psiBackup = psi.copy() as KtFile
             val addedNodes = addAllDataFromAnotherFile(psi, anonPsi as KtFile)
-            if (!checker.checkCompilingWithFileReplacement(psi, checker.curFile)) {
-                psi = psiBackup
-                continue
-            }
             psi = PSICreator.getPSIForText(psi.text)
             val updateAddedNodes =
                 addedNodes.mapNotNull { n -> psi.getAllChildren().find { it.text.trim() == n.text.trim() } }
-//            val newTargetNode = psi.getAllPSIChildrenOfType<KtNamedFunction>().find { it.name == targetNode.name }
-//                ?: throw Exception("Cant find node")
             val ctx2 = PSICreator.analyze(psi) ?: continue
             replaceNodesOfFile(updateAddedNodes, ctx2)
         }
         log.debug("Final res = ${psi.text}")
         exitProcess(0)
-        checker.curFile.changePsiFile(psi.text)
-        //file = creator.getPSIForText(psi.text)
+        file.changePsiFile(psi.text)
     }
 
 
@@ -115,9 +110,9 @@ class TCETransformation : Transformation() {
                 continue
             }
             log.debug("replacement of ${node.first.text} of type ${node.second} is ${replacement.text}")
-            checker.replaceNodeIfPossibleWithNodeWithFileReplacement(
+            MutationProcessor.replaceNodeWithNodeWithFileReplacement(
                 psi,
-                checker.curFile,
+                file,
                 node.first.node,
                 replacement.copy().node
             )?.let { replacementsList.add(it.psi) }
@@ -144,15 +139,15 @@ class TCETransformation : Transformation() {
             sameTypeExpression?.let {
                 log.debug("TRYING TO REPLACE CONSTANT ${constant.first.text}")
                 if (constant.first.parent is KtPrefixExpression) {
-                    checker.replacePSINodeIfPossibleWithFileReplacement(
+                    MutationProcessor.replacePSINodeWithFileReplacement(
                         psi,
-                        checker.curFile,
+                        file,
                         constant.first.parent,
                         it.first
                     )
-                } else checker.replacePSINodeIfPossibleWithFileReplacement(
+                } else MutationProcessor.replacePSINodeWithFileReplacement(
                     psi,
-                    checker.curFile,
+                    file,
                     constant.first,
                     it.first
                 )
@@ -174,7 +169,7 @@ class TCETransformation : Transformation() {
 
     private fun collectUsageCases(): List<Triple<KtExpression, String, KotlinType?>> {
         val ctx = PSICreator.analyze(psi) ?: return listOf()
-        val generatedSamples = UsagesSamplesGenerator.generate(psi, ctx, checker.project)
+        val generatedSamples = UsagesSamplesGenerator.generate(psi, ctx, project)
         val boxFuncs = psi.getBoxFuncs() ?: return generatedSamples
         /*val properties =
             (boxFuncs.getAllPSIChildrenOfType<KtProperty>() + psi.getAllPSIChildrenOfType { it.isTopLevel })

@@ -31,7 +31,7 @@ class ShuffleFunctionArguments(project: Project, file: BBFFile,
                         blindShuffling(call, callTarget)
                     else
                         smartShuffling(call, callTarget)
-                if (newValueArgs != null) MutationProcessor.replaceNode(call.valueArgumentList!!, newValueArgs, file)
+                if (newValueArgs != null) MutationProcessor.replaceNodeReturnNode(call.valueArgumentList!!, newValueArgs, file)
             }
     }
 

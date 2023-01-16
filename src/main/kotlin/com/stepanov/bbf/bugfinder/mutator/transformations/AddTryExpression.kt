@@ -7,12 +7,8 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerato
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
 import com.stepanov.bbf.bugfinder.util.subList
-import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtExpression
 import kotlin.random.Random
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtTryExpression
-import kotlin.system.exitProcess
 
 class AddTryExpression(project: Project, file: BBFFile,
                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
@@ -41,7 +37,7 @@ class AddTryExpression(project: Project, file: BBFFile,
             if (catchBlocks.isNotEmpty() && Random.getTrue(70)) ""
             else "finally {\n ${file.psiFile.getAllPSIChildrenOfType<KtExpression>().randomOrNull()?.text ?: ""}\n}"
         val newTryExpression = Factory.psiFactory.createExpression("$tryBlock\n$catchBlocksAsString\n$finallyBlock")
-        MutationProcessor.replaceNode(randomNode.node, newTryExpression.node, file)
+        MutationProcessor.replaceNodeReturnNode(randomNode.node, newTryExpression.node, file)
     }
 
     private fun addTryExpressionAsText() {

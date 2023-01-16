@@ -9,7 +9,6 @@ import com.stepanov.bbf.bugfinder.util.filterDuplicatesBy
 import com.stepanov.bbf.bugfinder.util.getNameWithoutError
 import com.stepanov.bbf.bugfinder.util.getTrue
 import com.stepanov.bbf.bugfinder.util.supertypesWithoutAny
-import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
@@ -31,7 +30,7 @@ class ChangeTypes(project: Project, file: BBFFile,
                     .randomOrNull()
                     ?.let { psiFactory.createTypeIfPossible(it.getNameWithoutError()) }
                     ?: continue
-            MutationProcessor.replaceNode(typeRef, replacement, file)
+            MutationProcessor.replaceNodeReturnNode(typeRef, replacement, file)
         }
     }
 }
