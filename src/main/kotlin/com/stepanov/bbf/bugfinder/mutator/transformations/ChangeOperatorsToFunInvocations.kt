@@ -1,6 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtArrayAccessExpression
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -10,7 +13,10 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 import java.util.*
 
-class ChangeOperatorsToFunInvocations : Transformation() {
+class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
+                                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         var oldText = file.text
@@ -27,7 +33,7 @@ class ChangeOperatorsToFunInvocations : Transformation() {
 
     //To handle nested constructions
     private fun transformImpl() {
-        for (psiNode in file.getAllPSIDFSChildrenOfType<KtExpression>()) {
+        for (psiNode in file.psiFile.getAllPSIDFSChildrenOfType<KtExpression>()) {
             //Probablity!
             if (Random().nextBoolean())
                 continue
@@ -48,7 +54,7 @@ class ChangeOperatorsToFunInvocations : Transformation() {
             return
         val params = exp.indexExpressions.joinToString(separator = ",") { it.text }
         val newCall = createCall(base.text, "get", params)
-        checker.replaceNodeIfPossible(exp, newCall)
+        MutationProcessor.replaceNode(exp, newCall, file)
         //exp.replaceThis(newCall)
     }
 
@@ -64,7 +70,7 @@ class ChangeOperatorsToFunInvocations : Transformation() {
         }
         exp.baseExpression?.let {
             //exp.replaceThis(createCall(it.text, newCall))
-            checker.replaceNodeIfPossible(exp, createCall(it.text, newCall))
+            MutationProcessor.replaceNode(exp, createCall(it.text, newCall), file)
         }
     }
 
@@ -73,7 +79,7 @@ class ChangeOperatorsToFunInvocations : Transformation() {
         val right = exp.right ?: return
         if (exp.operationToken == KtTokens.EQEQ) {
             val newExp = psiFactory.createExpression("(${left.text})?.equals(${right.text}) ?: (${right.text} === null)")
-            checker.replaceNodeIfPossible(exp, newExp)
+            MutationProcessor.replaceNode(exp, newExp, file)
             //exp.replaceThis(newExp)
             return
         } else if (exp.operationToken in allowedEqs) {
@@ -82,7 +88,7 @@ class ChangeOperatorsToFunInvocations : Transformation() {
                 val params = "${left.indexExpressions.joinToString(separator = ",") { it.text }}, ${right.text}"
                 val newCall = createCall(arrayExp.text, "set", params)
                 //exp.replaceThis(newCall)
-                checker.replaceNodeIfPossible(exp, newCall)
+                MutationProcessor.replaceNode(exp, newCall, file)
                 return
             }
         }
@@ -100,7 +106,7 @@ class ChangeOperatorsToFunInvocations : Transformation() {
 //            KtTokens.DIVEQ -> "divAssign"
             else -> return
         }
-        checker.replaceNodeIfPossible(exp, createCallWithBraces(left.text, newCall, right.text))
+        MutationProcessor.replaceNode(exp, createCallWithBraces(left.text, newCall, right.text), file)
         //exp.replaceThis(createCallWithBraces(left.text, newCall, right.text))
     }
 

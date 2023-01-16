@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.util.getAllChildrenOfCurLevel
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfTwoTypes
 import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
@@ -23,11 +25,14 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as 
 
 typealias UsageInfo = Triple<KotlinType, Int, MutableList<KtNameReferenceExpression>>
 
-class SkeletonEnumeration : Transformation() {
+class SkeletonEnumeration(project: Project, file: BBFFile,
+                          amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
         var prevScope = 0
-        val ctx = PSICreator.analyze(file) ?: return
-        for (el in file.getAllPSIDFSChildrenOfType<PsiElement>()) {
+        val ctx = PSICreator.analyze(file.psiFile) ?: return
+        for (el in file.psiFile.getAllPSIDFSChildrenOfType<PsiElement>()) {
             val scope = getDepth(el)
             if (prevScope != scope) {
                 if (prevScope > scope) {
@@ -68,17 +73,10 @@ class SkeletonEnumeration : Transformation() {
         val replacementNode = replacement.value.third.randomOrNull() ?: return false
         if (!checkBinExp(replacement.key, randomValue)) return false
         //Replacing
-        val backUp = randomValue.copy() as KtNameReferenceExpression
         val newNode = psiFactory.createExpression(replacementNode.text) as KtNameReferenceExpression
         value1.third.replaceAll { if (it == randomValue) newNode else it }
         randomValue.replaceThis(newNode)
-        if (!checker.checkCompiling()) {
-            value1.third.replaceAll { if (it == newNode) backUp else it }
-            newNode.replaceThis(backUp)
-            if (!checker.checkCompiling()) {
-                exitProcess(1)
-            }
-        }
+        log.debug("CAN BE UNSAFE: deleted checkCompiling")
         return true
     }
 

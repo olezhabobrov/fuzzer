@@ -1,5 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -10,9 +13,12 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator
 
 //TODO Add for map!!
-class ReinitProperties : Transformation() {
+class ReinitProperties(project: Project, file: BBFFile,
+                       amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
     override fun transform() {
-        file.getAllPSIChildrenOfType<KtProperty>().forEach {
+        file.psiFile.getAllPSIChildrenOfType<KtProperty>().forEach {
             val type =
                     if (it.hasInitializer()) {
                         getTypeFromInitializer(it.initializer!!)
@@ -24,7 +30,7 @@ class ReinitProperties : Transformation() {
             if (newValue.isEmpty()) return@forEach
             val newProp = it.copy() as KtProperty
             newProp.initializer = psiFactory.createExpression(newValue)
-            checker.replaceNodeIfPossible(it, newProp)
+            MutationProcessor.replaceNode(it, newProp, file)
         }
     }
 
@@ -52,5 +58,5 @@ class ReinitProperties : Transformation() {
     private val constructorsToTypes = mapOf("arrayListOf" to "ArrayList", "listOf" to "List",
             "setOf" to "Set", "arrayOf" to "Array")
 
-    private val context = PSICreator.analyze(checker.curFile.psiFile)
+    private val context = PSICreator.analyze(file.psiFile)
 }

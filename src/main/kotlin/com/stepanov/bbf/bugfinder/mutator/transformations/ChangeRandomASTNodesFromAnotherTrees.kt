@@ -1,6 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 
 import com.stepanov.bbf.bugfinder.util.NodeCollector
 import com.stepanov.bbf.bugfinder.util.debugPrint
@@ -19,11 +22,14 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 
-class ChangeRandomASTNodesFromAnotherTrees : Transformation() {
+class ChangeRandomASTNodesFromAnotherTrees(project: Project, file: BBFFile,
+                                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage) {
 
     override fun transform() {
         val randConst = Random.nextInt(numOfTries.first, numOfTries.second)
-        val nodes = file.node.getAllChildrenNodes().filter { it.elementType !in NodeCollector.excludes }
+        val nodes = file.psiFile.node.getAllChildrenNodes().filter { it.elementType !in NodeCollector.excludes }
         log.debug("Trying to change some nodes to nodes from other programs $randConst times")
         for (i in 0..randConst) {
             log.debug("Try №$i of $randConst")
@@ -41,10 +47,10 @@ class ChangeRandomASTNodesFromAnotherTrees : Transformation() {
             val targetNode = psi.node.getAllChildrenNodes().filter { it.elementType == randomNode.elementType }.random()
             //if (targetNode.psi.getAllPSIChildrenOfType<KtNameReferenceExpression>().isNotEmpty()) continue
             if (targetNode.psi is KtConstantExpression) continue
-            checker.replaceNodeIfPossible(randomNode, targetNode)
+            MutationProcessor.replaceNode(randomNode, targetNode, file)
         }
     }
 
     /*val magicConst = 4*/
-    private val numOfTries = if (checker.project.files.size == 1) 500 to 1000 else 2000 to 4000
+    private val numOfTries = if (project.files.size == 1) 500 to 1000 else 2000 to 4000
 }

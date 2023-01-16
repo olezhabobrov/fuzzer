@@ -1,21 +1,23 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.executor.project.BBFFile
+import com.stepanov.bbf.bugfinder.executor.project.Project
 import java.util.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class RemoveRandomLines: Transformation()  {
+class RemoveRandomLines(project: Project, file: BBFFile,
+                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+    Transformation(project, file,
+        amountOfTransformations, probPercentage)  {
 
     override fun transform() {
         val text = file.text.lines().toMutableList()
         for (i in 0..Random().nextInt(removeConst)) {
             val numLine = Random().nextInt(text.size)
-            val old = text[numLine]
             text[numLine] = ""
-            if (!checker.checkTextCompiling(getText(text))) {
-                text[numLine] = old
-            }
+            log.debug("SUPER UNSAFE transformation: may be incorrect syntax")
         }
-        checker.curFile.changePsiFile(psiFactory.createFile(getText(text)))
+        file.changePsiFile(psiFactory.createFile(getText(text)))
     }
 
     private fun getText(text: MutableList<String>) = text.joinToString(separator = "\n")
