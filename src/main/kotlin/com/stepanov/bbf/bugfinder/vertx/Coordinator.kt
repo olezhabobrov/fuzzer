@@ -18,6 +18,7 @@ import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
 import org.apache.log4j.Logger
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class Coordinator: AbstractVerticle() {
 
@@ -29,6 +30,7 @@ class Coordinator: AbstractVerticle() {
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
+
         establishConsumers()
         deployMutators()
         deployCompilers()
@@ -66,15 +68,15 @@ class Coordinator: AbstractVerticle() {
     private fun deployMutators() {
         // TODO: case of several mutators
         // TODO: not one random file
-
         val mutator = Mutator()
         mutators.add(mutator)
         vertx.deployVerticle(mutator,
-            workerOptions()
+            workerOptions().setMaxWorkerExecuteTime(10L)
         ) { res ->
             if (res.succeeded()) {
                 sendStrategyAndMutate()
             } else {
+                log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")
                 error("Mutator wasn't deployed")
             }
         }
@@ -92,6 +94,7 @@ class Coordinator: AbstractVerticle() {
             if (res.succeeded()) {
                 log.debug("Compilers deployed")
             } else {
+                log.debug("Deployment of compilers failed with exception: ${res.cause().stackTraceToString()}")
                 error("Compiler wasn't deployed")
             }
         }
@@ -105,7 +108,7 @@ class Coordinator: AbstractVerticle() {
         // TODO: create strategy from smth
 //        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
         val project = Project.createFromCode(File("./tmp/arrays/MultiDeclForComponentMemberExtensions1.kt").readText())
-        return MutationStrategy(listOf(ExpressionReplacer(project, project.files.first(), 1)))
+        return MutationStrategy(listOf(ExpressionReplacer(project, project.files.first(), 100)))
     }
 
     private fun getRandomStrategy(): Nothing = TODO()
@@ -120,6 +123,12 @@ class Coordinator: AbstractVerticle() {
 
     private fun localPreparations() {
         File(CompilerArgs.pathToMutatedDir).deleteRecursively()
+    }
+
+    private fun setExceptionHandlers() {
+        vertx.exceptionHandler { throwable ->
+            log.debug("Caught throwable: ${throwable.stackTraceToString()}")
+        }
     }
 
     private fun workerOptions() = DeploymentOptions().setWorker(true) // TODO: exception handling, timeouts, etc
