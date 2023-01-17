@@ -14,10 +14,19 @@ class Mutator: AbstractVerticle() {
     private var strategy: MutationStrategy? = null
 
     override fun start() {
-        val eb = vertx.eventBus()
-        eb.consumer<MutationStrategy>(mutateAddress) { newStrategy ->
+        establishConsumers()
+    }
+
+    private fun establishConsumers() {
+        vertx.eventBus().consumer<MutationStrategy>(mutateAddress) { newStrategy ->
             strategy = newStrategy.body()
             startMutate()
+            sendMutatedProject()
+        }.exceptionHandler { throwable ->
+            log.debug("""Caught an exception in mutator#$instanceNumber
+                | While mutating strategy#${strategy?.number}
+                | Exception: ${throwable.stackTraceToString()}
+            """.trimMargin())
         }
     }
 
@@ -46,7 +55,6 @@ class Mutator: AbstractVerticle() {
         strategy?.transformations?.forEach {
             executeMutation(it)
         } ?: throw RuntimeException("Called startMutate but no strategy provided")
-        sendMutatedProject()
     }
 
     companion object {

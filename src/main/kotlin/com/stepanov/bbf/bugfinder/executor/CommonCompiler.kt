@@ -21,6 +21,10 @@ abstract class CommonCompiler: AbstractVerticle() {
         eb.consumer<Project>(compileAddress) { msg ->
             val compileResult = tryToCompile(msg.body())
             eb.send(resultAddress, CompilationResult(compileResult, this, msg.body()))
+        }.exceptionHandler { throwable ->
+            log.debug("""Caught an exception in compiler#$instanceNumber
+                | Exception: ${throwable.stackTraceToString()}
+            """.trimMargin())
         }
     }
 
