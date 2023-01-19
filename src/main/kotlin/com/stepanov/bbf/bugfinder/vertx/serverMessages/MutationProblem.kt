@@ -12,11 +12,10 @@ import kotlin.reflect.KClass
 @Serializable
 data class MutationProblem(
     val tasks: List<MutationTask>,
-    @Serializable(with = URISerializer::class)
-    val projectPath: URI = URI.create("/")
+    val projectPath: String = "/"
 ) {
     fun validate() {
-        if (!projectPath.isAbsolute) {
+        if (!URI.create(projectPath).isAbsolute) {
             throw IllegalArgumentException("projectPath(=$projectPath) in request is not absolute")
         }
         projectPath
@@ -25,8 +24,7 @@ data class MutationProblem(
 
 @Serializable
 data class MutationTask(
-    @Serializable(with = URISerializer::class)
-    val file: URI,
+    val file: String,
     val allowedTransformations: AllowedTransformations,
     val mutationCount: Int
 )
@@ -46,9 +44,3 @@ data class TransformationsList(val transformationsList: List<TransformationClass
 data class TransformationClass(val clazz: KClass<out Transformation>)
 
 fun parseMutationProblem(data: String): MutationProblem = Json.decodeFromString(data)
-
-fun foo() {
-    val json = Json.encodeToJsonElement(MutationTask(URI("file"), TransformationsList(listOf(TransformationClass(ExpressionObfuscator::class))), 503))
-    val clazz = Json.decodeFromJsonElement<MutationTask>(json)
-    assert(true)
-}
