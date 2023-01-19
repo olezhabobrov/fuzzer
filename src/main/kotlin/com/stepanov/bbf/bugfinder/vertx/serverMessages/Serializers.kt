@@ -32,15 +32,3 @@ object TransformationClassSerializer: KSerializer<TransformationClass> {
         encoder.encodeString(value.clazz.simpleName!!)
     }
 }
-
-@OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = URI::class)
-object URISerializer: KSerializer<URI> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("URI", PrimitiveKind.STRING)
-
-    override fun deserialize(decoder: Decoder): URI = URI.create(decoder.decodeString())
-
-    override fun serialize(encoder: Encoder, value: URI) {
-        encoder.encodeString(value.toString())
-    }
-}
