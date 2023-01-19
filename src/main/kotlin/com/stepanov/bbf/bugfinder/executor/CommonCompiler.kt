@@ -6,6 +6,7 @@ import com.stepanov.bbf.reduktor.executor.CompilationResult
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class CommonCompiler: AbstractVerticle() {
 
@@ -29,12 +30,12 @@ abstract class CommonCompiler: AbstractVerticle() {
     }
 
     companion object {
-        var counter = 0
+        var counter = AtomicInteger(0)
         val resultAddress = VertxAddresses.compileResult
         val compileAddress = VertxAddresses.compile // + "${instanceNumber}"
     }
 
-    private val instanceNumber = ++counter
+    private val instanceNumber = counter.getAndIncrement()
 
     protected val log = Logger.getLogger("compilerLogger")
 }

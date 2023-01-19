@@ -14,23 +14,27 @@ import com.stepanov.bbf.bugfinder.vertx.codecs.*
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.AbstractVerticle
+import io.vertx.core.AsyncResult
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
+import io.vertx.kotlin.coroutines.CoroutineVerticle
+import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.log4j.Logger
 import java.io.File
+import java.net.URI
 import java.util.concurrent.TimeUnit
 
-class Coordinator: AbstractVerticle() {
+class Coordinator: CoroutineVerticle() {
 
     private val mutators = mutableListOf<Mutator>()
     private val compilers = mutableListOf<CommonCompiler>()
     private lateinit var eb: EventBus
 
-    override fun start() {
+    override suspend fun start() {
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
-
+//        setExceptionHandlers()
         establishConsumers()
         deployMutators()
         deployCompilers()
@@ -65,13 +69,20 @@ class Coordinator: AbstractVerticle() {
         eb.send(CommonCompiler.compileAddress, project)
     }
 
-    private fun deployMutators() {
+    private suspend fun deployMutators() {
         // TODO: case of several mutators
         // TODO: not one random file
         val mutator = Mutator()
         mutators.add(mutator)
+
+//        val res = awaitResult<String> {
+//            vertx.deployVerticle(mutator,
+//                workerOptions().setMaxWorkerExecuteTime(10L)
+//            )
+//        }
+
         vertx.deployVerticle(mutator,
-            workerOptions().setMaxWorkerExecuteTime(10L)
+            workerOptions().setWorkerPoolName("my-super-awesome-worker-pool") //.setMaxWorkerExecuteTime(10L)
         ) { res ->
             if (res.succeeded()) {
                 sendStrategyAndMutate()
@@ -135,3 +146,29 @@ class Coordinator: AbstractVerticle() {
 
     private val log = Logger.getLogger("coordinatorLogger")
 }
+
+sealed interface AllowedMutations
+
+object All : AllowedMutations
+data class Some(val allowedMutations: List<Mutation>) : AllowedMutations
+// object None : AllowedMutations
+
+// kotlinx-serialization
+// gson
+// jackson
+// ...
+data class MutationProblem(
+    val projectPath: URI,
+    val tasks: List<MutationTask>
+)
+
+typealias Mutation = Int
+
+data class MutationTask(
+    val file: URI,
+    val allowedMutations: AllowedMutations,
+    val mutationCount: Int,
+    /* val mutationGraph: MutationGraph */
+)
+
+fun parseMutationProblem(data: String): MutationProblem = TODO()
