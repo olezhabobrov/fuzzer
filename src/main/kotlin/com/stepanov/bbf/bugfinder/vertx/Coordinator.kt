@@ -12,11 +12,16 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplace
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.vertx.codecs.*
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.NoSuchTransformation
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.foo
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.parseMutationProblem
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
+import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.log4j.Logger
@@ -31,11 +36,13 @@ class Coordinator: CoroutineVerticle() {
     private lateinit var eb: EventBus
 
     override suspend fun start() {
+//        foo()
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
 //        setExceptionHandlers()
         establishConsumers()
+        createServer()
         deployMutators()
         deployCompilers()
         deployBugManager()
@@ -59,6 +66,31 @@ class Coordinator: CoroutineVerticle() {
             }
         }
     }
+
+    private fun createServer() {
+        val router = Router.router(vertx)
+        router.route("/mutation-problem")
+            .consumes("application/json")
+            .handler(BodyHandler.create())
+            .handler { context ->
+                try {
+                    val mutationProblem = parseMutationProblem(context.body().asString())
+
+                } catch (e: Exception) {
+                    log.debug(e.message)
+                }
+                TODO()
+            }
+
+        vertx.createHttpServer()
+            .requestHandler(router)
+            .listen(8888)
+            .onSuccess { server ->
+                println("HTTP server started on port " + server.actualPort())
+            }
+    }
+
+
 
     private fun sendStrategyAndMutate(index: Int = 0) {
 //        vertx.eventBus().send(mutators[index].mutateAddress, "Some message")
@@ -85,7 +117,7 @@ class Coordinator: CoroutineVerticle() {
             workerOptions().setWorkerPoolName("my-super-awesome-worker-pool") //.setMaxWorkerExecuteTime(10L)
         ) { res ->
             if (res.succeeded()) {
-                sendStrategyAndMutate()
+//                sendStrategyAndMutate()
             } else {
                 log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")
                 error("Mutator wasn't deployed")
@@ -146,29 +178,3 @@ class Coordinator: CoroutineVerticle() {
 
     private val log = Logger.getLogger("coordinatorLogger")
 }
-
-sealed interface AllowedMutations
-
-object All : AllowedMutations
-data class Some(val allowedMutations: List<Mutation>) : AllowedMutations
-// object None : AllowedMutations
-
-// kotlinx-serialization
-// gson
-// jackson
-// ...
-data class MutationProblem(
-    val projectPath: URI,
-    val tasks: List<MutationTask>
-)
-
-typealias Mutation = Int
-
-data class MutationTask(
-    val file: URI,
-    val allowedMutations: AllowedMutations,
-    val mutationCount: Int,
-    /* val mutationGraph: MutationGraph */
-)
-
-fun parseMutationProblem(data: String): MutationProblem = TODO()
