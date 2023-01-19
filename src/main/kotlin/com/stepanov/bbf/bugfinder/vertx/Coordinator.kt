@@ -12,6 +12,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.ExpressionReplacer
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.vertx.codecs.*
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.MutationProblem
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.parseMutationProblem
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.DeploymentOptions
@@ -69,7 +70,7 @@ class Coordinator: CoroutineVerticle() {
                 try {
                     val mutationProblem = parseMutationProblem(context.body().asString())
                     mutationProblem.validate()
-
+                    createStrategyFromMutationProblem(mutationProblem)
                 } catch (e: Exception) {
                     log.debug(e.message)
                 }
@@ -84,7 +85,9 @@ class Coordinator: CoroutineVerticle() {
             }
     }
 
-
+    private fun createStrategyFromMutationProblem(mutationProblem: MutationProblem) {
+        TODO()
+    }
 
     private fun sendStrategyAndMutate(index: Int = 0) {
 //        vertx.eventBus().send(mutators[index].mutateAddress, "Some message")
