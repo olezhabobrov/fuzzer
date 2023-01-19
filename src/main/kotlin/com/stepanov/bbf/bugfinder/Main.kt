@@ -1,10 +1,6 @@
 package com.stepanov.bbf.bugfinder
 
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
-import com.stepanov.bbf.bugfinder.mutator.transformations.*
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.LocalTCE
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.TCETransformation
-import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplacer
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.apache.log4j.PropertyConfigurator

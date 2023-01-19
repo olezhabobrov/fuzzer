@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.mutator.transformations.tce
+package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
@@ -7,8 +7,8 @@ import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory
-import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
-import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.FillerGenerator
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.UsagesSamplesGenerator
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllChildren
