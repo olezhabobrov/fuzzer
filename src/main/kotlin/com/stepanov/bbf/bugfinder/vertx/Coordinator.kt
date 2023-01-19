@@ -12,8 +12,6 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.util.ExpressionReplace
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.vertx.codecs.*
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.NoSuchTransformation
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.foo
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.parseMutationProblem
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.AbstractVerticle
@@ -23,11 +21,8 @@ import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
-import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.log4j.Logger
 import java.io.File
-import java.net.URI
-import java.util.concurrent.TimeUnit
 
 class Coordinator: CoroutineVerticle() {
 
@@ -75,6 +70,7 @@ class Coordinator: CoroutineVerticle() {
             .handler { context ->
                 try {
                     val mutationProblem = parseMutationProblem(context.body().asString())
+                    mutationProblem.validate()
 
                 } catch (e: Exception) {
                     log.debug(e.message)
