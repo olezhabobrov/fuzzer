@@ -20,7 +20,7 @@ data class MutationProblem(
     val projectPath: String = "/"
 ) {
     fun validate() {
-        if (!URI.create(projectPath).isAbsolute) {
+        if (!File(projectPath).isAbsolute) {
             throw IllegalArgumentException("projectPath(=$projectPath) in request is not absolute")
         }
         if (tasks.isEmpty()) {
