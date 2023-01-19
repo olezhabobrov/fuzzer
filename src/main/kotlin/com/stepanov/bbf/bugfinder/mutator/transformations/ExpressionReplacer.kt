@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.mutator.transformations.util
+package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile
@@ -6,10 +6,9 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.tryToCreateExpression
-import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
+import com.stepanov.bbf.bugfinder.mutator.transformations.util.ScopeCalculator
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ScopeCalculator.Companion.processScope
 import com.stepanov.bbf.bugfinder.util.getNameWithoutError
 import com.stepanov.bbf.bugfinder.util.getTrue
