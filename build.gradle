@@ -92,7 +92,7 @@ dependencies {
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-daemon-embeddable', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_version}"
     // TODO: not local file
-    implementation files("/home/oleg/.konan/kotlin-native-prebuilt-linux-x86_64-1.7.21/konan/lib/kotlin-native-compiler-embeddable.jar")
+    implementation files("/home/olezhka/.konan/kotlin-native-prebuilt-linux-x86_64-1.8.0/konan/lib/kotlin-native-compiler-embeddable.jar")
 
     //Reduktor
     implementation "commons-io:commons-io:2.6"
@@ -126,6 +126,9 @@ dependencies {
 
     // Vert.x
     implementation "io.vertx:vertx-core:$vertxVersion"
+    implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion"
+    implementation "io.vertx:vertx-web:$vertxVersion"
+    implementation "io.vertx:vertx-web-client:$vertxVersion"
 //    implementation "io.vertx:vertx-lang-kotlin"
 //    implementation kotlin("stdlib-jdk8")
 //    testImplementation "io.vertx:vertx-junit5"
@@ -183,5 +186,12 @@ task(runInfBBF, dependsOn: 'classes', type: JavaExec) {
 tasks.register('runCoordinator', JavaExec) {
     main = 'com.stepanov.bbf.bugfinder.vertx.MainKt'
     classpath = sourceSets.main.runtimeClasspath
+    jvmArgs project.property("org.gradle.jvmargs").split("\\s")
+}
+
+tasks.register('runClient', JavaExec) {
+    main = 'com.stepanov.bbf.client.MainKt'
+    classpath = sourceSets.main.runtimeClasspath
+    buildDir = 'clientBuild'
     jvmArgs project.property("org.gradle.jvmargs").split("\\s")
 }
