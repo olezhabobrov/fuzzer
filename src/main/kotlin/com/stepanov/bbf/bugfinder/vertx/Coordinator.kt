@@ -22,6 +22,8 @@ import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.apache.log4j.Logger
 import java.io.File
+import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.primaryConstructor
 
 class Coordinator: CoroutineVerticle() {
 
@@ -62,6 +64,7 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun createServer() {
+        // TODO: should make it suspend. Takes a lot of time
         val router = Router.router(vertx)
         router.route("/mutation-problem")
             .consumes("application/json")
@@ -70,11 +73,11 @@ class Coordinator: CoroutineVerticle() {
                 try {
                     val mutationProblem = parseMutationProblem(context.body().asString())
                     mutationProblem.validate()
-                    createStrategyFromMutationProblem(mutationProblem)
+                    val strategies = createStrategyFromMutationProblem(mutationProblem)
+                    TODO("send strategies")
                 } catch (e: Exception) {
                     log.debug(e.message)
                 }
-                TODO()
             }
 
         vertx.createHttpServer()
@@ -85,8 +88,21 @@ class Coordinator: CoroutineVerticle() {
             }
     }
 
-    private fun createStrategyFromMutationProblem(mutationProblem: MutationProblem) {
-        TODO()
+    private fun createStrategyFromMutationProblem(mutationProblem: MutationProblem): List<MutationStrategy> {
+        val result = mutableListOf<MutationStrategy>()
+        mutationProblem.tasks.forEach { task ->
+            val trans = task.listOfTransformations
+            val project = Project.createFromCode(File(mutationProblem.projectPath + task.file).readText())
+            val bbfFile = project.files.first()
+            result.add(MutationStrategy(List(trans.size) { id ->
+                        val tran = trans[id]
+                        // TODO: wtf is that. Refactor smh!!!
+                        tran.primaryConstructor!!.call(project, bbfFile, 1, 100)
+                    }
+                )
+            )
+        }
+        return result
     }
 
     private fun sendStrategyAndMutate(index: Int = 0) {
