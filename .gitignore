@@ -2,7 +2,7 @@
 /.idea
 /.gradle
 /build
-/clientBuild
+*/build
 /core/logs
 /core/tmp/lib
 tmp/*.jar
