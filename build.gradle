@@ -1,3 +1,6 @@
 plugins {
     id 'java'
 }
+
+group 'com.stepanov.bbf'
+version '1.0'
