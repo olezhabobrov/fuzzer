@@ -99,6 +99,7 @@ dependencies {
     implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertx_version"
     implementation "io.vertx:vertx-web:$vertx_version"
     implementation "io.vertx:vertx-web-client:$vertx_version"
+    implementation "io.vertx:vertx-hazelcast:$vertx_version"
 
     //Test
     testImplementation group: 'junit', name: 'junit', version: '4.12'

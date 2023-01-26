@@ -16,10 +16,14 @@ group rootProject.group
 version rootProject.version
 
 dependencies {
-    implementation "commons-io:commons-io:2.6"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: kotlin_jvm_version
-    implementation group: 'io.vertx', name: 'vertx-core', version: vertx_version
     implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
+    implementation "commons-io:commons-io:2.6"
+
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: kotlin_jvm_version
+
+    implementation group: 'io.vertx', name: 'vertx-hazelcast', version: vertx_version
+    implementation group: 'io.vertx', name: 'vertx-core', version: vertx_version
+
     implementation project(":core")
 }
 

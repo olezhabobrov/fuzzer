@@ -1,8 +1,19 @@
 package com.stepanov.bbf
 
-import org.apache.log4j.Logger
+import io.vertx.core.Vertx
+import io.vertx.core.VertxOptions
+import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager
 import org.apache.log4j.PropertyConfigurator
 
 fun main() {
     PropertyConfigurator.configure("log4j.properties")
+    val manager = HazelcastClusterManager()
+    Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->
+        if (res.succeeded()) {
+            val vertx = res.result()
+            vertx.deployVerticle(JVMCompiler())
+        } else {
+            error("Failed: " + res.cause())
+        }
+    }
 }

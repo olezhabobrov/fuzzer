@@ -18,9 +18,6 @@ import java.util.concurrent.TimeoutException
 
 open class JVMCompiler: CommonCompiler() {
 
-    fun foo() {
-        log.debug("foo")
-    }
     override fun start() {
         log.debug("Started JVMCompiler")
         super.start()
