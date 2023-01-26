@@ -30,8 +30,7 @@ class Coordinator: CoroutineVerticle() {
     private lateinit var eb: EventBus
 
     override suspend fun start() {
-        log.debug("started!")
-//        foo()
+        throw Exception("sometjig")
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
@@ -39,7 +38,7 @@ class Coordinator: CoroutineVerticle() {
         establishConsumers()
         createServer()
         deployMutators()
-        deployCompilers()
+//        deployCompilers()
         deployBugManager()
         log.debug("Coordinator deployed")
     }
@@ -73,7 +72,8 @@ class Coordinator: CoroutineVerticle() {
                     val mutationProblem = parseMutationProblem(context.body().asString())
                     mutationProblem.validate()
                     val strategies = createStrategyFromMutationProblem(mutationProblem)
-                    TODO("send strategies")
+                    //TODO: send all strategies
+                    sendStrategyAndMutate(strategies.first())
                 } catch (e: Exception) {
                     log.debug(e.message)
                 }
@@ -104,9 +104,8 @@ class Coordinator: CoroutineVerticle() {
         return result
     }
 
-    private fun sendStrategyAndMutate(index: Int = 0) {
-//        vertx.eventBus().send(mutators[index].mutateAddress, "Some message")
-        eb.send(Mutator.mutateAddress, getExampleStrategy())
+    private fun sendStrategyAndMutate(strategy: MutationStrategy) {
+        eb.send(Mutator.mutateAddress, strategy)
     }
 
     private fun sendProjectToCompiler(project: Project) {
