@@ -89,7 +89,7 @@ dependencies {
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler', version: "${kotlin_version}"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: "${kotlin_version}"
+//    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-daemon-embeddable', version: "${kotlin_version}"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_version}"
     // TODO: not local file

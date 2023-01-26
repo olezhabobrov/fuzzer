@@ -57,7 +57,7 @@ data class Header(
 
 }
 
-internal object Directives {
+object Directives {
     const val file = "// FILE: "
     const val module = "// MODULE: "
     const val language = "// !LANGUAGE: "

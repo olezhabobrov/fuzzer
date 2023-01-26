@@ -11,3 +11,4 @@ rootProject.name = 'bbf'
 
 include("core")
 include("JVMCompiler")
+include("NativeCompiler")
