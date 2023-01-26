@@ -1,13 +1,7 @@
 buildscript {
-    //Do not forget to update intellij core
-    ext.kotlin_version = '1.5.30'
-    ext.kotlin_native_version = '1.8.0'
-    ext.kotlin_plugin_version = '1.5.30'
-    ext.vertxVersion = "4.3.7"
-
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_plugin_version"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_plugin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_jvm_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_jvm_version"
     }
 }
 
@@ -21,27 +15,11 @@ apply plugin: 'kotlin'
 group rootProject.group
 version rootProject.version
 
-repositories {
-    mavenCentral()
-    maven() {
-        url "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/"
-    }
-    maven() {
-        url "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap/"
-    }
-    maven() {
-        url "https://dl.google.com/dl/android/maven2"
-    }
-    maven() {
-        url 'https://jitpack.io'
-    }
-}
-
 dependencies {
     implementation "commons-io:commons-io:2.6"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: "1.5.30"
-    implementation "io.vertx:vertx-core:$vertxVersion"
-    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: '30.0.4'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: kotlin_jvm_version
+    implementation group: 'io.vertx', name: 'vertx-core', version: vertx_version
+    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
     implementation project(":core")
 }
 

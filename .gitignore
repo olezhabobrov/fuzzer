@@ -3,7 +3,7 @@
 /.gradle
 /build
 */build
-/core/logs
+*/logs
 /core/tmp/lib
 tmp/*.jar
 tmp/*.kt

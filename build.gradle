@@ -1,6 +1,25 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
-group 'com.stepanov.bbf'
-version '1.0'
+group group
+version version
+
+subprojects {
+    repositories {
+        mavenCentral()
+        maven() {
+            url "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/"
+        }
+        maven() {
+            url "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap/"
+        }
+        maven() {
+            url "https://dl.google.com/dl/android/maven2"
+        }
+        maven() {
+            url 'https://jitpack.io'
+        }
+    }
+}
