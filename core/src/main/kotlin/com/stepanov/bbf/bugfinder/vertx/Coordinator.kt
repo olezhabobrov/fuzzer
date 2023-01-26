@@ -30,6 +30,7 @@ class Coordinator: CoroutineVerticle() {
     private lateinit var eb: EventBus
 
     override suspend fun start() {
+        log.debug("started!")
 //        foo()
         eb = vertx.eventBus()
         localPreparations()

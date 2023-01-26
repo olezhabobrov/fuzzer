@@ -1,9 +1,5 @@
 buildscript {
     //Do not forget to update intellij core
-//    ext.kotlin_version = '1.5.30'
-    ext.kotlin_native_version = '1.8.0'
-    ext.kotlin_plugin_version = '1.5.30'
-    ext.vertxVersion = "4.3.7"
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_native_version"
@@ -21,27 +17,17 @@ apply plugin: 'kotlin'
 group rootProject.group
 version rootProject.version
 
-repositories {
-    mavenCentral()
-    maven() {
-        url "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/"
-    }
-    maven() {
-        url "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap/"
-    }
-    maven() {
-        url "https://dl.google.com/dl/android/maven2"
-    }
-    maven() {
-        url 'https://jitpack.io'
-    }
-}
-
 dependencies {
+    // ACHTUNHG!!! Local file!
     implementation files("/home/olezhka/.konan/kotlin-native-prebuilt-linux-x86_64-${kotlin_native_version}/konan/lib/kotlin-native-compiler-embeddable.jar")
+
+    // Vert.x
+    implementation "io.vertx:vertx-core:$vertx_version"
+
+    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
+
     implementation "commons-io:commons-io:2.6"
-    implementation "io.vertx:vertx-core:$vertxVersion"
-    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: '30.0.4'
+
     implementation project(":core")
 }
 
