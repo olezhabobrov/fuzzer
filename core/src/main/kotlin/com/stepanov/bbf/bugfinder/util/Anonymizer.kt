@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.util
 
 import com.intellij.psi.PsiFile
 import com.stepanov.bbf.bugfinder.executor.checkers.CompilationChecker
-import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.reduktor.util.getAllChildren
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -14,29 +13,30 @@ object Anonymizer {
 
     val counters = mutableListOf(0, 0, 0, 0, 0)
     fun anon(project: Project): Boolean {
-        val psi = project.files.first().psiFile
-        val checker = CompilationChecker(JVMCompiler())
-
-        /*if (f.name != "singleAssignmentToVarargInAnnotation.kt") continue*/
-        val named = mutableListOf<KtNamedDeclaration>()
-        for (child in psi.getAllChildren()) {
-            if (child is KtNamedDeclaration
-                && child.name != null && !child.name!!.startsWith("<")
-                && !child.text.contains(Regex("""fun box\d*\("""))
-                && child !is KtParameter && child !is KtPrimaryConstructor && child !is KtSecondaryConstructor
-                && child.modifierList?.let { !it.hasModifier(KtTokens.OVERRIDE_KEYWORD) } != false
-                && child.modifierList?.let { !it.hasModifier(KtTokens.OPERATOR_KEYWORD) } != false
-            ) {
-                if (named.all { it.name != child.name })
-                    named.add(child)
-            }
-        }
-        //Rename box
-        psi.getAllPSIChildrenOfType<KtNamedFunction>()
-            .firstOrNull { it.text.contains(Regex("""fun box\d*\(""")) }
-            ?.let { tryToReplace(psi, "box${Random.nextInt(100, 1000)}", it, checker, project) }
-        named.forEach { tryToReplace(psi, generateNewName(it), it, checker, project) }
-        return true
+        TODO()
+//        val psi = project.files.first().psiFile
+//        val checker = CompilationChecker(JVMCompiler())
+//
+//        /*if (f.name != "singleAssignmentToVarargInAnnotation.kt") continue*/
+//        val named = mutableListOf<KtNamedDeclaration>()
+//        for (child in psi.getAllChildren()) {
+//            if (child is KtNamedDeclaration
+//                && child.name != null && !child.name!!.startsWith("<")
+//                && !child.text.contains(Regex("""fun box\d*\("""))
+//                && child !is KtParameter && child !is KtPrimaryConstructor && child !is KtSecondaryConstructor
+//                && child.modifierList?.let { !it.hasModifier(KtTokens.OVERRIDE_KEYWORD) } != false
+//                && child.modifierList?.let { !it.hasModifier(KtTokens.OPERATOR_KEYWORD) } != false
+//            ) {
+//                if (named.all { it.name != child.name })
+//                    named.add(child)
+//            }
+//        }
+//        //Rename box
+//        psi.getAllPSIChildrenOfType<KtNamedFunction>()
+//            .firstOrNull { it.text.contains(Regex("""fun box\d*\(""")) }
+//            ?.let { tryToReplace(psi, "box${Random.nextInt(100, 1000)}", it, checker, project) }
+//        named.forEach { tryToReplace(psi, generateNewName(it), it, checker, project) }
+//        return true
     }
 
     private fun tryToReplace(

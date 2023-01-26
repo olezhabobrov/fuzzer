@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.vertx
 
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
-import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.manager.Bug
 import com.stepanov.bbf.bugfinder.manager.BugManager
@@ -140,20 +139,20 @@ class Coordinator: CoroutineVerticle() {
 
     private fun deployCompilers() {
         // TODO: case of several mutators
-
-        val compiler = JVMCompiler()
-        compilers.add(compiler)
-        vertx.deployVerticle(compiler,
-            workerOptions()
-        ) { res ->
-            if (res.succeeded()) {
-                log.debug("Compilers deployed")
-            } else {
-                log.debug("Deployment of compilers failed with exception: ${res.cause().stackTraceToString()}")
-                error("Compiler wasn't deployed")
-            }
-        }
-        log.debug("Compilers deployed")
+        TODO()
+//        val compiler = JVMCompiler()
+//        compilers.add(compiler)
+//        vertx.deployVerticle(compiler,
+//            workerOptions()
+//        ) { res ->
+//            if (res.succeeded()) {
+//                log.debug("Compilers deployed")
+//            } else {
+//                log.debug("Deployment of compilers failed with exception: ${res.cause().stackTraceToString()}")
+//                error("Compiler wasn't deployed")
+//            }
+//        }
+//        log.debug("Compilers deployed")
     }
 
     private fun deployBugManager() {
