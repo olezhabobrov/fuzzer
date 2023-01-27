@@ -14,6 +14,7 @@ import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.MutationProblem
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.parseMutationProblem
 import com.stepanov.bbf.reduktor.executor.CompilationResult
+import io.vertx.core.AbstractVerticle
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
@@ -23,14 +24,13 @@ import org.apache.log4j.Logger
 import java.io.File
 import kotlin.reflect.full.primaryConstructor
 
-class Coordinator: CoroutineVerticle() {
+class Coordinator: AbstractVerticle() {
 
     private val mutators = mutableListOf<Mutator>()
     private val compilers = mutableListOf<CommonCompiler>()
     private lateinit var eb: EventBus
 
-    override suspend fun start() {
-        throw Exception("sometjig")
+    override fun start() {
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
@@ -112,7 +112,7 @@ class Coordinator: CoroutineVerticle() {
         eb.send(CommonCompiler.compileAddress, project)
     }
 
-    private suspend fun deployMutators() {
+    private fun deployMutators() {
         // TODO: case of several mutators
         // TODO: not one random file
         val mutator = Mutator()
@@ -128,31 +128,13 @@ class Coordinator: CoroutineVerticle() {
             workerOptions().setWorkerPoolName("my-super-awesome-worker-pool") //.setMaxWorkerExecuteTime(10L)
         ) { res ->
             if (res.succeeded()) {
-//                sendStrategyAndMutate()
+                sendStrategyAndMutate(getExampleStrategy())
             } else {
                 log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")
                 error("Mutator wasn't deployed")
             }
         }
         log.debug("Mutators deployed")
-    }
-
-    private fun deployCompilers() {
-        // TODO: case of several mutators
-        TODO()
-//        val compiler = JVMCompiler()
-//        compilers.add(compiler)
-//        vertx.deployVerticle(compiler,
-//            workerOptions()
-//        ) { res ->
-//            if (res.succeeded()) {
-//                log.debug("Compilers deployed")
-//            } else {
-//                log.debug("Deployment of compilers failed with exception: ${res.cause().stackTraceToString()}")
-//                error("Compiler wasn't deployed")
-//            }
-//        }
-//        log.debug("Compilers deployed")
     }
 
     private fun deployBugManager() {

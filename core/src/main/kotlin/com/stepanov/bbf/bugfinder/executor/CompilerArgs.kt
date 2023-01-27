@@ -30,57 +30,11 @@ object CompilerArgs {
         ?: throw IllegalArgumentException("Cannot init $name property")
 
     fun getStdLibPath(libToSearch: String): String {
-        val kotlinVersion = File("build.gradle")
-            .readText()
-            .lines()
-            .firstOrNull { it.trim().contains("kotlin_version") }
-            ?.substringAfter('\'')
-            ?.substringBefore('\'')
-            ?: throw Exception("Dont see kotlinVersion parameter in build.gradle file")
+        val kotlinVersion = System.getenv("kotlin_jvm_version")
+            ?: throw Exception("Dont see kotlinVersion parameter in environment variables (Should be defined in build.gradle)")
         "tmp/lib/$libToSearch-$kotlinVersion.jar".let {
             require(File(it).exists())
             return it
-        }
-    }
-//    fun getStdLibPath(libToSearch: String): String {
-//        val kotlinVersion =
-//            File("build.gradle").readText().lines().firstOrNull { it.trim().contains("kotlin_version") }
-//                ?: throw Exception("Dont see kotlinVersion parameter in build.gradle file")
-//        var ver = kotlinVersion.split("=").last().trim().filter { it != '\'' }
-//        val gradleDir = "${System.getProperty("user.home")}/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/"
-//        var dir =
-//            File("$gradleDir/$libToSearch").listFiles()?.find { it.isDirectory && it.name.trim() == ver }?.path ?: ""
-//        //TODO fix this
-//        if (dir.trim().isEmpty()) {
-//            ver = (ver.last() - '0').let { ver.dropLast(1) + (it - 1) }
-//            dir = File("$gradleDir/$libToSearch").listFiles()?.find { it.isDirectory && it.name.trim() == ver }?.path
-//                ?: ""
-//        }
-//        if (dir.trim().isEmpty()) {
-//            ver = (ver.last() - '0').let { ver.dropLast(1) + (it + 1) }
-//            dir = File("$gradleDir/$libToSearch").listFiles()?.find { it.isDirectory && it.name.trim() == ver }?.path
-//                ?: ""
-//        }
-//        var pathToLib = File(dir).walkTopDown().find { it.name == "$libToSearch-$ver.jar" }?.absolutePath ?: ""
-//        if (pathToLib.isEmpty()) {
-//            ver = "1.5.255-SNAPSHOT"
-//            dir = File("$gradleDir/$libToSearch").listFiles()?.find { it.isDirectory && it.name.trim() == ver }?.path
-//                ?: ""
-//            pathToLib = File(dir).walkTopDown().find { it.name == "$libToSearch-$ver.jar" }?.absolutePath ?: ""
-//        }
-//        require(pathToLib.isNotEmpty())
-//        return pathToLib
-//    }
-
-    fun getAnnoPath(ver: String): String {
-//        val gradleDir = "${System.getProperty("user.home")}/.gradle/caches/modules-2/files-2.1/org.jetbrains/"
-//        val dir =
-//            File("$gradleDir/annotations").listFiles()?.find { it.isDirectory && it.name.trim() == ver }?.path ?: ""
-//        val pathToLib = File(dir).walkTopDown().find { it.name == "annotations-$ver.jar" }?.absolutePath ?: ""
-//        require(pathToLib.isNotEmpty())
-        File("tmp/lib/annotations-$ver.jar").let {
-            require(it.exists())
-            return it.absolutePath
         }
     }
 
@@ -130,12 +84,8 @@ object CompilerArgs {
     val useJavaAsOracle = getPropAsBoolean("USE_JAVA_AS_ORACLE")
 
     //COMPILER
-    val compilerVersion = File("build.gradle")
-        .readText()
-        .lines()
-        .firstOrNull { it.trim().contains("kotlin_version") }
-        ?.substringAfter('\'')
-        ?.substringBefore('\'')
+
+    val compilerVersion = System.getenv("kotlin_jvm_version")
 
     //MUTATED BUGS
     val shouldSaveCompilerBugs =

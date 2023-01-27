@@ -154,4 +154,8 @@ tasks.register('runCoordinator', JavaExec) {
     main = 'com.stepanov.bbf.bugfinder.vertx.MainKt'
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs project.property("org.gradle.jvmargs").split("\\s")
+    // TODO: change to some other task, on which we'll depend on
+    doFirst {
+        environment 'kotlin_jvm_version', kotlin_jvm_version
+    }
 }

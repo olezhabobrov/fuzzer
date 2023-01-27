@@ -22,12 +22,13 @@ class Mutator: AbstractVerticle() {
             strategy = newStrategy.body()
             startMutate()
             sendMutatedProject()
-        }.exceptionHandler { throwable ->
-            log.debug("""Caught an exception in mutator#$instanceNumber
-                | While mutating strategy#${strategy?.number}
-                | Exception: ${throwable.stackTraceToString()}
-            """.trimMargin())
         }
+//            .exceptionHandler { throwable ->
+//            log.debug("""Caught an exception in mutator#$instanceNumber
+//                | While mutating strategy#${strategy?.number}
+//                | Exception: ${throwable.stackTraceToString()}
+//            """.trimMargin())
+//        }
     }
 
     private fun executeMutation(t: Transformation) {
