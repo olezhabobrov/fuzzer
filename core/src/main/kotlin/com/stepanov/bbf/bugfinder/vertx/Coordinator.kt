@@ -74,10 +74,18 @@ class Coordinator: AbstractVerticle() {
                     val strategies = createStrategyFromMutationProblem(mutationProblem)
                     //TODO: send all strategies
                     sendStrategyAndMutate(strategies.first())
+                    context.request().response()
+                        .setStatusCode(200)
+                        .send()
                 } catch (e: Exception) {
                     log.debug(e.message)
+                    context.request().response()
+                        .setStatusCode(400)
+                        .setStatusMessage("An error occured: ${e.message}")
+                        .send()
                 }
             }
+
 
         vertx.createHttpServer()
             .requestHandler(router)
