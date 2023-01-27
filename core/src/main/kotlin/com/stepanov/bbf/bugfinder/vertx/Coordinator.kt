@@ -73,7 +73,8 @@ class Coordinator: AbstractVerticle() {
                     mutationProblem.validate()
                     val strategies = createStrategyFromMutationProblem(mutationProblem)
                     //TODO: send all strategies
-                    sendStrategyAndMutate(strategies.first())
+//                    sendStrategyAndMutate(strategies.first())
+                    sendProjectToCompiler(strategies.first().project)
                     context.request().response()
                         .setStatusCode(200)
                         .send()
