@@ -1,0 +1,15 @@
+{
+  "projectPath": "/home/olezhka/fuzzer/core/tmp/arrays/",
+  "tasks": [
+    {
+      "file": "MultiDeclForComponentMemberExtensions1.kt",
+      "allowedTransformations": {
+        "type": "Some",
+        "transformationsList": [
+          "ExpressionReplacer"
+        ]
+      },
+      "mutationCount": 1
+    }
+  ]
+}

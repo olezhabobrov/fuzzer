@@ -128,7 +128,6 @@ class Coordinator: AbstractVerticle() {
             workerOptions().setWorkerPoolName("my-super-awesome-worker-pool") //.setMaxWorkerExecuteTime(10L)
         ) { res ->
             if (res.succeeded()) {
-                sendStrategyAndMutate(getExampleStrategy())
             } else {
                 log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")
                 error("Mutator wasn't deployed")
