@@ -23,6 +23,7 @@ dependencies {
 
     // Vert.x
     implementation "io.vertx:vertx-core:$vertx_version"
+    implementation group: 'io.vertx', name: 'vertx-hazelcast', version: vertx_version
 
     implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
 
