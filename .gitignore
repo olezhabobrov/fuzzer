@@ -3,6 +3,7 @@
 /.gradle
 /build
 */build
+*tmp/build
 */logs
 /core/tmp/lib
 tmp/*.jar
@@ -11,3 +12,4 @@ tmp/*.js
 core/java-agent/.gradle
 core/java-agent/build
 client
+/JVMCompiler/tmp/build/

@@ -7,6 +7,7 @@ import com.stepanov.bbf.bugfinder.executor.addMainForPerformanceTesting
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.*
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.util.getAllWithout
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
@@ -37,6 +38,11 @@ class Project(
                 }
             return Project(configuration, files, language)
         }
+
+        val projectMessageToProject = hashMapOf<ProjectMessage, Project>()
+
+        fun getProjectByMessage(projectMessage: ProjectMessage) = projectMessageToProject[projectMessage]
+            ?: error("wtf why don't we have it saved")
     }
 
     fun addFile(file: BBFFile): List<BBFFile> {
@@ -207,4 +213,16 @@ class Project(
         it.name + "\n" +
                 it.psiFile.text
     }
+
+    fun getProjectMessage(): ProjectMessage {
+        val result = ProjectMessage(
+            files.map { bbfFile ->
+                bbfFile.name to bbfFile.text
+            },
+            ""
+        )
+        projectMessageToProject[result] = this
+        return result
+    }
+
 }

@@ -8,7 +8,7 @@ import com.stepanov.bbf.bugfinder.manager.BugType
 class DiffCompileChecker(
     override val project: Project,
     override var curFile: BBFFile,
-    private val compilers: List<CommonCompiler>
+    private val compilers: List<String>
 ) : MultiCompilerCrashChecker(project, curFile, null, BugType.DIFFBEHAVIOR) {
 
     override fun checkTest(): Boolean {

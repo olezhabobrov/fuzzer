@@ -4,6 +4,7 @@ import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.Directives
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import com.stepanov.bbf.reduktor.util.MsgCollector
@@ -23,20 +24,23 @@ open class JVMCompiler: CommonCompiler() {
         super.start()
     }
 
-    override fun tryToCompile(project: Project): KotlincInvokeStatus {
-        val path = project.saveOrRemoveToTmp(true)
-        val trashDir = "${CompilerArgs.pathToTmpDir}/trash/"
-        val args = prepareArgs(project, path, trashDir)
+    override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
+        createLocalTmpProject(project)
+//        val path = project.saveOrRemoveToTmp(true)
+//        val trashDir = "${CompilerArgs.pathToTmpDir}/trash/"
+        val args = prepareArgs(project, "tmp/build/")
         return executeCompiler(project, args)
     }
 
     // TODO: add some additional arguments maybe
-    private fun prepareArgs(project: Project, path: String, destination: String): K2JVMCompilerArguments {
+    private fun prepareArgs(project: ProjectMessage, destination: String): K2JVMCompilerArguments {
         val destFile = File(destination)
         if (destFile.isFile) destFile.delete()
         else if (destFile.isDirectory) FileUtils.cleanDirectory(destFile)
-        val projectArgs = project.getProjectSettingsAsCompilerArgs("JVM") as K2JVMCompilerArguments
-        val compilerArgs = "$path -d $destination".split(" ")
+        else destFile.mkdir()
+        val projectArgs = K2JVMCompilerArguments()
+//            project.getProjectSettingsAsCompilerArgs("JVM") as K2JVMCompilerArguments
+        val compilerArgs = "${getAllPathsInLine(project)} -d $destination".split(" ")
         projectArgs.apply { K2JVMCompiler().parseArguments(compilerArgs.toTypedArray(), this) }
         //projectArgs.compileJava = true
         projectArgs.classpath =
@@ -49,8 +53,8 @@ open class JVMCompiler: CommonCompiler() {
                 .joinToString(":")
         projectArgs.jvmTarget = "1.8"
         projectArgs.optIn = arrayOf("kotlin.ExperimentalStdlibApi", "kotlin.contracts.ExperimentalContracts")
-        if (project.configuration.jvmDefault.isNotEmpty())
-            projectArgs.jvmDefault = project.configuration.jvmDefault.substringAfter(Directives.jvmDefault)
+//        if (project.configuration.jvmDefault.isNotEmpty())
+//            projectArgs.jvmDefault = project.configuration.jvmDefault.substringAfter(Directives.jvmDefault)
         //TODO!!
         //if (project.configuration.samConversion.isNotEmpty()) {
         //val samConvType = project.configuration.samConversion.substringAfterLast(": ")
@@ -59,7 +63,7 @@ open class JVMCompiler: CommonCompiler() {
         return projectArgs
     }
 
-    private fun executeCompiler(project: Project, args: K2JVMCompilerArguments): KotlincInvokeStatus {
+    private fun executeCompiler(project: ProjectMessage, args: K2JVMCompilerArguments): KotlincInvokeStatus {
         val compiler = K2JVMCompiler()
         val services = Services.EMPTY
         MsgCollector.clear()
@@ -83,7 +87,7 @@ open class JVMCompiler: CommonCompiler() {
             hasTimeout = true
             futureExitCode.cancel(true)
         } finally {
-            project.saveOrRemoveToTmp(false)
+            deleteLocalTmpProject(project)
         }
         if (CompilerArgs.isInstrumentationMode) {
             CompilerInstrumentation.shouldProbesBeRecorded = false

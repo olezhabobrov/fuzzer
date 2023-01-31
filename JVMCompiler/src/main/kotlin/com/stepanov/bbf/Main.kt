@@ -10,15 +10,14 @@ import java.io.File
 
 fun main() {
     PropertyConfigurator.configure("log4j.properties")
-    Project.createFromCode(File("/home/olezhka/fuzzer/core/tmp/arrays/MultiDeclForComponentMemberExtensions1.kt").readText())
-//    val manager = HazelcastClusterManager()
-//    Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->
-//        if (res.succeeded()) {
-//            val vertx = res.result()
-//            vertx.eventBus().registerDefaultCodec(Project::class.java, ProjectCodec())
-//            vertx.deployVerticle(JVMCompiler())
-//        } else {
-//            error("Failed: " + res.cause())
-//        }
-//    }
+    val manager = HazelcastClusterManager()
+    Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->
+        if (res.succeeded()) {
+            val vertx = res.result()
+            vertx.eventBus().registerDefaultCodec(Project::class.java, ProjectCodec())
+            vertx.deployVerticle(JVMCompiler())
+        } else {
+            error("Failed: " + res.cause())
+        }
+    }
 }
