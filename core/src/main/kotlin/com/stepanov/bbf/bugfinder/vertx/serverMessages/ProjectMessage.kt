@@ -2,7 +2,9 @@ package com.stepanov.bbf.bugfinder.vertx.serverMessages
 
 import com.stepanov.bbf.bugfinder.executor.project.Header
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ProjectMessage(
 //    val header: Header,
     val files: List<Pair<String, String>>,

@@ -1,11 +1,11 @@
 package com.stepanov.bbf.reduktor.executor
 
-import com.stepanov.bbf.bugfinder.executor.CommonCompiler
-import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.manager.BugType
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
+import kotlinx.serialization.Serializable
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 
+@Serializable
 class KotlincInvokeStatus(
     val combinedOutput: String,
     val isCompileSuccess: Boolean,
