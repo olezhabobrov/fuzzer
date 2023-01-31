@@ -13,3 +13,4 @@ core/java-agent/.gradle
 core/java-agent/build
 client
 /JVMCompiler/tmp/build/
+NativeCompiler/tmp/
