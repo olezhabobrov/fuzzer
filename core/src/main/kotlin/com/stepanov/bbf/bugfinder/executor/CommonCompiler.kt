@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.executor
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
+import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.CompilationResult
@@ -19,10 +21,16 @@ abstract class CommonCompiler: AbstractVerticle() {
 
     override fun start() {
         establishConsumers()
+        registerCodecs()
         log.debug("Compiler deployed")
     }
 
     abstract fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus
+
+    private fun registerCodecs() {
+        vertx.eventBus().registerDefaultCodec(Project::class.java, ProjectCodec())
+        vertx.eventBus().registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
+    }
 
     private fun establishConsumers() {
         val eb = vertx.eventBus()

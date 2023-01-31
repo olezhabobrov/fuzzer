@@ -1,7 +1,9 @@
 package com.stepanov.bbf
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
+import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager
@@ -14,7 +16,6 @@ fun main() {
     Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->
         if (res.succeeded()) {
             val vertx = res.result()
-            vertx.eventBus().registerDefaultCodec(Project::class.java, ProjectCodec())
             vertx.deployVerticle(JVMCompiler())
         } else {
             error("Failed: " + res.cause())
