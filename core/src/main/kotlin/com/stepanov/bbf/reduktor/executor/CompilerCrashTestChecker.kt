@@ -3,6 +3,7 @@ package com.stepanov.bbf.reduktor.executor
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.manager.BugType
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 
 class KotlincInvokeStatus(
@@ -25,7 +26,7 @@ class KotlincInvokeStatus(
 }
 
 class CompilationResult(
+    val compiler: String,
     val invokeStatus: KotlincInvokeStatus,
-    val compiler: CommonCompiler,
-    val project: Project
+    val project: ProjectMessage
 )

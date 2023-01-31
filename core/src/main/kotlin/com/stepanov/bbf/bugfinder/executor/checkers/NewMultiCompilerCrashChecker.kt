@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 open class MultiCompilerCrashChecker(
     override val project: Project,
     override var curFile: BBFFile,
-    val compiler: CommonCompiler?,
+    val compiler: String?,
     val bugType: BugType
 ) : CompilerTestChecker {
 

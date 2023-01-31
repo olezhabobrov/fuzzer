@@ -4,6 +4,7 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.executor.*
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
@@ -19,7 +20,7 @@ enum class BugType {
     PERFORMANCE
 }
 
-data class Bug(val compilers: List<CommonCompiler>, val msg: String, val crashedProject: Project, val type: BugType) {
+data class Bug(val compilers: List<String>, val msg: String, val crashedProject: Project, val type: BugType) {
 
     constructor(b: Bug) : this(
         b.compilers,
@@ -28,7 +29,7 @@ data class Bug(val compilers: List<CommonCompiler>, val msg: String, val crashed
         b.type
     )
 
-    constructor(compiler: CommonCompiler, msg: String, crashedProject: Project, type: BugType) : this(
+    constructor(compiler: String, msg: String, crashedProject: Project, type: BugType) : this(
         listOf(compiler),
         msg,
         crashedProject,
@@ -38,7 +39,7 @@ data class Bug(val compilers: List<CommonCompiler>, val msg: String, val crashed
     constructor(res: CompilationResult): this(
         listOf(res.compiler),
         res.invokeStatus.combinedOutput,
-        res.project,
+        Project.getProjectByMessage(res.project),
         res.invokeStatus.bugType()
     )
 
