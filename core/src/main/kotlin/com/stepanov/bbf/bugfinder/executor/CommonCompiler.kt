@@ -5,16 +5,16 @@ import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
+import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
+import com.stepanov.bbf.reduktor.util.MsgCollector
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
-import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
-import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
-import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import org.jetbrains.kotlin.cli.js.K2JSCompiler
-import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class CommonCompiler: AbstractVerticle() {
@@ -35,7 +35,10 @@ abstract class CommonCompiler: AbstractVerticle() {
     private fun establishConsumers() {
         val eb = vertx.eventBus()
         eb.consumer<ProjectMessage>(compileAddress) { msg ->
-            val compileResult = tryToCompile(msg.body())
+            val project = msg.body()
+            createLocalTmpProject(project)
+            val compileResult = tryToCompile(project)
+            deleteLocalTmpProject(project)
             eb.send(resultAddress,
                 CompilationResult(
                     this::class.java.simpleName,
@@ -50,17 +53,20 @@ abstract class CommonCompiler: AbstractVerticle() {
         }
     }
 
-    protected fun createLocalTmpProject(project: ProjectMessage) {
+    private fun createLocalTmpProject(project: ProjectMessage) {
         project.files.forEach { (name, text) ->
             File(name.substringBeforeLast("/")).mkdirs()
             File(name).writeText(text)
         }
+        File(project.outputDir).mkdir()
     }
 
-    protected fun deleteLocalTmpProject(project: ProjectMessage) {
-        project.files.forEach { (name, text) ->
-            File(name).delete()
+    private fun deleteLocalTmpProject(project: ProjectMessage) {
+        project.files.forEach { (name, _) ->
+            if (File(name).exists())
+                File(name).deleteRecursively()
         }
+        File(project.outputDir).deleteRecursively()
     }
 
     protected fun getAllPathsInLine(project: ProjectMessage): String {
@@ -94,6 +100,36 @@ abstract class CommonCompiler: AbstractVerticle() {
 //        args.optIn = configuration.useExperimental.toTypedArray()
 //        return args
 //    }
+
+    protected fun executeCompiler(
+        project: ProjectMessage,
+        task: Runnable
+    ): KotlincInvokeStatus {
+        val threadPool = Executors.newCachedThreadPool()
+        val futureExitCode = threadPool.submit(task)
+        var hasTimeout = false
+        var compilerWorkingTime: Long = -1
+        try {
+            val startTime = System.currentTimeMillis()
+            futureExitCode.get(10L, TimeUnit.SECONDS)
+            compilerWorkingTime = System.currentTimeMillis() - startTime
+        } catch (ex: TimeoutException) {
+            hasTimeout = true
+            futureExitCode.cancel(true)
+        } finally {
+            deleteLocalTmpProject(project)
+        }
+        val status = KotlincInvokeStatus(
+            MsgCollector.crashMessages.joinToString("\n") +
+                    MsgCollector.compileErrorMessages.joinToString("\n"),
+            !MsgCollector.hasCompileError,
+            MsgCollector.hasException,
+            hasTimeout,
+            compilerWorkingTime,
+            MsgCollector.locations.toMutableList()
+        )
+        return status
+    }
 
     companion object {
         var counter = AtomicInteger(0)

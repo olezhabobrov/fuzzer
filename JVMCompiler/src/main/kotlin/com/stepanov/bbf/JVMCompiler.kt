@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 open class JVMCompiler: CommonCompiler() {
+    val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
 
     override fun start() {
         log.debug("Started JVMCompiler")
@@ -25,11 +26,11 @@ open class JVMCompiler: CommonCompiler() {
     }
 
     override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
-        createLocalTmpProject(project)
-//        val path = project.saveOrRemoveToTmp(true)
-//        val trashDir = "${CompilerArgs.pathToTmpDir}/trash/"
         val args = prepareArgs(project, "tmp/build/")
-        return executeCompiler(project, args)
+        return executeCompiler(project) {
+            val services = Services.EMPTY
+            compiler.exec(MsgCollector, services, args)
+        }
     }
 
     // TODO: add some additional arguments maybe
@@ -61,48 +62,6 @@ open class JVMCompiler: CommonCompiler() {
         //projectArgs.samConversions = samConvType.toLowerCase()
         //}
         return projectArgs
-    }
-
-    private fun executeCompiler(project: ProjectMessage, args: K2JVMCompilerArguments): KotlincInvokeStatus {
-        val compiler = K2JVMCompiler()
-        val services = Services.EMPTY
-        MsgCollector.clear()
-        val threadPool = Executors.newCachedThreadPool()
-        if (CompilerArgs.isInstrumentationMode) {
-            CompilerInstrumentation.clearRecords()
-            CompilerInstrumentation.shouldProbesBeRecorded = true
-        } else {
-            CompilerInstrumentation.shouldProbesBeRecorded = false
-        }
-        val futureExitCode = threadPool.submit {
-            compiler.exec(MsgCollector, services, args)
-        }
-        var hasTimeout = false
-        var compilerWorkingTime: Long = -1
-        try {
-            val startTime = System.currentTimeMillis()
-            futureExitCode.get(10L, TimeUnit.SECONDS)
-            compilerWorkingTime = System.currentTimeMillis() - startTime
-        } catch (ex: TimeoutException) {
-            hasTimeout = true
-            futureExitCode.cancel(true)
-        } finally {
-            deleteLocalTmpProject(project)
-        }
-        if (CompilerArgs.isInstrumentationMode) {
-            CompilerInstrumentation.shouldProbesBeRecorded = false
-        }
-        val status = KotlincInvokeStatus(
-            MsgCollector.crashMessages.joinToString("\n") +
-                    MsgCollector.compileErrorMessages.joinToString("\n"),
-            !MsgCollector.hasCompileError,
-            MsgCollector.hasException,
-            hasTimeout,
-            compilerWorkingTime,
-            MsgCollector.locations.toMutableList()
-        )
-        //println(status.combinedOutput)
-        return status
     }
 
 }

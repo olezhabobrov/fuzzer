@@ -35,3 +35,8 @@ dependencies {
 application {
     mainClass.set("com.stepanov.bbf.MainKt")
 }
+
+run.doFirst {
+    environment 'kotlin_native_version', kotlin_native_version
+    environment 'kotlin-home', "/home/olezhka/.konan/kotlin-native-prebuilt-linux-x86_64-${kotlin_native_version}"
+}

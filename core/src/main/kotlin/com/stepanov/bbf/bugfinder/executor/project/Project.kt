@@ -219,6 +219,7 @@ class Project(
             files.map { bbfFile ->
                 bbfFile.name to bbfFile.text
             },
+            "tmp/build",
             ""
         )
         projectMessageToProject[result] = this
