@@ -17,30 +17,25 @@ class NativeCompiler: CommonCompiler() {
     }
 
     override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
-        createLocalTmpProject(project)
-        val arguments = K2NativeCompilerArguments()
-        val compilerArgumentsKlib = arrayOf(project.files.first().first,
-            "-kotlin-home", "/home/olezhka/.konan/kotlin-native-prebuilt-linux-x86_64-1.8.0/",
-            "-p", "library",
-            "-o", "tmp/build"
-        )
-
-        K2Native().parseArguments(compilerArgumentsKlib , arguments)
-
-        compiler.exec(MsgCollector, Services.EMPTY, arguments)
-
-
-        if (MsgCollector.hasCompileError) {
-            println(MsgCollector.compileErrorMessages[0])
+        val arguments = createArguments(project)
+        return executeCompiler(project) {
+            val services = Services.EMPTY
+            compiler.exec(MsgCollector, services, arguments)
         }
-        if (MsgCollector.hasException) {
-            println(MsgCollector.compileErrorMessages[0])
-        }
-
-        TODO("Not yet implemented")
     }
 
-
+    private fun createArguments(project: ProjectMessage): K2NativeCompilerArguments {
+        val compilerArgumentsList = mutableListOf(
+            "-kotlin-home", System.getenv("kotlin-home")
+                ?: error("kotlin-home not specified in environment variables (should be in build.gradle)"),
+            "-p", "library",
+            "-o", project.outputDir + "result"
+        )
+        project.files.forEach { compilerArgumentsList.add(it.first) }
+        val arguments = K2NativeCompilerArguments()
+        K2Native().parseArguments(compilerArgumentsList.toTypedArray() , arguments)
+        return arguments
+    }
 
 
 }

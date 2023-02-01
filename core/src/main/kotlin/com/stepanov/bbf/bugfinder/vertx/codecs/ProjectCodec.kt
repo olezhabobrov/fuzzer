@@ -18,12 +18,14 @@ class ProjectCodec: MessageCodec<Project, ProjectMessage> {
         val (projectStr, _) = getString(position, buffer!!)
         val json = JsonObject(projectStr)
         val files = json.getJsonArray("files")
+        val build = json.getString("build")
         val conf = json.getString("conf")
         return ProjectMessage(
             files.map { jfile ->
                 jfile as JsonObject
                 jfile.getString("name") to jfile.getString("text")
             },
+            build,
             conf
         )
     }
@@ -37,6 +39,7 @@ class ProjectCodec: MessageCodec<Project, ProjectMessage> {
             jfile.put("text", it.text)
         }
         )
+        json.put("build", "tmp/build")
         json.put("conf", "")
         encodeString(json.toString(), buffer!!)
     }
