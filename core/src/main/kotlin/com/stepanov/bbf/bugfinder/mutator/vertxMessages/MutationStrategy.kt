@@ -8,11 +8,6 @@ data class MutationStrategy(
 ) {
     val project: Project = transformations.firstOrNull()?.project ?: error("Empty strategy")
     val number: Int = ++counter
-//    init {
-//        transformations.forEach { transformation ->
-//            require(project === transformation.project) { "All projects should be the same" }
-//        }
-//    }
 
     companion object {
         var counter = 0

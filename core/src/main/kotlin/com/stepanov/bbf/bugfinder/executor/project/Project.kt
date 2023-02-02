@@ -27,6 +27,11 @@ class Project(
     constructor(configuration: Header, file: BBFFile, language: LANGUAGE) : this(configuration, listOf(file), language)
 
     companion object {
+        fun createBBFilesFromCode(code: String): List<BBFFile>? {
+            val configuration = Header.createHeader(getCommentSection(code))
+            return BBFFileFactory(code, configuration).createBBFFiles()
+        }
+
         fun createFromCode(code: String): Project {
             val configuration = Header.createHeader(getCommentSection(code))
             val files = BBFFileFactory(code, configuration).createBBFFiles() ?: return Project(configuration, listOf())

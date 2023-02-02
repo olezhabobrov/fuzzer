@@ -70,11 +70,10 @@ class Coordinator: AbstractVerticle() {
             .handler { context ->
                 try {
                     val mutationProblem = parseMutationProblem(context.body().asString())
-                    mutationProblem.validate()
-                    val strategies = createStrategyFromMutationProblem(mutationProblem)
+                    val strategy = mutationProblem.createMutationStrategy()
                     //TODO: send all strategies
 //                    sendStrategyAndMutate(strategies.first())
-                    sendProjectToCompiler(strategies.first().project)
+                    sendProjectToCompiler(strategy.project)
                     context.request().response()
                         .setStatusCode(200)
                         .send()
@@ -94,23 +93,6 @@ class Coordinator: AbstractVerticle() {
             .onSuccess { server ->
                 println("HTTP server started on port " + server.actualPort())
             }
-    }
-
-    private fun createStrategyFromMutationProblem(mutationProblem: MutationProblem): List<MutationStrategy> {
-        val result = mutableListOf<MutationStrategy>()
-//        mutationProblem.tasks.forEach { task ->
-//            val trans = task.listOfTransformations
-//            val project = Project.createFromCode(File(mutationProblem.projectPath + task.file).readText())
-//            val bbfFile = project.files.first()
-//            result.add(MutationStrategy(List(trans.size) { id ->
-//                        val tran = trans[id]
-//                         TODO: wtf is that. Refactor smh!!!
-//                        tran.primaryConstructor!!.call(project, bbfFile, 1, 100)
-//                    }
-//                )
-//            )
-//        }
-        return result
     }
 
     private fun sendStrategyAndMutate(strategy: MutationStrategy) {
