@@ -98,18 +98,18 @@ class Coordinator: AbstractVerticle() {
 
     private fun createStrategyFromMutationProblem(mutationProblem: MutationProblem): List<MutationStrategy> {
         val result = mutableListOf<MutationStrategy>()
-        mutationProblem.tasks.forEach { task ->
-            val trans = task.listOfTransformations
-            val project = Project.createFromCode(File(mutationProblem.projectPath + task.file).readText())
-            val bbfFile = project.files.first()
-            result.add(MutationStrategy(List(trans.size) { id ->
-                        val tran = trans[id]
-                        // TODO: wtf is that. Refactor smh!!!
-                        tran.primaryConstructor!!.call(project, bbfFile, 1, 100)
-                    }
-                )
-            )
-        }
+//        mutationProblem.tasks.forEach { task ->
+//            val trans = task.listOfTransformations
+//            val project = Project.createFromCode(File(mutationProblem.projectPath + task.file).readText())
+//            val bbfFile = project.files.first()
+//            result.add(MutationStrategy(List(trans.size) { id ->
+//                        val tran = trans[id]
+//                         TODO: wtf is that. Refactor smh!!!
+//                        tran.primaryConstructor!!.call(project, bbfFile, 1, 100)
+//                    }
+//                )
+//            )
+//        }
         return result
     }
 
