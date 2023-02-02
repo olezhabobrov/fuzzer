@@ -18,7 +18,7 @@ class Mutator: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<MutationStrategy>(mutateAddress) { newStrategy ->
+        vertx.eventBus().consumer<MutationStrategy>(VertxAddresses.mutate) { newStrategy ->
             strategy = newStrategy.body()
             startMutate()
             sendMutatedProject()
@@ -45,7 +45,7 @@ class Mutator: AbstractVerticle() {
 
     private fun sendMutatedProject() {
         log.debug("Sending back project, mutated by mutation strategy #${strategy?.number}")
-        vertx.eventBus().send(resultAddress,
+        vertx.eventBus().send(VertxAddresses.mutatedProject,
             MutationResult(strategy!!.project, strategy!!.number)
         )
     }
@@ -57,13 +57,6 @@ class Mutator: AbstractVerticle() {
             executeMutation(it)
         } ?: throw RuntimeException("Called startMutate but no strategy provided")
     }
-
-    companion object {
-        var instanceCounter = 0
-        val resultAddress = VertxAddresses.mutatedProject// + "#${instanceNumber}"
-        val mutateAddress = VertxAddresses.mutate // + "#${instanceNumber}"
-    }
-    private val instanceNumber: Int = ++instanceCounter
 
     private val log = Logger.getLogger("bugFinderLogger")
 }

@@ -11,4 +11,6 @@ object VertxAddresses {
     const val compileResult = "compileResult"
 
     const val bugManager = "bugManager"
+
+    const val mutationProblemExec = "mutationProblemExec"
 }
