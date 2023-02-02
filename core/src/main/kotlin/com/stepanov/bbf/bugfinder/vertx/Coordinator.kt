@@ -44,7 +44,16 @@ class Coordinator: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        eb.consumer<MutationResult>(Mutator.resultAddress) { result ->
+        eb.consumer<MutationProblem>(VertxAddresses.mutationProblemExec) { msg ->
+            val mutationProblem = msg.body()
+            // TODO: how may tries do we want?
+            while (true) {
+                val strategy = mutationProblem.createMutationStrategy()
+                // TODO: send to mutator
+            }
+        }
+
+        eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
             log.debug("Got mutation result")
             val mutatedProject = result.body()
             sendProjectToCompiler(mutatedProject.project)
@@ -70,10 +79,7 @@ class Coordinator: AbstractVerticle() {
             .handler { context ->
                 try {
                     val mutationProblem = parseMutationProblem(context.body().asString())
-                    val strategy = mutationProblem.createMutationStrategy()
-                    //TODO: send all strategies
-//                    sendStrategyAndMutate(strategies.first())
-                    sendProjectToCompiler(strategy.project)
+                    vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
                     context.request().response()
                         .setStatusCode(200)
                         .send()
@@ -96,7 +102,7 @@ class Coordinator: AbstractVerticle() {
     }
 
     private fun sendStrategyAndMutate(strategy: MutationStrategy) {
-        eb.send(Mutator.mutateAddress, strategy)
+        eb.send(VertxAddresses.mutate, strategy)
     }
 
     private fun sendProjectToCompiler(project: Project) {
@@ -130,16 +136,9 @@ class Coordinator: AbstractVerticle() {
     private fun deployBugManager() {
         vertx.deployVerticle(BugManager(), workerOptions())
     }
-    private fun getExampleStrategy(): MutationStrategy {
-        // TODO: create strategy from smth
-//        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
-        val project = Project.createFromCode(File("./tmp/arrays/MultiDeclForComponentMemberExtensions1.kt").readText())
-        return MutationStrategy(listOf(ExpressionReplacer(project, project.files.first(), 100)))
-    }
-
-    private fun getRandomStrategy(): Nothing = TODO()
 
     private fun registerCodecs() {
+        eb.registerDefaultCodec(MutationProblem::class.java, MutationProblemCodec())
         eb.registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
         eb.registerDefaultCodec(MutationResult::class.java, MutationResultCodec())
         eb.registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())

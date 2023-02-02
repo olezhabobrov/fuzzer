@@ -21,7 +21,7 @@ data class MutationProblem(
     fun createMutationStrategy(): MutationStrategy {
         val project: Project
         if (mutationTarget is FileTarget) {
-            project = Project.createFromCode(mutationTarget.getCode())
+            project = Project.createFromCode(mutationTarget.extactCode())
         } else if (mutationTarget is ProjectTarget) {
             val fileIter = mutationTarget.getFileIter()
             project = Project.createFromCode(fileIter.next())
@@ -97,7 +97,7 @@ data class FileTarget(
     val fileName: String? = null,
     val code: String? = null
 ): MutationTarget() {
-    fun getCode(): String {
+    fun extactCode(): String {
         if (code != null)
             return code
         if (fileName != null)
@@ -135,7 +135,7 @@ data class ProjectTarget(
     }
 
     fun getFileIter() = iterator {
-        files.forEach { yield(it.getCode()) }
+        files.forEach { yield(it.extactCode()) }
     }
 
 }
