@@ -50,8 +50,7 @@ class Mutator: AbstractVerticle() {
         )
     }
 
-    // TODO: make private
-    fun startMutate() {
+    private fun startMutate() {
         log.debug("Starting mutating for strategy #${strategy?.number}")
         strategy?.transformations?.forEach {
             executeMutation(it)

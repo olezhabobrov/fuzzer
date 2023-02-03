@@ -5,6 +5,8 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import io.vertx.core.Vertx
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -56,6 +58,12 @@ data class MutationProblem(
     fun validate() {
         if (compilers.isEmpty()) {
             throw IllegalArgumentException("No target compilers defined")
+        }
+        compilers.forEach { address ->
+            when (address) {
+                VertxAddresses.JVMCompiler, VertxAddresses.NativeCompiler -> {}
+                else -> throw IllegalArgumentException("Unknown compiler target: $address")
+            }
         }
         if (mutationCount <= 0) {
             throw IllegalArgumentException("mutationCount should be positive, but it equals $mutationCount")

@@ -2,10 +2,8 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
-import com.stepanov.bbf.bugfinder.executor.project.Directives
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
-import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import com.stepanov.bbf.reduktor.util.MsgCollector
 import org.apache.commons.io.FileUtils
@@ -13,11 +11,10 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.config.Services
 import java.io.File
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 open class JVMCompiler: CommonCompiler() {
+    override val compileAddress = VertxAddresses.JVMCompiler
+
     val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
 
     override fun start() {
