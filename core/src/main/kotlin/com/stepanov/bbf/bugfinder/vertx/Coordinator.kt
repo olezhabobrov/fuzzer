@@ -1,13 +1,11 @@
 package com.stepanov.bbf.bugfinder.vertx
 
-import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.manager.Bug
 import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.mutator.Mutator
-import com.stepanov.bbf.bugfinder.mutator.transformations.ExpressionReplacer
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.vertx.codecs.*
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
@@ -19,15 +17,11 @@ import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.apache.log4j.Logger
 import java.io.File
-import kotlin.reflect.full.primaryConstructor
 
 class Coordinator: AbstractVerticle() {
 
-    private val mutators = mutableListOf<Mutator>()
-    private val compilers = mutableListOf<CommonCompiler>()
     private lateinit var eb: EventBus
 
     override fun start() {
@@ -46,20 +40,19 @@ class Coordinator: AbstractVerticle() {
     private fun establishConsumers() {
         eb.consumer<MutationProblem>(VertxAddresses.mutationProblemExec) { msg ->
             val mutationProblem = msg.body()
-            // TODO: how may tries do we want?
-            while (true) {
-                val strategy = mutationProblem.createMutationStrategy()
-                // TODO: send to mutator
-            }
+            val strategy = mutationProblem.createMutationStrategy()
+            strategiesMap[strategy.number] = mutationProblem
+            // TODO: send to mutator
+            sendProjectToCompilers(strategy.project, strategy.number)
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
             log.debug("Got mutation result")
             val mutatedProject = result.body()
-            sendProjectToCompiler(mutatedProject.project)
+            sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
         }
 
-        eb.consumer<CompilationResult>(CommonCompiler.resultAddress) { result ->
+        eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
             log.debug("Got compilation result")
             val compileResult = result.body()
             if (compileResult.invokeStatus.hasCompilerCrash()) {
@@ -105,15 +98,16 @@ class Coordinator: AbstractVerticle() {
         eb.send(VertxAddresses.mutate, strategy)
     }
 
-    private fun sendProjectToCompiler(project: Project) {
-        eb.send(CommonCompiler.compileAddress, project)
+    private fun sendProjectToCompilers(project: Project, strategyN: Int) {
+        strategiesMap[strategyN]!!.compilers.forEach { address ->
+            eb.send(address, project)
+        }
     }
 
     private fun deployMutators() {
         // TODO: case of several mutators
         // TODO: not one random file
         val mutator = Mutator()
-        mutators.add(mutator)
 
 //        val res = awaitResult<String> {
 //            vertx.deployVerticle(mutator,
@@ -155,6 +149,8 @@ class Coordinator: AbstractVerticle() {
             log.debug("Caught throwable: ${throwable.stackTraceToString()}")
         }
     }
+
+    private val strategiesMap = hashMapOf<Int, MutationProblem>()
 
     private fun workerOptions() = DeploymentOptions().setWorker(true) // TODO: exception handling, timeouts, etc
 

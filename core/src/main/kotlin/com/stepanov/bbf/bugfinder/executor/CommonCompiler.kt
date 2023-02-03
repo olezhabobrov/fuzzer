@@ -39,7 +39,7 @@ abstract class CommonCompiler: AbstractVerticle() {
             createLocalTmpProject(project)
             val compileResult = tryToCompile(project)
             deleteLocalTmpProject(project)
-            eb.send(resultAddress,
+            eb.send(VertxAddresses.compileResult,
                 CompilationResult(
                     this::class.java.simpleName,
                     compileResult,
@@ -47,7 +47,7 @@ abstract class CommonCompiler: AbstractVerticle() {
                 )
             )
         }.exceptionHandler { throwable ->
-            log.debug("""Caught an exception in compiler#$instanceNumber
+            log.debug("""Caught an exception in compiler
                 | Exception: ${throwable.stackTraceToString()}
             """.trimMargin())
         }
@@ -72,34 +72,6 @@ abstract class CommonCompiler: AbstractVerticle() {
     protected fun getAllPathsInLine(project: ProjectMessage): String {
         return project.files.map { it.first }.joinToString(" ")
     }
-
-//    fun getProjectSettingsAsCompilerArgs(backendType: String): CommonCompilerArguments {
-//        val args = when (backendType) {
-//            "JVM" -> K2JVMCompilerArguments()
-//            else -> K2JSCompilerArguments()
-//        }
-//        val languageDirective = "-XXLanguage:"
-//        val languageFeaturesAsArgs = configuration.languageSettings.joinToString(
-//            separator = " $languageDirective",
-//            prefix = languageDirective,
-//        ).split(" ")
-//        when (backendType) {
-//            "JVM" -> args.apply {
-//                K2JVMCompiler().parseArguments(
-//                    languageFeaturesAsArgs.toTypedArray(),
-//                    this as K2JVMCompilerArguments
-//                )
-//            }
-//            "JS" -> args.apply {
-//                K2JSCompiler().parseArguments(
-//                    languageFeaturesAsArgs.toTypedArray(),
-//                    this as K2JSCompilerArguments
-//                )
-//            }
-//        }
-//        args.optIn = configuration.useExperimental.toTypedArray()
-//        return args
-//    }
 
     protected fun executeCompiler(
         project: ProjectMessage,
@@ -131,13 +103,7 @@ abstract class CommonCompiler: AbstractVerticle() {
         return status
     }
 
-    companion object {
-        var counter = AtomicInteger(0)
-        val resultAddress = VertxAddresses.compileResult
-        val compileAddress = VertxAddresses.compile // + "${instanceNumber}"
-    }
-
-    private val instanceNumber = counter.getAndIncrement()
+    abstract val compileAddress: String
 
     protected val log = Logger.getLogger("compilerLogger")
 }

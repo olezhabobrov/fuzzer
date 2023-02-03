@@ -1,6 +1,6 @@
 {
     "compilers": [
-        "Native"
+        "NativeCompiler"
     ],
     "allowedTransformations": {
         "type": "Some",

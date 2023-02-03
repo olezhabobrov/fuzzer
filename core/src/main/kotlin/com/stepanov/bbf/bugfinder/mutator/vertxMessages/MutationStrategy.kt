@@ -2,14 +2,15 @@ package com.stepanov.bbf.bugfinder.mutator.vertxMessages
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
+import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationStrategy(
     val transformations: List<Transformation>,
 ) {
     val project: Project = transformations.firstOrNull()?.project ?: error("Empty strategy")
-    val number: Int = ++counter
+    val number: Int = counter.incrementAndGet()
 
     companion object {
-        var counter = 0
+        val counter: AtomicInteger = AtomicInteger(0)
     }
 }

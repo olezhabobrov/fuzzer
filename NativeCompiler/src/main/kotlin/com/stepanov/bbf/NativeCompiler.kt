@@ -1,6 +1,7 @@
 package com.stepanov.bbf
 
 import com.stepanov.bbf.bugfinder.executor.CommonCompiler
+import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
 import com.stepanov.bbf.reduktor.util.MsgCollector
@@ -9,6 +10,8 @@ import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
 
 class NativeCompiler: CommonCompiler() {
+    override val compileAddress = VertxAddresses.NativeCompiler
+
     private val compiler = K2Native()
 
     override fun start() {

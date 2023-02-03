@@ -6,11 +6,13 @@ object VertxAddresses {
 
     const val mutatedProject = "mutatedProject"
 
-    const val compile = "compile"
-
     const val compileResult = "compileResult"
 
     const val bugManager = "bugManager"
 
     const val mutationProblemExec = "mutationProblemExec"
+
+    const val JVMCompiler = "JVMCompiler"
+
+    const val NativeCompiler = "NativeCompiler"
 }
