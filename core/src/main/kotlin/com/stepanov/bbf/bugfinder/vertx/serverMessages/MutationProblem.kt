@@ -6,7 +6,6 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
-import io.vertx.core.Vertx
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File

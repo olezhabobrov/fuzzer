@@ -5,6 +5,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager
 import org.apache.log4j.PropertyConfigurator
+import java.io.File
 
 fun main() {
     PropertyConfigurator.configure("src/main/resources/bbfLog4j.properties")
@@ -12,7 +13,7 @@ fun main() {
     Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->
         if (res.succeeded()) {
             val vertx = res.result()
-//            vertx.exceptionHandler(GlobalExceptionHandler)
+            vertx.exceptionHandler(GlobalExceptionHandler)
             val coordinator = Coordinator()
             vertx.deployVerticle(coordinator).onFailure(GlobalExceptionHandler)
         } else {
