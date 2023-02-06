@@ -17,14 +17,17 @@ import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
+import io.vertx.kotlin.coroutines.CoroutineVerticle
+import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 
-class Coordinator: AbstractVerticle() {
+class Coordinator: CoroutineVerticle() {
 
     private lateinit var eb: EventBus
 
-    override fun start() {
+    override suspend fun start() {
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
@@ -32,7 +35,6 @@ class Coordinator: AbstractVerticle() {
         establishConsumers()
         createServer()
         deployMutators()
-//        deployCompilers()
         deployBugManager()
         log.debug("Coordinator deployed")
     }
@@ -42,8 +44,7 @@ class Coordinator: AbstractVerticle() {
             val mutationProblem = msg.body()
             val strategy = mutationProblem.createMutationStrategy()
             strategiesMap[strategy.number] = mutationProblem
-            // TODO: send to mutator
-            sendProjectToCompilers(strategy.project, strategy.number)
+            sendStrategyAndMutate(strategy)
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
@@ -104,7 +105,7 @@ class Coordinator: AbstractVerticle() {
         }
     }
 
-    private fun deployMutators() {
+    private suspend fun deployMutators() {
         // TODO: case of several mutators
         // TODO: not one random file
         val mutator = Mutator()

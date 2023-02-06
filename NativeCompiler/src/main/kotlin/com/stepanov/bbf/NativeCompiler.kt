@@ -9,8 +9,7 @@ import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
 
-class NativeCompiler: CommonCompiler() {
-    override val compileAddress = VertxAddresses.NativeCompiler
+class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
     private val compiler = K2Native()
 

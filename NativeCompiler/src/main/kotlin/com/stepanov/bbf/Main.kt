@@ -4,7 +4,6 @@ import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager
 import org.apache.log4j.PropertyConfigurator
-import org.jetbrains.kotlin.cli.bc.K2Native
 
 fun main() {
     PropertyConfigurator.configure("log4j.properties")

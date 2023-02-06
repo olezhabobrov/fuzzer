@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.executor
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.util.MarkerLogger
 import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
@@ -17,7 +18,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
-abstract class CommonCompiler: AbstractVerticle() {
+abstract class CommonCompiler(
+    val compileAddress: String
+): AbstractVerticle() {
 
     override fun start() {
         establishConsumers()
@@ -103,8 +106,6 @@ abstract class CommonCompiler: AbstractVerticle() {
         return status
     }
 
-    abstract val compileAddress: String
-
-    protected val log = Logger.getLogger("compilerLogger")
+    protected val log = MarkerLogger("compilerLogger", compileAddress)
 }
 

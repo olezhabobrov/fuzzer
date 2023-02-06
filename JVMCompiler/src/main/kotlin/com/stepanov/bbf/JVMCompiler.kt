@@ -12,8 +12,7 @@ import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.config.Services
 import java.io.File
 
-open class JVMCompiler: CommonCompiler() {
-    override val compileAddress = VertxAddresses.JVMCompiler
+open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
 
     val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
 
