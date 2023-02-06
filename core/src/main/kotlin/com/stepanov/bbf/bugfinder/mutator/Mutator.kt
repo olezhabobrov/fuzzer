@@ -6,12 +6,11 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import java.lang.Thread.sleep
 import kotlin.RuntimeException
 import kotlin.random.Random
 
 class Mutator: AbstractVerticle() {
-
-    private var strategy: MutationStrategy? = null
 
     override fun start() {
         establishConsumers()
@@ -19,9 +18,11 @@ class Mutator: AbstractVerticle() {
 
     private fun establishConsumers() {
         vertx.eventBus().consumer<MutationStrategy>(VertxAddresses.mutate) { newStrategy ->
-            strategy = newStrategy.body()
-            startMutate()
-            sendMutatedProject()
+            val strategy = newStrategy.body()
+            log.debug("Got mutation strategy#${strategy!!.number}")
+            sleep(1000_000)
+            startMutate(strategy)
+            sendMutatedProject(strategy)
         }
 //            .exceptionHandler { throwable ->
 //            log.debug("""Caught an exception in mutator#$instanceNumber
@@ -43,19 +44,19 @@ class Mutator: AbstractVerticle() {
         }
     }
 
-    private fun sendMutatedProject() {
-        log.debug("Sending back project, mutated by mutation strategy #${strategy?.number}")
+    private fun sendMutatedProject(strategy: MutationStrategy) {
+        log.debug("Sending back project, mutated by mutation strategy #${strategy.number}")
         vertx.eventBus().send(VertxAddresses.mutatedProject,
-            MutationResult(strategy!!.project, strategy!!.number)
+            MutationResult(strategy.project, strategy.number)
         )
     }
 
-    private fun startMutate() {
-        log.debug("Starting mutating for strategy #${strategy?.number}")
-        strategy?.transformations?.forEach {
+    private fun startMutate(strategy: MutationStrategy) {
+        log.debug("Starting mutating for strategy #${strategy.number}")
+        strategy.transformations.forEach {
             executeMutation(it)
-        } ?: throw RuntimeException("Called startMutate but no strategy provided")
+        }
     }
 
-    private val log = Logger.getLogger("bugFinderLogger")
+    private val log = Logger.getLogger("mutatorLogger")
 }

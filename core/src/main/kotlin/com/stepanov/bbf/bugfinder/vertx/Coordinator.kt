@@ -22,6 +22,7 @@ import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.log4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.Thread.sleep
 
 class Coordinator: CoroutineVerticle() {
 
@@ -41,10 +42,12 @@ class Coordinator: CoroutineVerticle() {
 
     private fun establishConsumers() {
         eb.consumer<MutationProblem>(VertxAddresses.mutationProblemExec) { msg ->
+            log.debug("Consumer got parsed MutationProblem")
             val mutationProblem = msg.body()
             val strategy = mutationProblem.createMutationStrategy()
             strategiesMap[strategy.number] = mutationProblem
-            sendStrategyAndMutate(strategy)
+//            sendStrategyAndMutate(strategy)
+            sendProjectToCompilers(strategy.project, strategy.number)
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
@@ -72,6 +75,7 @@ class Coordinator: CoroutineVerticle() {
             .handler(BodyHandler.create())
             .handler { context ->
                 try {
+                    log.debug("Got mutation request")
                     val mutationProblem = parseMutationProblem(context.body().asString())
                     vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
                     context.request().response()
