@@ -15,11 +15,17 @@ class Mutator: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<MutationStrategy>(VertxAddresses.mutate) { newStrategy ->
-            val strategy = newStrategy.body()
-            log.debug("Got mutation strategy#${strategy!!.number}")
-            startMutate(strategy)
-            sendMutatedProject(strategy)
+        vertx.eventBus().consumer<MutationStrategy>(VertxAddresses.mutate) { msg ->
+            try {
+                val strategy = msg.body()
+                log.debug("Got mutation strategy#${strategy!!.number}")
+                startMutate(strategy)
+                log.debug("Sending back project, mutated by mutation strategy #${strategy.number}")
+                msg.reply(MutationResult(strategy.project, strategy.number))
+            } catch(e: Throwable) {
+                log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
+                msg.fail(1, e.message)
+            }
         }
     }
 
@@ -32,13 +38,6 @@ class Mutator: AbstractVerticle() {
             t.execTransformations()
             t.file.changePsiFile(t.file.text)
         }
-    }
-
-    private fun sendMutatedProject(strategy: MutationStrategy) {
-        log.debug("Sending back project, mutated by mutation strategy #${strategy.number}")
-        vertx.eventBus().send(VertxAddresses.mutatedProject,
-            MutationResult(strategy.project, strategy.number)
-        )
     }
 
     private fun startMutate(strategy: MutationStrategy) {

@@ -28,4 +28,10 @@ abstract class Transformation(
         val log = Logger.getLogger("mutatorLogger")
     }
 
+    override fun toString() = """Transformation {
+            file=${file.name}
+            transformation=${this::class.java.simpleName}
+        }
+    """.trimIndent()
+
 }
