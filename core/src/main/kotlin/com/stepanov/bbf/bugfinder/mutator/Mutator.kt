@@ -6,8 +6,6 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
-import java.lang.Thread.sleep
-import kotlin.RuntimeException
 import kotlin.random.Random
 
 class Mutator: AbstractVerticle() {
@@ -20,16 +18,9 @@ class Mutator: AbstractVerticle() {
         vertx.eventBus().consumer<MutationStrategy>(VertxAddresses.mutate) { newStrategy ->
             val strategy = newStrategy.body()
             log.debug("Got mutation strategy#${strategy!!.number}")
-            sleep(1000_000)
             startMutate(strategy)
             sendMutatedProject(strategy)
         }
-//            .exceptionHandler { throwable ->
-//            log.debug("""Caught an exception in mutator#$instanceNumber
-//                | While mutating strategy#${strategy?.number}
-//                | Exception: ${throwable.stackTraceToString()}
-//            """.trimMargin())
-//        }
     }
 
     private fun executeMutation(t: Transformation) {
@@ -39,7 +30,6 @@ class Mutator: AbstractVerticle() {
             t.ctx ?: TODO("Figure out why ctx can be null")
             log.debug("Cur transformation ${t::class.simpleName}")
             t.execTransformations()
-            // TODO: send new file text
             t.file.changePsiFile(t.file.text)
         }
     }

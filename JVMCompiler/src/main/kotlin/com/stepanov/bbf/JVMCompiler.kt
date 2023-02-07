@@ -14,7 +14,7 @@ import java.io.File
 
 open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
 
-    val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
+    private val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
 
     override fun start() {
         log.debug("Started JVMCompiler")
@@ -36,10 +36,8 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
         else if (destFile.isDirectory) FileUtils.cleanDirectory(destFile)
         else destFile.mkdir()
         val projectArgs = K2JVMCompilerArguments()
-//            project.getProjectSettingsAsCompilerArgs("JVM") as K2JVMCompilerArguments
         val compilerArgs = "${getAllPathsInLine(project)} -d $destination".split(" ")
         projectArgs.apply { K2JVMCompiler().parseArguments(compilerArgs.toTypedArray(), this) }
-        //projectArgs.compileJava = true
         projectArgs.classpath =
             "${CompilerArgs.jvmStdLibPaths.joinToString(
                 separator = ":"
@@ -50,13 +48,6 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
                 .joinToString(":")
         projectArgs.jvmTarget = "1.8"
         projectArgs.optIn = arrayOf("kotlin.ExperimentalStdlibApi", "kotlin.contracts.ExperimentalContracts")
-//        if (project.configuration.jvmDefault.isNotEmpty())
-//            projectArgs.jvmDefault = project.configuration.jvmDefault.substringAfter(Directives.jvmDefault)
-        //TODO!!
-        //if (project.configuration.samConversion.isNotEmpty()) {
-        //val samConvType = project.configuration.samConversion.substringAfterLast(": ")
-        //projectArgs.samConversions = samConvType.toLowerCase()
-        //}
         return projectArgs
     }
 

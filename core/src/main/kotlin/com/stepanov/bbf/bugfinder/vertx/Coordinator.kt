@@ -32,7 +32,6 @@ class Coordinator: CoroutineVerticle() {
         eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
-//        setExceptionHandlers()
         establishConsumers()
         createServer()
         deployMutators()
@@ -46,8 +45,7 @@ class Coordinator: CoroutineVerticle() {
             val mutationProblem = msg.body()
             val strategy = mutationProblem.createMutationStrategy()
             strategiesMap[strategy.number] = mutationProblem
-//            sendStrategyAndMutate(strategy)
-            sendProjectToCompilers(strategy.project, strategy.number)
+            sendStrategyAndMutate(strategy)
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
@@ -109,9 +107,8 @@ class Coordinator: CoroutineVerticle() {
         }
     }
 
-    private suspend fun deployMutators() {
+    private fun deployMutators() {
         // TODO: case of several mutators
-        // TODO: not one random file
         val mutator = Mutator()
 
 //        val res = awaitResult<String> {
@@ -147,12 +144,6 @@ class Coordinator: CoroutineVerticle() {
 
     private fun localPreparations() {
         File(CompilerArgs.pathToMutatedDir).deleteRecursively()
-    }
-
-    private fun setExceptionHandlers() {
-        vertx.exceptionHandler { throwable ->
-            log.debug("Caught throwable: ${throwable.stackTraceToString()}")
-        }
     }
 
     private val strategiesMap = hashMapOf<Int, MutationProblem>()

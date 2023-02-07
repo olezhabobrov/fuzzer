@@ -13,13 +13,14 @@ import com.stepanov.bbf.reduktor.util.MsgCollector
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import java.io.File
+import java.lang.Thread.sleep
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class CommonCompiler(
-    val compileAddress: String
+    private val compileAddress: String
 ): AbstractVerticle() {
 
     override fun start() {
@@ -38,10 +39,13 @@ abstract class CommonCompiler(
     private fun establishConsumers() {
         val eb = vertx.eventBus()
         eb.consumer<ProjectMessage>(compileAddress) { msg ->
+            log.debug("Got a project to compile")
             val project = msg.body()
             createLocalTmpProject(project)
             val compileResult = tryToCompile(project)
             deleteLocalTmpProject(project)
+            sleep(10_000)
+            log.debug("Sending back compile result")
             eb.send(VertxAddresses.compileResult,
                 CompilationResult(
                     this::class.java.simpleName,
