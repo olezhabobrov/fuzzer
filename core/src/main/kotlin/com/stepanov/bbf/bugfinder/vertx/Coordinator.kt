@@ -44,15 +44,16 @@ class Coordinator: CoroutineVerticle() {
             log.debug("Consumer got parsed MutationProblem")
             val mutationProblem = msg.body()
             val strategy = mutationProblem.createMutationStrategy()
+            log.debug("Created mutation strategy: $strategy")
             strategiesMap[strategy.number] = mutationProblem
             sendStrategyAndMutate(strategy)
         }
 
-        eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
-            log.debug("Got mutation result")
-            val mutatedProject = result.body()
-            sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
-        }
+//        eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
+//            log.debug("Got mutation result")
+//            val mutatedProject = result.body()
+//            sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
+//        }
 
         eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
             log.debug("Got compilation result")
@@ -73,8 +74,9 @@ class Coordinator: CoroutineVerticle() {
             .handler(BodyHandler.create())
             .handler { context ->
                 try {
-                    log.debug("Got mutation request")
-                    val mutationProblem = parseMutationProblem(context.body().asString())
+                    val input = context.body().asString()
+                    log.debug("Got mutation request: $input")
+                    val mutationProblem = parseMutationProblem(input)
                     vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
                     context.request().response()
                         .setStatusCode(200)
@@ -83,11 +85,10 @@ class Coordinator: CoroutineVerticle() {
                     log.debug(e.message)
                     context.request().response()
                         .setStatusCode(400)
-                        .setStatusMessage("An error occured: ${e.message}")
+                        .setStatusMessage("An error occurred: ${e.message}")
                         .send()
                 }
             }
-
 
         vertx.createHttpServer()
             .requestHandler(router)
@@ -98,7 +99,17 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun sendStrategyAndMutate(strategy: MutationStrategy) {
-        eb.send(VertxAddresses.mutate, strategy)
+        log.debug("Sending strategy#${strategy.number}")
+        eb.request<MutationResult>(VertxAddresses.mutate, strategy) { result ->
+            if (result.succeeded()) {
+                log.debug("Got mutation result")
+                val mutatedProject = result.result().body()
+                sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
+            } else {
+                log.debug("Caught exception, while mutating strategy#${strategy.number}: ${result.cause().message}")
+                sendStrategyAndMutate(strategy)
+            }
+        }
     }
 
     private fun sendProjectToCompilers(project: Project, strategyN: Int) {
