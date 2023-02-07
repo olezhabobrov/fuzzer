@@ -39,33 +39,6 @@ class Coordinator: CoroutineVerticle() {
         log.debug("Coordinator deployed")
     }
 
-    private fun establishConsumers() {
-        eb.consumer<MutationProblem>(VertxAddresses.mutationProblemExec) { msg ->
-            log.debug("Consumer got parsed MutationProblem")
-            val mutationProblem = msg.body()
-            val strategy = mutationProblem.createMutationStrategy()
-            log.debug("Created mutation strategy: $strategy")
-            strategiesMap[strategy.number] = mutationProblem
-            sendStrategyAndMutate(strategy)
-        }
-
-//        eb.consumer<MutationResult>(VertxAddresses.mutatedProject) { result ->
-//            log.debug("Got mutation result")
-//            val mutatedProject = result.body()
-//            sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
-//        }
-
-        eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
-            log.debug("Got compilation result")
-            val compileResult = result.body()
-            if (compileResult.invokeStatus.hasCompilerCrash()) {
-                log.debug("Found some bug, sending it to BugManager")
-                val bug = Bug(compileResult)
-                vertx.eventBus().send(VertxAddresses.bugManager, bug)
-            }
-        }
-    }
-
     private fun createServer() {
         // TODO: should make it suspend. Takes a lot of time
         val router = Router.router(vertx)
@@ -77,7 +50,7 @@ class Coordinator: CoroutineVerticle() {
                     val input = context.body().asString()
                     log.debug("Got mutation request: $input")
                     val mutationProblem = parseMutationProblem(input)
-                    vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
+                    sendMutationProblem(mutationProblem)
                     context.request().response()
                         .setStatusCode(200)
                         .send()
@@ -98,6 +71,33 @@ class Coordinator: CoroutineVerticle() {
             }
     }
 
+    private fun sendMutationProblem(mutationProblem: MutationProblem) {
+        repeat(10) {
+            vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
+        }
+    }
+
+    private fun establishConsumers() {
+        eb.consumer<MutationProblem>(VertxAddresses.mutationProblemExec) { msg ->
+            log.debug("Consumer got parsed MutationProblem")
+            val mutationProblem = msg.body()
+            val strategy = mutationProblem.createMutationStrategy()
+            log.debug("Created mutation strategy: $strategy")
+            strategiesMap[strategy.number] = mutationProblem
+            sendStrategyAndMutate(strategy)
+        }
+
+        eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
+            log.debug("Got compilation result")
+            val compileResult = result.body()
+            if (compileResult.invokeStatus.hasCompilerCrash()) {
+                log.debug("Found some bug, sending it to BugManager")
+                val bug = Bug(compileResult)
+                vertx.eventBus().send(VertxAddresses.bugManager, bug)
+            }
+        }
+    }
+
     private fun sendStrategyAndMutate(strategy: MutationStrategy) {
         log.debug("Sending strategy#${strategy.number}")
         eb.request<MutationResult>(VertxAddresses.mutate, strategy) { result ->
@@ -107,7 +107,6 @@ class Coordinator: CoroutineVerticle() {
                 sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
             } else {
                 log.debug("Caught exception, while mutating strategy#${strategy.number}: ${result.cause().message}")
-                sendStrategyAndMutate(strategy)
             }
         }
     }
@@ -129,10 +128,10 @@ class Coordinator: CoroutineVerticle() {
 //        }
 
         vertx.deployVerticle(mutator,
-            workerOptions().setWorkerPoolName("my-super-awesome-worker-pool") //.setMaxWorkerExecuteTime(10L)
+            DeploymentOptions().setWorker(true)
+                .setWorkerPoolName("mutators-pool") //.setMaxWorkerExecuteTime(10L)
         ) { res ->
-            if (res.succeeded()) {
-            } else {
+            if (res.failed()) {
                 log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")
                 error("Mutator wasn't deployed")
             }
@@ -141,7 +140,7 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun deployBugManager() {
-        vertx.deployVerticle(BugManager(), workerOptions())
+        vertx.deployVerticle(BugManager(), DeploymentOptions().setWorker(true))
     }
 
     private fun registerCodecs() {
@@ -158,8 +157,6 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private val strategiesMap = hashMapOf<Int, MutationProblem>()
-
-    private fun workerOptions() = DeploymentOptions().setWorker(true) // TODO: exception handling, timeouts, etc
 
     private val log = Logger.getLogger("coordinatorLogger")
 }
