@@ -72,9 +72,7 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun sendMutationProblem(mutationProblem: MutationProblem) {
-        repeat(10) {
-            vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
-        }
+        vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
     }
 
     private fun establishConsumers() {

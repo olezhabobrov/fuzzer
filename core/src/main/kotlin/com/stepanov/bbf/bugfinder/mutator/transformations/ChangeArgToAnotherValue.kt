@@ -30,7 +30,7 @@ class ChangeArgToAnotherValue(project: Project, file: BBFFile,
 
     override fun transform() {
         val ctx = PSICreator.analyze(file.psiFile, project) ?: return
-        val randomInstancesGenerator = RandomInstancesGenerator(file as KtFile, ctx)
+        val randomInstancesGenerator = RandomInstancesGenerator(file.psiFile as KtFile, ctx)
         for (func in file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()) {
             val funcDescriptor =
                 func.getDeclarationDescriptorIncludingConstructors(ctx) as? FunctionDescriptor ?: continue

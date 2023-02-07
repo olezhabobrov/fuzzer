@@ -1,0 +1,13 @@
+{
+    "compilers": [
+        "NativeCompiler",
+        "JVMCompiler"
+    ],
+    "allowedTransformations": {
+        "type": "All"
+    },
+    "mutationTarget": {
+        "type": "file"
+    },
+    "mutationCount": 5
+}
