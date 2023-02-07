@@ -33,7 +33,7 @@ class Mutator: AbstractVerticle() {
         if (Random.nextInt(0, 100) < t.probPercentage) {
             //Update ctx
             t.updateCtx()
-            t.ctx ?: TODO("Figure out why ctx can be null")
+            t.ctx ?: return
             log.debug("Cur transformation ${t::class.simpleName}")
             t.execTransformations()
             t.file.changePsiFile(t.file.text)
