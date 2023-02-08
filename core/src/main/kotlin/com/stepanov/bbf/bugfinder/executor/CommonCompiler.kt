@@ -1,23 +1,25 @@
 package com.stepanov.bbf.bugfinder.executor
-
+import com.intellij.psi.PsiErrorElement
+import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.util.MarkerLogger
 import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
-import com.stepanov.bbf.coverage.CompilerInstrumentation
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
+import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.MsgCollector
+import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import io.vertx.core.AbstractVerticle
-import org.apache.log4j.Logger
 import java.io.File
-import java.lang.Thread.sleep
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import java.util.concurrent.atomic.AtomicInteger
+
+
 
 abstract class CommonCompiler(
     private val compileAddress: String
@@ -44,9 +46,9 @@ abstract class CommonCompiler(
             createLocalTmpProject(project)
             val compileResult = tryToCompile(project)
             deleteLocalTmpProject(project)
-            sleep(10_000)
             log.debug("Sending back compile result")
-            eb.send(VertxAddresses.compileResult,
+            eb.send(
+                VertxAddresses.compileResult,
                 CompilationResult(
                     this::class.java.simpleName,
                     compileResult,
@@ -112,4 +114,3 @@ abstract class CommonCompiler(
 
     protected val log = MarkerLogger("compilerLogger", compileAddress)
 }
-
