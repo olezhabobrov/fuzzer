@@ -110,8 +110,12 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun sendProjectToCompilers(project: Project, strategyN: Int) {
-        strategiesMap[strategyN]!!.compilers.forEach { address ->
-            eb.send(address, project)
+        if (project.isSyntaxCorrect()) {
+            strategiesMap[strategyN]!!.compilers.forEach { address ->
+                eb.send(address, project)
+            }
+        } else {
+            log.debug("resulted project is not syntax correct. Not sending to compilers")
         }
     }
 
