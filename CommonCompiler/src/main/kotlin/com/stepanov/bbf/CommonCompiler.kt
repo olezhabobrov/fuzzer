@@ -1,24 +1,17 @@
-package com.stepanov.bbf.bugfinder.executor
-import com.intellij.psi.PsiErrorElement
-import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
-import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
-import com.stepanov.bbf.bugfinder.util.MarkerLogger
+package com.stepanov.bbf
+
 import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
 import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
-import com.stepanov.bbf.reduktor.parser.PSICreator
-import com.stepanov.bbf.reduktor.util.MsgCollector
-import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import io.vertx.core.AbstractVerticle
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-
+import org.apache.log4j.Logger
 
 
 abstract class CommonCompiler(
@@ -34,7 +27,7 @@ abstract class CommonCompiler(
     abstract fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus
 
     private fun registerCodecs() {
-        vertx.eventBus().registerDefaultCodec(Project::class.java, ProjectCodec())
+        vertx.eventBus().registerDefaultCodec(ProjectMessage::class.java, ProjectCodec())
         vertx.eventBus().registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
     }
 
@@ -64,7 +57,7 @@ abstract class CommonCompiler(
 
     private fun createLocalTmpProject(project: ProjectMessage) {
         project.files.forEach { (name, text) ->
-            File(name.substringBeforeLast("/")).mkdirs()
+            File(name.substringBeforeLast("/")).mkdir()
             File(name).writeText(text)
         }
         File(project.outputDir).mkdir()
@@ -82,35 +75,22 @@ abstract class CommonCompiler(
         return project.files.map { it.first }.joinToString(" ")
     }
 
+    /**
+     *  @return if it was compiled without timeout
+     */
     protected fun executeCompiler(
-        project: ProjectMessage,
         task: Runnable
-    ): KotlincInvokeStatus {
+    ): Boolean {
         val threadPool = Executors.newCachedThreadPool()
         val futureExitCode = threadPool.submit(task)
-        var hasTimeout = false
-        var compilerWorkingTime: Long = -1
-        try {
-            val startTime = System.currentTimeMillis()
+        return try {
             futureExitCode.get(10L, TimeUnit.SECONDS)
-            compilerWorkingTime = System.currentTimeMillis() - startTime
+            true
         } catch (ex: TimeoutException) {
-            hasTimeout = true
             futureExitCode.cancel(true)
-        } finally {
-            deleteLocalTmpProject(project)
+            false
         }
-        val status = KotlincInvokeStatus(
-            MsgCollector.crashMessages.joinToString("\n") +
-                    MsgCollector.compileErrorMessages.joinToString("\n"),
-            !MsgCollector.hasCompileError,
-            MsgCollector.hasException,
-            hasTimeout,
-            compilerWorkingTime,
-            MsgCollector.locations.toMutableList()
-        )
-        return status
     }
 
-    protected val log = MarkerLogger("compilerLogger", compileAddress)
+    protected val log = Logger.getLogger("compilerLogger")
 }

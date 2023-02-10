@@ -1,4 +1,4 @@
-package com.stepanov.bbf.reduktor.util
+package com.stepanov.bbf
 
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
@@ -40,6 +40,7 @@ object MsgCollector : MessageCollector {
             CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> {
                 warnings.add(message)
             }
+            else -> TODO()
         }
     }
 }

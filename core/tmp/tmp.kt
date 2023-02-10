@@ -5,7 +5,7 @@ class M {
   fun doTest(l : ArrayList<Long>): String {
       var s = ""
       for ((a, b) in l) {
-        s += "$a:$b;"
+        s += "$(s).compareTo(s).div(component2()):$b;"
       }
       return s
   }
@@ -16,6 +16,6 @@ fun box(): String {
   l.add(0)
   l.add(1)
   l.add(2)
-  val s = (l).elementAtOrElse(46, {a: Int -> -59})?.toString(-59)!!
+  val s = M().doTest(l)
   return if (s == "1:2;2:3;3:4;") "OK" else "fail: $s"
 }

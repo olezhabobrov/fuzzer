@@ -5,7 +5,6 @@ import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
-import com.stepanov.bbf.reduktor.util.MsgCollector
 import org.apache.commons.io.FileUtils
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
@@ -23,10 +22,18 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
 
     override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
         val args = prepareArgs(project, "tmp/build/")
-        return executeCompiler(project) {
+        val hasTimeout = !executeCompiler {
             val services = Services.EMPTY
             compiler.exec(MsgCollector, services, args)
         }
+        val status = KotlincInvokeStatus(
+            MsgCollector.crashMessages.joinToString("\n") +
+                    MsgCollector.compileErrorMessages.joinToString("\n"),
+            !MsgCollector.hasCompileError,
+            MsgCollector.hasException,
+            hasTimeout
+        )
+        return status
     }
 
     // TODO: add some additional arguments maybe
