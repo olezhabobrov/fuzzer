@@ -13,13 +13,13 @@ plugins {
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'kotlinx-serialization'
+
 
 group rootProject.group
 version rootProject.version
 
 dependencies {
-    // ACHTUNHG!!! Local file!
-    implementation files("/home/olezhka/.konan/kotlin-native-prebuilt-linux-x86_64-${kotlin_native_version}/konan/lib/kotlin-native-compiler-embeddable.jar")
 
     // Vert.x
     implementation "io.vertx:vertx-core:$vertx_version"
@@ -28,13 +28,17 @@ dependencies {
     implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
 
     implementation "commons-io:commons-io:2.6"
+
+
+    //Serialization
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
+
+    //Log
+    implementation 'ch.qos.logback:logback-classic:1.4.5'
+    implementation "org.slf4j:slf4j-api:1.7.28"
+    implementation "net.sourceforge.argparse4j:argparse4j:0.8.1"
 }
 
 application {
     mainClass.set("com.stepanov.bbf.MainKt")
-}
-
-run.doFirst {
-    environment 'kotlin_native_version', kotlin_native_version
-    environment 'kotlin-home', "/home/olezhka/.konan/kotlin-native-prebuilt-linux-x86_64-${kotlin_native_version}"
 }

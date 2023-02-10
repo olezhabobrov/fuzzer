@@ -4,7 +4,6 @@ import com.stepanov.bbf.bugfinder.executor.CommonCompiler
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
-import com.stepanov.bbf.reduktor.util.MsgCollector
 import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
@@ -20,10 +19,18 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
     override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
         val arguments = createArguments(project)
-        return executeCompiler(project) {
+        val hasTimeout = !executeCompiler {
             val services = Services.EMPTY
             compiler.exec(MsgCollector, services, arguments)
         }
+        val status = KotlincInvokeStatus(
+            MsgCollector.crashMessages.joinToString("\n") +
+                    MsgCollector.compileErrorMessages.joinToString("\n"),
+            !MsgCollector.hasCompileError,
+            MsgCollector.hasException,
+            hasTimeout
+        )
+        return status
     }
 
     private fun createArguments(project: ProjectMessage): K2NativeCompilerArguments {

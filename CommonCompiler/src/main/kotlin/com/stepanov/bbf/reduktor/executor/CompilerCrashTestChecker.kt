@@ -1,9 +1,8 @@
 package com.stepanov.bbf.reduktor.executor
 
-import com.stepanov.bbf.bugfinder.manager.BugType
+//import com.stepanov.bbf.bugfinder.manager.BugType
 import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import kotlinx.serialization.Serializable
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 
 @Serializable
 class KotlincInvokeStatus(
@@ -11,18 +10,16 @@ class KotlincInvokeStatus(
     val isCompileSuccess: Boolean,
     val hasException: Boolean,
     val hasTimeout: Boolean,
-    val compilerExecTimeInMlls: Long,
-    val locations: List<CompilerMessageSourceLocation> = listOf()
 ) {
     fun hasCompilerCrash(): Boolean = hasTimeout || hasException
 
     fun hasCompilationError(): Boolean = !isCompileSuccess
 
-    fun bugType(): BugType =
-        if (combinedOutput.contains("Exception while analyzing expression"))
-            BugType.FRONTEND
-        else
-            BugType.BACKEND
+//    fun bugType(): BugType =
+//        if (combinedOutput.contains("Exception while analyzing expression"))
+//            BugType.FRONTEND
+//        else
+//            BugType.BACKEND
 }
 
 class CompilationResult(
