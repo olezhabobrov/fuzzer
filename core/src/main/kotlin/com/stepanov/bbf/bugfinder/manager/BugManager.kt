@@ -3,8 +3,10 @@ package com.stepanov.bbf.bugfinder.manager
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.executor.*
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationResult
+import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import java.io.File
@@ -19,27 +21,20 @@ enum class BugType {
     PERFORMANCE
 }
 
-data class Bug(val compilers: List<String>, val msg: String, val crashedProject: Project, val type: BugType) {
 
-    constructor(b: Bug) : this(
-        b.compilers,
-        b.msg,
-        b.crashedProject.copy(),
-        b.type
-    )
+internal fun bugType(result: CompilationResult): BugType =
+    if (result.invokeStatus.combinedOutput.contains("Exception while analyzing expression"))
+        BugType.FRONTEND
+    else
+        BugType.BACKEND
 
-    constructor(compiler: String, msg: String, crashedProject: Project, type: BugType) : this(
-        listOf(compiler),
-        msg,
-        crashedProject,
-        type
-    )
+data class Bug(val compilers: List<String>, val msg: String, val crashedProject: ProjectMessage, val type: BugType) {
 
     constructor(res: CompilationResult): this(
         listOf(res.compiler),
         res.invokeStatus.combinedOutput,
-        Project.getProjectByMessage(res.project),
-        res.invokeStatus.bugType()
+        res.project,
+        bugType(res)
     )
 
     val compilerVersion = compilers.joinToString(", ")
@@ -78,6 +73,7 @@ data class Bug(val compilers: List<String>, val msg: String, val crashedProject:
         return result
     }
 
+
 }
 
 
@@ -102,27 +98,6 @@ class BugManager: AbstractVerticle() {
             if (field.isNotEmpty()) StatisticCollector.incField(field)
             println("SAVING ${bug.type} BUG")
             if (ReportProperties.getPropAsBoolean("SAVE_STATS") == true) saveStats()
-            //Check if bug is real project bug
-//            val newBug = bug.copy()//checkIfBugIsProject(bug)
-//            log.debug("Start to reduce ${newBug.crashedProject}")
-//            val reduced =
-//                try {
-//                    Reducer.reduce(newBug)
-//                } catch (e: Exception) {
-//                    newBug.crashedProject.copy()
-//                }
-//            val reducedBug = Bug(newBug.compilers, newBug.msg, reduced, newBug.type)
-//            log.debug("Reduced: ${reducedBug.crashedProject}")
-//            val newestBug = reducedBug//checkIfBugIsProject(reducedBug)
-            //Try to find duplicates
-//            if (/*newBug.crashedProject.texts.size == 1 &&*/
-//                CompilerArgs.shouldFilterDuplicateCompilerBugs &&
-//                haveDuplicates(newestBug)
-//            ) {
-//                StatisticCollector.incField("Duplicates")
-//                return
-//            }
-//            bugs.add(newestBug)
             //Report bugs
             if (ReportProperties.getPropAsBoolean("TEXT_REPORTER") == true) {
                 TextReporter.dump(bugs)
