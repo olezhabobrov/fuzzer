@@ -28,6 +28,8 @@ dependencies {
     implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
 
     implementation "commons-io:commons-io:2.6"
+
+    implementation project(":CommonCompiler")
 }
 
 application {

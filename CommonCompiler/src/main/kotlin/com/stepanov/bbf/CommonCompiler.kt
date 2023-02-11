@@ -2,7 +2,7 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.ProjectCodec
-import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
