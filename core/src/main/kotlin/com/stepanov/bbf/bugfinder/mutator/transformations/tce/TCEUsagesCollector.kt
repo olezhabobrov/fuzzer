@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.tce
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.util.filterDuplicatesBy
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.KtNodeTypes

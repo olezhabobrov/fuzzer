@@ -1,10 +1,8 @@
-package com.stepanov.bbf.bugfinder.executor.project
+package com.stepanov.bbf.bugfinder.project
 
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.stepanov.bbf.information.CompilerArgs
-import com.stepanov.bbf.bugfinder.executor.addMain
-import com.stepanov.bbf.bugfinder.executor.addMainForPerformanceTesting
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.*
@@ -47,10 +45,6 @@ class Project(
             return Project(configuration, files, language)
         }
 
-        val projectMessageToProject = hashMapOf<ProjectMessage, Project>()
-
-        fun getProjectByMessage(projectMessage: ProjectMessage) = projectMessageToProject[projectMessage]
-            ?: error("wtf why don't we have it saved")
     }
 
     fun addFile(file: BBFFile): List<BBFFile> {
@@ -232,7 +226,6 @@ class Project(
             "tmp/build",
             ""
         )
-        projectMessageToProject[result] = this
         return result
     }
 

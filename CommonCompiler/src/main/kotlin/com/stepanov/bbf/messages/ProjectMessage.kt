@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectMessage(
-//    val header: Header,
     val files: List<Pair<String, String>>,
     val outputDir: String,
     val additionalConf: String
@@ -18,4 +17,10 @@ data class ProjectMessage(
             return false
         return hashCode() == other.hashCode()
     }
+
+    fun moveAllCodeInOneFile() =
+        StringBuilder().apply {
+//            append(configuration.toString());
+            files.forEach { appendLine(it.toString()) }
+        }.toString()
 }

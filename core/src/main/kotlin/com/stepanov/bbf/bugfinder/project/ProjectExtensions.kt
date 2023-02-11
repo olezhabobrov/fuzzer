@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.executor.project
+package com.stepanov.bbf.bugfinder.project
 
 
 //fun Project.moveAllCodeInOneFile(): Project {

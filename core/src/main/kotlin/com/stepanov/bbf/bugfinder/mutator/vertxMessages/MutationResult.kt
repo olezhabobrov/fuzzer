@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.mutator.vertxMessages
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.Project
 
 data class MutationResult(
     val project: Project,
