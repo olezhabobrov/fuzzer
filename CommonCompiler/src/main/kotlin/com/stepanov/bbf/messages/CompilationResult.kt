@@ -15,11 +15,6 @@ class KotlincInvokeStatus(
 
     fun hasCompilationError(): Boolean = !isCompileSuccess
 
-//    fun bugType(): BugType =
-//        if (combinedOutput.contains("Exception while analyzing expression"))
-//            BugType.FRONTEND
-//        else
-//            BugType.BACKEND
 }
 
 class CompilationResult(
