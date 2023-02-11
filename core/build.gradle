@@ -101,6 +101,8 @@ dependencies {
     implementation "io.vertx:vertx-web-client:$vertx_version"
     implementation "io.vertx:vertx-hazelcast:$vertx_version"
 
+    implementation project(":CommonCompiler")
+
     //Test
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test', version: '1.3.61'
@@ -139,19 +141,8 @@ application {
     mainClassName = javaMainClass
 }
 
-task(runBBF, dependsOn: 'classes', type: JavaExec) {
-    main = 'com.stepanov.bbf.bugfinder.MainKt'
-    classpath = sourceSets.main.runtimeClasspath
-    jvmArgs project.property("org.gradle.jvmargs").split("\\s")
-}
-
-task(runInfBBF, dependsOn: 'classes', type: JavaExec) {
-    main = 'com.stepanov.bbf.MainKt'
-    classpath = sourceSets.main.runtimeClasspath
-}
-
 tasks.register('runCoordinator', JavaExec) {
-    main = 'com.stepanov.bbf.bugfinder.vertx.MainKt'
+    main = 'com.stepanov.bbf.bugfinder.MainKt'
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs project.property("org.gradle.jvmargs").split("\\s")
     // TODO: change to some other task, on which we'll depend on

@@ -2,13 +2,13 @@ package com.stepanov.bbf.bugfinder.executor.project
 
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.addMain
 import com.stepanov.bbf.bugfinder.executor.addMainForPerformanceTesting
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.*
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
+import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.getAllWithout
