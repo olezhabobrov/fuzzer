@@ -3,7 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
-import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
+import com.stepanov.bbf.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import kotlin.random.Random

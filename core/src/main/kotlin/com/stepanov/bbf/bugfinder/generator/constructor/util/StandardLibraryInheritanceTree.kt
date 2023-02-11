@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.generator.constructor.util
 
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.information.CompilerArgs
 import java.io.File
 
 object StandardLibraryInheritanceTree {
