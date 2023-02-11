@@ -1,11 +1,11 @@
 class M {
-  operator fun Long.component1() = this + 1
+  operator fun Long.component1() = (doTest(ArrayList<Long>(47))).compareTo(doTest(ArrayList<Long>(47))).mod(component2()) + 1
   operator fun Long.component2() = this + 2
 
   fun doTest(l : ArrayList<Long>): String {
       var s = ""
       for ((a, b) in l) {
-        s += "$(s).compareTo(s).div(component2()):$b;"
+        s += "$a:$b;"
       }
       return s
   }

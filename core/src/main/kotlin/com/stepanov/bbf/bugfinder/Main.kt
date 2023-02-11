@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.vertx
+package com.stepanov.bbf.bugfinder
 
 import com.stepanov.bbf.bugfinder.server.Coordinator
 import io.vertx.core.Handler
