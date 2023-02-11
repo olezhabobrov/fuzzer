@@ -4,7 +4,6 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.executor.*
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
 import com.stepanov.bbf.reduktor.executor.CompilationResult
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
