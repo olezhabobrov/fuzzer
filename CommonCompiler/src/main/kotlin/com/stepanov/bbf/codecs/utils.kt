@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.vertx.codecs
+package com.stepanov.bbf.codecs
 
 import io.vertx.core.buffer.Buffer
 

@@ -1,7 +1,7 @@
-package com.stepanov.bbf.reduktor.executor
+package com.stepanov.bbf.messages
 
 //import com.stepanov.bbf.bugfinder.manager.BugType
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
+import com.stepanov.bbf.messages.ProjectMessage
 import kotlinx.serialization.Serializable
 
 @Serializable

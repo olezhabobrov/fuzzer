@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.vertx.serverMessages
+package com.stepanov.bbf.messages
 
 import kotlinx.serialization.Serializable
 

@@ -1,18 +1,16 @@
-package com.stepanov.bbf.bugfinder.vertx.codecs
+package com.stepanov.bbf.codecs
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
+import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.MessageCodec
 import io.vertx.core.json.JsonObject
 
-class ProjectCodec: MessageCodec<Project, ProjectMessage> {
+class ProjectCodec: MessageCodec<ProjectMessage, ProjectMessage> {
     override fun name(): String = "ProjectCodec"
 
     override fun systemCodecID(): Byte = -1
 
-    override fun transform(s: Project?): ProjectMessage =
-        s!!.getProjectMessage()
+    override fun transform(s: ProjectMessage?): ProjectMessage = s!!
 
     override fun decodeFromWire(position: Int, buffer: Buffer?): ProjectMessage {
         val (projectStr, _) = getString(position, buffer!!)
@@ -30,13 +28,13 @@ class ProjectCodec: MessageCodec<Project, ProjectMessage> {
         )
     }
 
-    override fun encodeToWire(buffer: Buffer?, s: Project?) {
+    override fun encodeToWire(buffer: Buffer?, s: ProjectMessage?) {
         val json = JsonObject()
 //        json.put("header", s!!.configuration)
         json.put("files", s!!.files.map {
             val jfile = JsonObject()
-            jfile.put("name", it.name)
-            jfile.put("text", it.text)
+            jfile.put("name", it.first)
+            jfile.put("text", it.second)
         }
         )
         json.put("build", "tmp/build")
