@@ -1,7 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile
 import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
@@ -62,10 +62,6 @@ class TCETransformation(project: Project, file: BBFFile,
             //if (Project.createFromCode(psi2.text).language != LANGUAGE.KOTLIN) continue
             //val anonProj = Project.createFromCode(psi2.text)
             val anonPsi = anonProj.files.first().psiFile
-            if (!Anonymizer.anon(anonProj)) {
-                log.debug("Cant anonymize")
-                continue
-            }
             val sameTypeNodes = anonPsi.node.getAllChildrenNodes().filter { it.elementType.toString() == randomType }
             if (sameTypeNodes.isEmpty()) continue
             val targetNode = sameTypeNodes.random().psi as KtNamedFunction

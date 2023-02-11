@@ -2,7 +2,7 @@ package com.stepanov.bbf.bugfinder.executor.project
 
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.util.filterNotLines
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType

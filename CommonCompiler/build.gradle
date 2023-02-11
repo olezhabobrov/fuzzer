@@ -2,8 +2,8 @@ buildscript {
     //Do not forget to update intellij core
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_native_version"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_native_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_jvm_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_jvm_version"
     }
 }
 

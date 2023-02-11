@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.manager
 
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import java.io.File
 import java.util.*

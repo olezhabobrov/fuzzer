@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
-import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.util.*
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
