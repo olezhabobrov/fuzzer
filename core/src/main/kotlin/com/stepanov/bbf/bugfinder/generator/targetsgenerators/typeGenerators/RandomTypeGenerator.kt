@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.generator.constructor.util.StandardLibraryInheritanceTree
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator.getDeclDescriptorOf

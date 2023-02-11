@@ -3,8 +3,8 @@ package com.stepanov.bbf.reduktor.executor
 import com.intellij.lang.ASTNode
 import com.intellij.lang.FileASTNode
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.executor.project.BBFFile
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.bugfinder.project.Project
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 
 interface CompilerTestChecker {

@@ -33,7 +33,7 @@ object PSICreator {
     private var targetFiles: List<KtFile> = listOf()
     private lateinit var cfg: CompilerConfiguration
     private lateinit var env: KotlinCoreEnvironment
-    var curProject: com.stepanov.bbf.bugfinder.executor.project.Project? = null
+    var curProject: com.stepanov.bbf.bugfinder.project.Project? = null
 
     fun getPsiForJava(text: String, proj: Project = Factory.file.project) =
         PsiFileFactory.getInstance(proj).createFileFromText(JavaLanguage.INSTANCE, text)
@@ -80,12 +80,12 @@ object PSICreator {
 
     fun analyzeAndGetModuleDescriptor(psiFile: PsiFile) = getAnalysisResult(psiFile, curProject)?.moduleDescriptor
 
-    fun analyze(psiFile: PsiFile, project: com.stepanov.bbf.bugfinder.executor.project.Project?): BindingContext? =
+    fun analyze(psiFile: PsiFile, project: com.stepanov.bbf.bugfinder.project.Project?): BindingContext? =
         getAnalysisResult(psiFile, project)?.bindingContext
 
     private fun getAnalysisResult(
         psiFile: PsiFile,
-        project: com.stepanov.bbf.bugfinder.executor.project.Project?
+        project: com.stepanov.bbf.bugfinder.project.Project?
     ): AnalysisResult? {
         //if (psiFile !is KtFile) return null
         project?.saveOrRemoveToTmp(true)

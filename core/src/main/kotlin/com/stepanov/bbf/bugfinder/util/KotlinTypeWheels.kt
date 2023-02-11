@@ -1,7 +1,7 @@
 package com.stepanov.bbf.bugfinder.util
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.descriptors.*

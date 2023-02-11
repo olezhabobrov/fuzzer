@@ -1,8 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 
-import com.stepanov.bbf.bugfinder.executor.project.BBFFile
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression

@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.util
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.stepanov.bbf.reduktor.util.replaceReturnValueTypeOnUnit
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.cli.jvm.compiler.CompileEnvironmentException
@@ -113,4 +114,31 @@ fun copyFullJarImpl(stream: JarOutputStream, jarPath: File) {
             FileUtil.copy(jis, stream)
         }
     }
+}
+
+fun PsiFile.addMain(boxFuncs: List<KtNamedFunction>) {
+    val m = java.lang.StringBuilder()
+    m.append("fun main(args: Array<String>) {\n")
+    for (func in boxFuncs) m.append("println(${func.name}())\n")
+    m.append("}")
+    val mainFun = KtPsiFactory(this.project).createFunction(m.toString())
+    this.add(KtPsiFactory(this.project).createWhiteSpace("\n\n"))
+    this.add(mainFun)
+}
+
+fun PsiFile.addMainForPerformanceTesting(boxFuncs: List<KtNamedFunction>, times: Int) {
+    val m = java.lang.StringBuilder()
+    m.append("fun main(args: Array<String>) {\n")
+    for (func in boxFuncs) {
+        m.append(
+            """
+        repeat($times) { ${func.name}() }
+        """.trimIndent()
+        )
+        m.append("\n")
+    }
+    m.append("}")
+    val mainFun = KtPsiFactory(this.project).createFunction(m.toString())
+    this.add(KtPsiFactory(this.project).createWhiteSpace("\n\n"))
+    this.add(mainFun)
 }

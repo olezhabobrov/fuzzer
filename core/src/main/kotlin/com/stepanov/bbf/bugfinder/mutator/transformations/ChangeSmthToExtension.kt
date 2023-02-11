@@ -1,7 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
-import com.stepanov.bbf.bugfinder.executor.project.BBFFile
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.bugfinder.project.Project
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtProperty
@@ -14,7 +14,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as 
 
 //Change extension to smth?
 class ChangeSmthToExtension(project: Project, file: BBFFile,
-                             amountOfTransformations: Int = 1, probPercentage: Int = 100):
+                            amountOfTransformations: Int = 1, probPercentage: Int = 100):
     Transformation(project, file,
         amountOfTransformations, probPercentage) {
 

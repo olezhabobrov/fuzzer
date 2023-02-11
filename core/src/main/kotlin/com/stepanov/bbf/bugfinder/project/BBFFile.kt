@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.executor.project
+package com.stepanov.bbf.bugfinder.project
 
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile

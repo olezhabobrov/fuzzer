@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.server
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.manager.Bug
 import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.Mutator
@@ -122,7 +122,7 @@ class Coordinator: CoroutineVerticle() {
     private fun sendProjectToCompilers(project: Project, strategyN: Int) {
         if (project.isSyntaxCorrect()) {
             strategiesMap[strategyN]!!.compilers.forEach { address ->
-                eb.send(address, project)
+                eb.send(address, project.getProjectMessage())
             }
         } else {
             log.debug("resulted project is not syntax correct. Not sending to compilers")

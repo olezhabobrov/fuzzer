@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.mutator.vertxMessages
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import java.util.concurrent.atomic.AtomicInteger
 

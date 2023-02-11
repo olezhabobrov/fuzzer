@@ -1,7 +1,5 @@
 package com.stepanov.bbf.bugfinder.manager
 
-import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.executor.*
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
