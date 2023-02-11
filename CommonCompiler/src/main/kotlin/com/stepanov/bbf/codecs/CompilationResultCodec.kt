@@ -1,9 +1,8 @@
-package com.stepanov.bbf.bugfinder.vertx.codecs
+package com.stepanov.bbf.codecs
 
-import com.stepanov.bbf.reduktor.executor.CompilationResult
+import com.stepanov.bbf.messages.CompilationResult
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.JsonObject
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement

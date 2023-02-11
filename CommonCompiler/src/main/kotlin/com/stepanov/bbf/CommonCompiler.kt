@@ -1,11 +1,11 @@
 package com.stepanov.bbf
 
-import com.stepanov.bbf.bugfinder.vertx.codecs.CompilationResultCodec
-import com.stepanov.bbf.bugfinder.vertx.codecs.ProjectCodec
+import com.stepanov.bbf.codecs.CompilationResultCodec
+import com.stepanov.bbf.codecs.ProjectCodec
 import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
-import com.stepanov.bbf.reduktor.executor.CompilationResult
-import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
+import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.messages.CompilationResult
+import com.stepanov.bbf.messages.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
 import java.io.File
 import java.util.concurrent.Executors

@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.vertx.information
+package com.stepanov.bbf.information
 
 object VertxAddresses {
 
