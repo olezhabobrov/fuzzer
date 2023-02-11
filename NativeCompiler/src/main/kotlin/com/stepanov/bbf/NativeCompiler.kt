@@ -1,9 +1,8 @@
 package com.stepanov.bbf
 
-import com.stepanov.bbf.bugfinder.executor.CommonCompiler
-import com.stepanov.bbf.bugfinder.vertx.information.VertxAddresses
-import com.stepanov.bbf.bugfinder.vertx.serverMessages.ProjectMessage
-import com.stepanov.bbf.reduktor.executor.KotlincInvokeStatus
+import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.messages.KotlincInvokeStatus
+import com.stepanov.bbf.messages.ProjectMessage
 import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services

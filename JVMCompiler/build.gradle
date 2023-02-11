@@ -34,7 +34,7 @@ dependencies {
     implementation group: 'io.vertx', name: 'vertx-hazelcast', version: vertx_version
     implementation group: 'io.vertx', name: 'vertx-core', version: vertx_version
 
-    implementation project(":core")
+    implementation project(":CommonCompiler")
 
     toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_jvm_version}"
     toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_jvm_version}"

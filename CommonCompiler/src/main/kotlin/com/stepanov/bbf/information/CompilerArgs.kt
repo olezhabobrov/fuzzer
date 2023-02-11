@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.executor
+package com.stepanov.bbf.information
 
 import org.apache.commons.io.IOUtils
 import java.io.File

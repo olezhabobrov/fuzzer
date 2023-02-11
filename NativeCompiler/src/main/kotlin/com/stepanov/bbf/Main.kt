@@ -1,6 +1,5 @@
 package com.stepanov.bbf
 
-import com.stepanov.bbf.bugfinder.vertx.GlobalExceptionHandler
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
@@ -13,7 +12,6 @@ fun main() {
     Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->
         if (res.succeeded()) {
             val vertx = res.result()
-            vertx.exceptionHandler(GlobalExceptionHandler)
             vertx.deployVerticle(NativeCompiler(),
                 DeploymentOptions()
                     .setWorkerPoolName("NativeCompilers")
