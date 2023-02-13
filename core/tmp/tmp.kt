@@ -1,5 +1,5 @@
 class M {
-  operator fun Long.component1() = (doTest(ArrayList<Long>(47))).compareTo(doTest(ArrayList<Long>(47))).mod(component2()) + 1
+  operator fun Long.component1() = component2() + 1
   operator fun Long.component2() = this + 2
 
   fun doTest(l : ArrayList<Long>): String {

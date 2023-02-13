@@ -93,5 +93,5 @@ abstract class CommonCompiler(
         }
     }
 
-    protected val log: Logger = LoggerFactory.getLogger("compilerLogger")
+    protected val log: Logger = LoggerFactory.getLogger("CompilerLogger")
 }

@@ -36,6 +36,11 @@ dependencies {
 
     implementation project(":CommonCompiler")
 
+    //Log
+    implementation 'ch.qos.logback:logback-classic:1.4.5'
+    implementation "org.slf4j:slf4j-api:1.7.28"
+    implementation "net.sourceforge.argparse4j:argparse4j:0.8.1"
+
     toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_jvm_version}"
     toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_jvm_version}"
     toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "${kotlin_jvm_version}"
