@@ -7,11 +7,12 @@ import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import io.vertx.core.AbstractVerticle
+import org.slf4j.Logger
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 
 
 abstract class CommonCompiler(
@@ -92,5 +93,5 @@ abstract class CommonCompiler(
         }
     }
 
-    protected val log = Logger.getLogger("compilerLogger")
+    protected val log: Logger = LoggerFactory.getLogger("compilerLogger")
 }

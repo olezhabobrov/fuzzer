@@ -25,10 +25,7 @@ dependencies {
     implementation "io.vertx:vertx-core:$vertx_version"
     implementation group: 'io.vertx', name: 'vertx-hazelcast', version: vertx_version
 
-    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
-
     implementation "commons-io:commons-io:2.6"
-
 
     //Serialization
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"

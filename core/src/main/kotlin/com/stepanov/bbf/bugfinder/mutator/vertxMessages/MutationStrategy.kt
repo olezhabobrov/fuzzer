@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationStrategy(
     val transformations: List<Transformation>,
+    val project: Project
 ) {
-    val project: Project = transformations.firstOrNull()?.project ?: error("Empty strategy")
     val number: Int = counter.incrementAndGet()
 
     companion object {
