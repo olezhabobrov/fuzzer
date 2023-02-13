@@ -40,7 +40,7 @@ data class MutationProblem(
         return MutationStrategy(List(mutationCount) { _ ->
             listOfTransformations.random().primaryConstructor!!
                 .call(project, project.files.random(), 1, 100)
-        })
+        }, project)
     }
 
 
@@ -64,8 +64,8 @@ data class MutationProblem(
                 else -> throw IllegalArgumentException("Unknown compiler target: $address")
             }
         }
-        if (mutationCount <= 0) {
-            throw IllegalArgumentException("mutationCount should be positive, but it equals $mutationCount")
+        if (mutationCount < 0) {
+            throw IllegalArgumentException("mutationCount should be positive or 0, but it equals $mutationCount")
         }
         if (listOfTransformations.isEmpty()) {
             throw IllegalArgumentException("List of allowed transformations is empty")

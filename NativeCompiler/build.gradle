@@ -25,11 +25,14 @@ dependencies {
     implementation "io.vertx:vertx-core:$vertx_version"
     implementation group: 'io.vertx', name: 'vertx-hazelcast', version: vertx_version
 
-    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
-
     implementation "commons-io:commons-io:2.6"
 
     implementation project(":CommonCompiler")
+
+    //Log
+    implementation 'ch.qos.logback:logback-classic:1.4.5'
+    implementation "org.slf4j:slf4j-api:1.7.28"
+    implementation "net.sourceforge.argparse4j:argparse4j:0.8.1"
 }
 
 application {

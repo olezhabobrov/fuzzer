@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
 
+
 class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
     private val compiler = K2Native()
@@ -19,6 +20,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
         val arguments = createArguments(project)
         val hasTimeout = !executeCompiler {
+            MsgCollector.clear()
             val services = Services.EMPTY
             compiler.exec(MsgCollector, services, arguments)
         }
