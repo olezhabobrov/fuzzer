@@ -22,10 +22,9 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType as ktGetType
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 //TODO lib calls
-class AddFunInvocations(project: Project, file: BBFFile,
-                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddFunInvocations(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         for (i in 0 until randomConst) {

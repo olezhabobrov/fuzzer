@@ -11,10 +11,9 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
-class AddMethodToClass(project: Project, file: BBFFile,
-                       amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddMethodToClass(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         repeat(MAGIC_CONST) {
             val ctx = PSICreator.analyze(file.psiFile) ?: return

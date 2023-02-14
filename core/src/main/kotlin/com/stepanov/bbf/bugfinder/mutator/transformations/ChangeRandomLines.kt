@@ -6,10 +6,9 @@ import com.stepanov.bbf.bugfinder.project.Project
 import java.util.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class ChangeRandomLines(project: Project, file: BBFFile,
-                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeRandomLines(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         log.debug("In unsecure transformation: changes just 2 random lines. Check syntax") // TODO

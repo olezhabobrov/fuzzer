@@ -21,10 +21,9 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import kotlin.random.Random
 
-class AddRandomComponent(project: Project, file: BBFFile,
-                         amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddRandomComponent(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     private val ktFile = file.psiFile as KtFile
     private var randomInstanceGenerator: RandomInstancesGenerator? = null

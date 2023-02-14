@@ -8,10 +8,9 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFunctionType
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
-class AddReificationToTypeParam(project: Project, file: BBFFile,
-                                amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddReificationToTypeParam(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         val funcsWithTypeParams =
             file.psiFile.getAllPSIDFSChildrenOfType<KtNamedFunction>()

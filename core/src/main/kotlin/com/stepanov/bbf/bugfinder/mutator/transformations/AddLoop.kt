@@ -18,10 +18,9 @@ import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.isBoolean
 import kotlin.random.Random
 
-class AddLoop(project: Project, file: BBFFile,
-              amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddLoop(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         repeat(RANDOM_CONST) {

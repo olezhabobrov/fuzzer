@@ -7,10 +7,9 @@ import com.stepanov.bbf.reduktor.util.getAllChildren
 import java.io.File
 import kotlin.random.Random
 
-class AddRandomNode(project: Project, file: BBFFile,
-                    amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddRandomNode(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         val randConst = Random.nextInt(numOfTries.first, numOfTries.second)
         val filteredNodes = file.psiFile.node.getAllChildrenNodes().filter { it.elementType !in NodeCollector.excludes }

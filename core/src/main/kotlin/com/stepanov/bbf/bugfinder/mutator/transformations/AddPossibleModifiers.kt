@@ -12,10 +12,9 @@ import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import java.util.*
 
-class AddPossibleModifiers(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddPossibleModifiers(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val values = file.psiFile.node.getAllChildrenNodes()

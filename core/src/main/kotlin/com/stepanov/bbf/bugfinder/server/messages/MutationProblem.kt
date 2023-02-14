@@ -38,8 +38,9 @@ data class MutationProblem(
         // i.e. for a certain mutation we should mutate certain file
         // and should fix params
         return MutationStrategy(List(mutationCount) { _ ->
-            listOfTransformations.random().primaryConstructor!!
-                .call(project, project.files.random(), 1, 100)
+            val transformation = listOfTransformations.random()
+            transformation.primaryConstructor!!
+                .call(project, project.files.random())
         }, project)
     }
 

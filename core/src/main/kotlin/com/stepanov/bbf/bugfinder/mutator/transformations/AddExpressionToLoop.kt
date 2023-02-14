@@ -8,10 +8,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
 
-class AddExpressionToLoop(project: Project, file: BBFFile,
-                          amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddExpressionToLoop(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         val ctx = PSICreator.analyze(file.psiFile) ?: return
         val expressions = file.psiFile.getAllPSIChildrenOfType<KtExpression>().filter { it.getType(ctx) != null }

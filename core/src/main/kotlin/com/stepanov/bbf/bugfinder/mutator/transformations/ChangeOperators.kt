@@ -12,10 +12,9 @@ import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 import java.util.*
 
-class ChangeOperators(project: Project, file: BBFFile,
-                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeOperators(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val operators = file.psiFile.node.getAllChildrenNodes()

@@ -9,10 +9,9 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class ChangeVarToNull(project: Project, file: BBFFile,
-                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeVarToNull(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         file.psiFile.getAllPSIChildrenOfType<KtExpression>()

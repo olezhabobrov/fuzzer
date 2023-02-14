@@ -13,10 +13,9 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 import java.util.*
 
-class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile,
-                                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeOperatorsToFunInvocations(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         var oldText = file.text

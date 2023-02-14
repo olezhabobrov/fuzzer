@@ -12,10 +12,9 @@ import org.jetbrains.kotlin.psi.KtParameter
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 import java.util.*
 
-class AddSameFunctions(project: Project, file: BBFFile,
-                       amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddSameFunctions(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         if (context == null) return

@@ -15,10 +15,9 @@ import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
 
-class AddCallableReference(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddCallableReference(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         var ctx = PSICreator.analyze(file.psiFile) ?: return
         val callsWithFunTypes =

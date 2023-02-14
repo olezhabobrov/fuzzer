@@ -12,10 +12,9 @@ import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 
-class ChangeReturnValueToConstant(project: Project, file: BBFFile,
-                                  amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeReturnValueToConstant(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val functions = file.psiFile.getAllPSIChildrenOfType<KtNamedFunction>().filter { getRandomBoolean() }
