@@ -10,7 +10,7 @@ import java.util.*
 object FileReporter : Reporter {
 
     fun saveRegularBug(bug: Bug) {
-        val compilerBugDir = bug.compilerVersion.filter { it != ' ' }
+        val compilerBugDir = bug.compiler
         val resDir = CompilerArgs.resultsDir
         val randomName = Random().getRandomVariableName(5)
         val newPath =
@@ -24,7 +24,7 @@ object FileReporter : Reporter {
         val newPath =
             if (resDir.endsWith('/')) "${resDir}diff$type/${Random().getRandomVariableName(7)}.kt"
             else "${resDir}/diff$type/${Random().getRandomVariableName(7)}.kt"
-        val diffCompilers = "// Different ${type.toLowerCase()} happens on:${bug.compilerVersion}"
+        val diffCompilers = "// Different ${type.toLowerCase()} happens on:${bug.compiler}"
         File(newPath.substringBeforeLast('/')).mkdirs()
         File(newPath).writeText("$diffCompilers\n${bug.crashedProject.moveAllCodeInOneFile()}")
     }
@@ -38,7 +38,7 @@ object FileReporter : Reporter {
             val name = Random().getRandomVariableName(7) +
                     if (bug.crashedProject.files.size == 1) "_FILE" else "_PROJECT"
             val newPath = when (bug.type) {
-                BugType.BACKEND, BugType.FRONTEND -> "$resDir${bug.compilerVersion.filter { it != ' ' }}/${bug.type.name}_$name.kt"
+                BugType.BACKEND, BugType.FRONTEND -> "$resDir${bug.compiler}/${bug.type.name}_$name.kt"
                 BugType.DIFFCOMPILE -> "$resDir/diffCompile/$name.kt"
                 BugType.DIFFBEHAVIOR -> "$resDir/diffBehavior/$name.kt"
                 BugType.DIFFABI -> "$resDir/diffABI/$name.kt"
@@ -46,7 +46,7 @@ object FileReporter : Reporter {
                 else -> return
             }
             File(newPath.substringBeforeLast('/')).mkdirs()
-            val info = "// Bug happens on ${bug.compilerVersion} ver ${CompilerArgs.compilerVersion}"
+            val info = "// Bug happens on ${bug.compiler} ver ${CompilerArgs.compilerVersion(bug.compiler)}"
             val commentedStackTrace =
                 if (bug.type == BugType.BACKEND || bug.type == BugType.FRONTEND) {
                     "// STACKTRACE:\n${bug.msg.split("\n").joinToString("\n") { "// $it" }}"
@@ -58,7 +58,7 @@ object FileReporter : Reporter {
             }
             if (isFrontendOrBackendBug) {
                 val pathForOriginal =
-                    "$resDir${bug.compilerVersion.filter { it != ' ' }}/${bug.type.name}_${name}_ORIGINAL.kt"
+                    "$resDir${bug.compiler}/${bug.type.name}_${name}_ORIGINAL.kt"
                 File(pathForOriginal).writeText("$info\n${bugs.first().crashedProject.moveAllCodeInOneFile()}\n$commentedStackTrace")
             }
             File(newPath).writeText("$info\n${bug.crashedProject.moveAllCodeInOneFile()}\n$commentedStackTrace")
