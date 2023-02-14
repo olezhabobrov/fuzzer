@@ -1,56 +1,12 @@
-open class A<T> : Collection<T> {
-    override val size: Int
-        get() = TODO("Not yet implemented")
+import ann.*
 
-    override fun contains(element: T): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun containsAll(elements: Collection<T>): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun isEmpty(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun iterator(): Iterator<T> {
-        TODO("Not yet implemented")
-    }
+@Test1<ARG>(24)
+@Test2<String, String>(83)
+@Test3<String, C<String>>(Test1(93))
+@Test4([Test3(Test1(44)), Test3(Test1(55)), Test3(Test1(66))])
+//@Test5<ARG>(*arrayOf(Test3(Test1(77))), *arrayOf(Test3(Test1(88)))) <-- KT-45414
+class K {
+    fun test(): String = "K"
 }
 
-interface L<Q> : List<Q>
-
-class C<F> : B<F>() {
-    override fun get(index: Int): F {
-        TODO("Not yet implemented")
-    }
-
-    override fun indexOf(element: F): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun lastIndexOf(element: F): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun listIterator(): ListIterator<F> {
-        TODO("Not yet implemented")
-    }
-
-    override fun listIterator(index: Int): ListIterator<F> {
-        TODO("Not yet implemented")
-    }
-
-    override fun subList(fromIndex: Int, toIndex: Int): List<F> {
-        TODO("Not yet implemented")
-    }
-}
-
-fun box() = try {
-    C<String>().callIndexAdd(1)
-    throw RuntimeException("fail 1")
-} catch (e: UnsupportedOperationException) {
-    if (e.message != "Operation is not supported for read-only collection") throw RuntimeException("fail 2")
-    "OK"
-}
+fun box(): String = O().test() + K().test()

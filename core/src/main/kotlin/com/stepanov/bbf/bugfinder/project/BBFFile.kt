@@ -10,7 +10,7 @@ import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.containsChildOfType
 import java.io.File
 
-data class BBFFile(val name: String, var psiFile: PsiFile) {
+data class BBFFile(var name: String, var psiFile: PsiFile) {
 
     fun getLanguage(): LANGUAGE {
         return when {

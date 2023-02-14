@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.calls.callUtil.getFunctionResolvedCallWithAssert
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.source.PsiSourceElement
+import java.lang.Thread.sleep
 import kotlin.random.Random
 
 //TODO add field to class

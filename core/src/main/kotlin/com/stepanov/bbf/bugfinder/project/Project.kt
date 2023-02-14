@@ -24,6 +24,7 @@ class Project(
     var files: List<BBFFile>,
     val language: LANGUAGE = LANGUAGE.KOTLIN
 ) {
+    var realFileName: String? = null
 
     constructor(configuration: Header, file: BBFFile, language: LANGUAGE) : this(configuration, listOf(file), language)
 

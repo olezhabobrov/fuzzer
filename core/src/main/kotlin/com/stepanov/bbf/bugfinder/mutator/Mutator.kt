@@ -6,7 +6,12 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import kotlin.random.Random
+import kotlin.system.measureTimeMillis
 
 class Mutator: AbstractVerticle() {
 
@@ -42,10 +47,58 @@ class Mutator: AbstractVerticle() {
 
     private fun startMutate(strategy: MutationStrategy) {
         log.debug("Starting mutating for strategy #${strategy.number}")
-        strategy.transformations.forEach {
-            executeMutation(it)
+        val initial = strategy.transformations.first().file.copy()
+        val initialText = initial.text
+        val threadPool = Executors.newCachedThreadPool()
+        strategy.transformations.forEach { transformation ->
+
+            var finished = 0
+            var changed = 0
+            var failedWithException = 0
+            var timeouts = 0
+            val exceptionsBuilder = StringBuilder()
+            val time = measureTimeMillis {
+                repeat(MagicConst) {
+                    val futureExitCode = threadPool.submit {
+                        executeMutation(transformation)
+                    }
+                    try {
+                        futureExitCode.get(15L, TimeUnit.SECONDS)
+                        finished++
+                        if (transformation.file.text != initialText) {
+                            changed++
+                        }
+                    } catch (e: TimeoutException) {
+                        timeouts++
+                        futureExitCode.cancel(true)
+                    } catch (e: Throwable) {
+                        failedWithException++
+                        exceptionsBuilder.append(e.message + "\n\n")
+                    } finally {
+                        transformation.file = initial
+                    }
+                }
+            }
+            val avgTime = time / MagicConst / 1000
+            val result = """
+                transformation=${transformation.javaClass.simpleName}
+                file=${transformation.project.realFileName}
+                finished=$finished
+                changed=$changed
+                failed with exception=$failedWithException
+                timeout of 15 seconds=$timeouts
+                average time=$avgTime seconds
+                
+                exceptions:
+                
+                $exceptionsBuilder
+            """.trimIndent()
+            val fileName = transformation.javaClass.simpleName + "___" + transformation.project.realFileName + ".txt"
+            File("stats/$fileName").writeText(result)
         }
     }
+
+    private val MagicConst = 25
 
     private val log = Logger.getLogger("mutatorLogger")
 }

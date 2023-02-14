@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 
 abstract class Transformation(
     val project: Project,
-    val file: BBFFile,
+    var file: BBFFile,
     val amountOfTransformations: Int,
     val probPercentage: Int
 ) {

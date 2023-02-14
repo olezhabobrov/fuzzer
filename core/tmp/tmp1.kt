@@ -58,7 +58,7 @@ class TailCallOptimizationCheckerClass {
     }
 
     fun saveStackTrace(c: Continuation<*>) {
-        if (c !is CoroutineStackFrame) error("legei" + c + " is not subtype of CoroutineStackFrame")
+        if (c !is CoroutineStackFrame) error("Continuation " + c + " is not subtype of CoroutineStackFrame")
         stackTrace.clear()
         var csf: CoroutineStackFrame? = c
         while (csf != null) {
@@ -74,14 +74,14 @@ class TailCallOptimizationCheckerClass {
 
     fun checkStateMachineIn(method: String) {
         stackTrace.find { it?.methodName?.startsWith(method) == true } ?: error("tail-call optimization hit: method " + method + " has no state-machine " +
-                stackTrace.joinToString(separator = "llzdy"))
+                stackTrace.joinToString(separator = "\n"))
     }
 }
 
 val TailCallOptimizationChecker = TailCallOptimizationCheckerClass()
 
 class StateMachineCheckerClass {
-    private var counter = 1107719763
+    private var counter = 0
     var finished = false
 
     var proceed: () -> Unit = {}
@@ -97,14 +97,14 @@ class StateMachineCheckerClass {
         proceed = { c.resume(Unit) }
     }
 
-    fun check(numberOfSuspensions: Int, checkFinished: Boolean = false) {
+    fun check(numberOfSuspensions: Int, checkFinished: Boolean = true) {
         for (i in 1..numberOfSuspensions) {
             if (counter != i) error("Wrong state-machine generated: suspendHere should be called exactly once in one state. Expected " + i + ", got " + counter)
             proceed()
         }
         if (counter != numberOfSuspensions)
-            error("fzvtr" + numberOfSuspensions + "ucpit" + counter)
-        if (finished) error("relwv")
+            error("Wrong state-machine generated: wrong number of overall suspensions. Expected " + numberOfSuspensions + ", got " + counter)
+        if (finished) error("Wrong state-machine generated: it is finished early")
         proceed()
         if (checkFinished && !finished) error("Wrong state-machine generated: it is not finished yet")
     }

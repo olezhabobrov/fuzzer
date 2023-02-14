@@ -22,7 +22,9 @@ data class MutationProblem(
     fun createMutationStrategy(): MutationStrategy {
         val project: Project
         if (mutationTarget is FileTarget) {
+            mutationTarget.file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
             project = Project.createFromCode(mutationTarget.extactCode())
+            project.realFileName = mutationTarget.file.name
         } else if (mutationTarget is ProjectTarget) {
             val fileIter = mutationTarget.getFileIter()
             project = Project.createFromCode(fileIter.next())
@@ -37,11 +39,14 @@ data class MutationProblem(
         // TODO: probably shouldn't mutate random file
         // i.e. for a certain mutation we should mutate certain file
         // and should fix params
-        return MutationStrategy(List(mutationCount) { _ ->
-            val transformation = listOfTransformations.random()
-            transformation.primaryConstructor!!
-                .call(project, project.files.random())
+        return MutationStrategy(listOfTransformations.map { transformation ->
+            transformation.primaryConstructor!!.call(project, project.files.random())
         }, project)
+//        MutationStrategy(List(mutationCount) { _ ->
+//            val transformation = listOfTransformations.random()
+//            transformation.primaryConstructor!!
+//                .call(project, project.files.random())
+//        }, project)
     }
 
 
@@ -105,15 +110,10 @@ data class FileTarget(
     val fileName: String? = null,
     val code: String? = null
 ): MutationTarget() {
-    fun extactCode(): String {
-        if (code != null)
-            return code
-        if (fileName != null)
-            return File(fileName).readText()
-        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()
-            ?: error("wtf couldn't choose random file for some reason")
-        return file.readText()
-    }
+    @Contextual
+    var file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
+    fun extactCode(): String = file.readText()
+
 
     override fun validate() {
         if (code == null &&

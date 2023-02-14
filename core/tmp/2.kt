@@ -1,10 +1,7 @@
-    enum class A {
-    override var value: String
-    fun f() = value
-}
+@file:[JvmName("MultifileClass") JvmMultifileClass]
+package a
 
-data class B : A() {
-    init {
-        value = "OK"
-    }
-}
+fun foo(): String = "OK"
+const val constOK: String = "OK"
+val valOK: String = "OK"
+var varOK: String = "Hmmm?"

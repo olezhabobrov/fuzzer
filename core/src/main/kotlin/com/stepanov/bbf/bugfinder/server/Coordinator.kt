@@ -25,6 +25,7 @@ import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.apache.log4j.Logger
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class Coordinator: CoroutineVerticle() {
 
@@ -112,7 +113,8 @@ class Coordinator: CoroutineVerticle() {
             if (result.succeeded()) {
                 log.debug("Got mutation result")
                 val mutatedProject = result.result().body()
-                sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
+                eb.send(VertxAddresses.mutationProblemExec, strategiesMap[strategy.number])
+//                sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
             } else {
                 log.debug("Caught exception, while mutating strategy#${strategy.number}: ${result.cause().message}")
             }
@@ -141,7 +143,9 @@ class Coordinator: CoroutineVerticle() {
 
         vertx.deployVerticle(mutator,
             DeploymentOptions().setWorker(true)
-                .setWorkerPoolName("mutators-pool") //.setMaxWorkerExecuteTime(10L)
+                .setWorkerPoolName("mutators-pool")
+                .setMaxWorkerExecuteTimeUnit(TimeUnit.DAYS)
+                .setMaxWorkerExecuteTime(1L)
         ) { res ->
             if (res.failed()) {
                 log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")
@@ -165,6 +169,8 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun localPreparations() {
+        if (!File("stats").exists())
+            File("stats").mkdir()
         File(CompilerArgs.pathToMutatedDir).deleteRecursively()
     }
 
