@@ -11,7 +11,7 @@ object TextReporter : Reporter {
         val bugsToStr = sortedBugs.joinToString(separator = "\n\n\n")
         {
             """*******************************************************************
-                |Compiler: ${it.compilerVersion}
+                |Compiler: ${it.compiler}
             |Type: ${it.type}
             |CrashingCode: ${it.crashedProject}
             |Message: ${it.msg}

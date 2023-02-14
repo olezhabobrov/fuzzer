@@ -85,7 +85,14 @@ object CompilerArgs {
 
     //COMPILER
 
-    val compilerVersion = System.getenv("kotlin_jvm_version")
+    val JVMCompilerVersion = System.getenv("kotlin_jvm_version")
+    val NativeCompilerVersion = System.getenv("kotlin_native_version")
+
+    fun compilerVersion(compiler: String) = when (compiler) {
+        VertxAddresses.JVMCompiler -> JVMCompilerVersion
+        VertxAddresses.NativeCompiler -> NativeCompilerVersion
+        else -> "unknown compiler"
+    }
 
     //MUTATED BUGS
     val shouldSaveCompilerBugs =

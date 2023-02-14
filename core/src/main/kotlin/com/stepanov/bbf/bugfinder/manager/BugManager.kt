@@ -26,21 +26,21 @@ internal fun bugType(result: CompilationResult): BugType =
     else
         BugType.BACKEND
 
-data class Bug(val compilers: List<String>, val msg: String, val crashedProject: ProjectMessage, val type: BugType) {
+data class Bug(val compiler: String, val msg: String, val crashedProject: ProjectMessage, val type: BugType) {
 
     constructor(res: CompilationResult): this(
-        listOf(res.compiler),
+        res.compiler,
         res.invokeStatus.combinedOutput,
         res.project,
         bugType(res)
     )
 
-    val compilerVersion = compilers.joinToString(", ")
+    val compilerWithVersion = "$compiler version ${CompilerArgs.compilerVersion(compiler)}"
 
     fun compareTo(other: Bug): Int =
-        if (compilerVersion == other.compilerVersion)
+        if (compiler == other.compiler)
             type.compareTo(other.type)
-        else compilerVersion.compareTo(other.compilerVersion)
+        else compiler.compareTo(other.compiler)
 
     fun getDirWithSameTypeBugs(): String =
         CompilerArgs.resultsDir +
@@ -52,22 +52,22 @@ data class Bug(val compilers: List<String>, val msg: String, val crashedProject:
                     else -> ""
                 }
 
-    fun copy() = Bug(compilers, msg, crashedProject.copy(), type)
+    fun copy() = Bug(compiler, msg, crashedProject.copy(), type)
 
     override fun toString(): String {
-        return "${type.name}\n${compilers.map { TODO() }}\nText:\n${crashedProject}"
+        return "${type.name}\n${compiler}\nText:\n${crashedProject}"
     }
 
     override fun equals(other: Any?): Boolean =
         other is Bug && other.crashedProject == this.crashedProject && other.type == this.type &&
-                other.compilers.map { TODO() } == this.compilers.map { TODO() }
+                other.compiler == this.compiler
 
     override fun hashCode(): Int {
-        var result = compilers.hashCode()
+        var result = compiler.hashCode()
         result = 31 * result + msg.hashCode()
         result = 31 * result + crashedProject.hashCode()
         result = 31 * result + type.hashCode()
-        result = 31 * result + compilerVersion.hashCode()
+        result = 31 * result + compiler.hashCode()
         return result
     }
 
