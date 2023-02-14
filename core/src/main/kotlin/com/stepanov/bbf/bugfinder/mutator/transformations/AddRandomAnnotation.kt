@@ -19,10 +19,9 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.types.KotlinType
 import kotlin.random.Random
 
-class AddRandomAnnotation(project: Project, file: BBFFile,
-                          amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddRandomAnnotation(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     private var randomInstancesGenerator: RandomInstancesGenerator? = null
 

@@ -13,10 +13,9 @@ import java.io.File
 import kotlin.random.Random
 
 
-class ChangeRandomASTNodesFromAnotherTrees(project: Project, file: BBFFile,
-                                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeRandomASTNodesFromAnotherTrees(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val randConst = Random.nextInt(numOfTries.first, numOfTries.second)

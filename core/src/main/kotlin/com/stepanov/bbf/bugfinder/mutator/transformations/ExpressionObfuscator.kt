@@ -29,10 +29,9 @@ import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 import java.lang.StringBuilder
 import kotlin.random.Random
 
-class ExpressionObfuscator(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ExpressionObfuscator(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     lateinit var usageExamples: MutableList<Triple<KtExpression, String, KotlinType?>>
     lateinit var availableVars: List<Pair<KtProperty, KotlinType?>>

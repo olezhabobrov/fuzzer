@@ -11,10 +11,9 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
 
-class ChangeRandomASTNodes(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeRandomASTNodes(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val numOfSwaps = Random.nextInt(numOfSwaps.first, numOfSwaps.second)

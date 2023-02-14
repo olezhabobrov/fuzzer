@@ -12,10 +12,9 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import kotlin.random.Random
 
-class AddRandomClass(project: Project, file: BBFFile,
-                     amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddRandomClass(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val ktFile = file.psiFile as KtFile

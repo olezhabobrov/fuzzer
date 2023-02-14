@@ -19,10 +19,9 @@ import kotlin.random.Random
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 
-class AddDefaultValueToArg(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddDefaultValueToArg(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     //TODO MAYBE INIT AND REINIT SOME PROPERTIES
     override fun transform() {

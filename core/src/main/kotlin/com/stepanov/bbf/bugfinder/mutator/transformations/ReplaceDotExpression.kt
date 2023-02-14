@@ -9,10 +9,9 @@ import com.stepanov.bbf.bugfinder.util.getTrue
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import kotlin.random.Random
 
-class ReplaceDotExpression(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ReplaceDotExpression(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         file.psiFile.getAllPSIChildrenOfType<KtDotQualifiedExpression>().reversed()
             .filter { Random.getTrue(15) }

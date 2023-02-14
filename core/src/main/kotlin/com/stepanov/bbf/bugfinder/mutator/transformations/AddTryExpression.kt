@@ -10,10 +10,9 @@ import com.stepanov.bbf.bugfinder.util.subList
 import org.jetbrains.kotlin.psi.KtExpression
 import kotlin.random.Random
 
-class AddTryExpression(project: Project, file: BBFFile,
-                       amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddTryExpression(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         for (i in 0 until randomConst) {
             addTryExpressionAsPsi()

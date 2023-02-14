@@ -8,10 +8,9 @@ import org.jetbrains.kotlin.psi.KtTypeReference
 import kotlin.random.Random
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class AddNullabilityTransformer(project: Project, file: BBFFile,
-                                amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddNullabilityTransformer(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         file.psiFile.getAllPSIChildrenOfType<KtTypeReference>()

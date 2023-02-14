@@ -10,10 +10,9 @@ import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import java.util.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class ChangeConstants(project: Project, file: BBFFile,
-                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeConstants(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     enum class Type { BOOLEAN, INTEGER, DOUBLE }
 

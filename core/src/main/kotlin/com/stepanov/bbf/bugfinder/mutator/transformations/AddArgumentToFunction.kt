@@ -21,10 +21,9 @@ import org.jetbrains.kotlin.resolve.source.PsiSourceElement
 import kotlin.random.Random
 
 //TODO add field to class
-class AddArgumentToFunction(project: Project, file: BBFFile,
-                            amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddArgumentToFunction(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         repeat(MAGIC_CONST) {

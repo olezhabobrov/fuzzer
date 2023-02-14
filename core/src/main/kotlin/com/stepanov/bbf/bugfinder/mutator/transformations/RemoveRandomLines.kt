@@ -5,10 +5,9 @@ import com.stepanov.bbf.bugfinder.project.Project
 import java.util.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
-class RemoveRandomLines(project: Project, file: BBFFile,
-                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class RemoveRandomLines(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage)  {
+        1, 100)  {
 
     override fun transform() {
         val text = file.text.lines().toMutableList()

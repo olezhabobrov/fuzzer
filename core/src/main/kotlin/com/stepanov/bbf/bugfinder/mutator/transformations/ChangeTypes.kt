@@ -14,10 +14,9 @@ import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import kotlin.random.Random
 
-class ChangeTypes(project: Project, file: BBFFile,
-                  amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeTypes(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val typeReferences = file.psiFile.getAllPSIChildrenOfType<KtTypeReference>()

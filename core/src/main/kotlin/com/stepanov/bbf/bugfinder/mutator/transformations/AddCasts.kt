@@ -18,10 +18,9 @@ import org.jetbrains.kotlin.types.KotlinType
 import kotlin.random.Random
 
 
-class AddCasts(project: Project, file: BBFFile,
-               amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddCasts(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         val ktFile = file.psiFile as KtFile
         val ctx = PSICreator.analyze(ktFile, project) ?: return

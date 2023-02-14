@@ -13,10 +13,9 @@ import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 //Change extension to smth?
-class ChangeSmthToExtension(project: Project, file: BBFFile,
-                            amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeSmthToExtension(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         file.psiFile.getAllPSIChildrenOfType<KtProperty>()

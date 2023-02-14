@@ -32,10 +32,9 @@ import kotlin.random.Random
 //Don't forget to add import for projects
 //Deal with TypeParameters
 
-class AddInheritance(project: Project, file: BBFFile,
-                     amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddInheritance(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     private val RANDOM_CONST = 2
 

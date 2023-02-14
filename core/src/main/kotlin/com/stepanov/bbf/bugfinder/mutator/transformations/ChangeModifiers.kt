@@ -11,10 +11,9 @@ import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import java.util.*
 
-class ChangeModifiers(project: Project, file: BBFFile,
-                      amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ChangeModifiers(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         for (i in 0..RANDOM_CONST) {
             val modifiersLists = file.psiFile.getAllPSIChildrenOfType<KtModifierList>().filter { Random().nextBoolean() }

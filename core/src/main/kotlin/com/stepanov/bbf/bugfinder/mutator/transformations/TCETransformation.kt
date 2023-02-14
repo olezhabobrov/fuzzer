@@ -27,10 +27,9 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 //TODO make work for projects
-class TCETransformation(project: Project, file: BBFFile,
-                        amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class TCETransformation(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     private val blockListOfTypes = listOf("Unit", "Nothing", "Nothing?")
     private val randomConst = 3

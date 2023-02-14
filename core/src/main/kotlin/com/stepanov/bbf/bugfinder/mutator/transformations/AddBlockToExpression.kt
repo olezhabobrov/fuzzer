@@ -9,10 +9,9 @@ import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import java.util.*
 
-class AddBlockToExpression(project: Project, file: BBFFile,
-                           amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddBlockToExpression(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     override fun transform() {
         val expr = file.psiFile.getAllPSIChildrenOfType<KtExpression>()

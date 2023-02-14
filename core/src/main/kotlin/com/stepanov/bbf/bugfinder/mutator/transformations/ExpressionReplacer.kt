@@ -31,10 +31,9 @@ import java.lang.StringBuilder
 import kotlin.random.Random
 
 //Class which trying to replace expression of one type by expressions from available context
-class ExpressionReplacer(project: Project, file: BBFFile,
-                         amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ExpressionReplacer(project: Project, file: BBFFile):
     Transformation(project, file,
-    amountOfTransformations, probPercentage) {
+    1, 100) {
 
     private val blockListOfTypes = listOf("Nothing", "Nothing?")
     private val generatedFunCalls = mutableMapOf<FunctionDescriptor, KtExpression?>()

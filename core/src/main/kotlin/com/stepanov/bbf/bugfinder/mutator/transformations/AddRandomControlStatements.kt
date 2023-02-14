@@ -13,10 +13,9 @@ import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
 
-class AddRandomControlStatements(project: Project, file: BBFFile,
-                                 amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddRandomControlStatements(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         repeat(RANDOM_CONST) { insertRandomStatement() }
     }

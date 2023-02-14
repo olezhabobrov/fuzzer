@@ -12,10 +12,9 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator
 
 //TODO Add for map!!
-class ReinitProperties(project: Project, file: BBFFile,
-                       amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class ReinitProperties(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         file.psiFile.getAllPSIChildrenOfType<KtProperty>().forEach {
             val type =

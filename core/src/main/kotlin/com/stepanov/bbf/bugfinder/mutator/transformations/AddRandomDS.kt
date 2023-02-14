@@ -8,10 +8,9 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.abi.GeneratorFactory
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.psi.KtFile
 
-class AddRandomDS(project: Project, file: BBFFile,
-                  amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddRandomDS(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     init {
         updateCtx()

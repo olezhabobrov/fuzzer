@@ -20,10 +20,9 @@ import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 import kotlin.random.Random
 
-class LocalTCE(project: Project, file: BBFFile,
-               amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class LocalTCE(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
 
     private val blockListOfTypes = listOf("Unit", "Nothing", "Nothing?")
     private var psi = file.psiFile.copy() as KtFile

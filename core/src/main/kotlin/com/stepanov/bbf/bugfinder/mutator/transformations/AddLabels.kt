@@ -8,10 +8,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import kotlin.random.Random
 
-class AddLabels(project: Project, file: BBFFile,
-                amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class AddLabels(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         val randomLoops =
             file.psiFile.getAllPSIChildrenOfFourTypes<KtForExpression, KtWhileExpression, KtDoWhileExpression, KtLambdaExpression>()

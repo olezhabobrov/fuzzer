@@ -18,10 +18,9 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as 
 
 typealias UsageInfo = Triple<KotlinType, Int, MutableList<KtNameReferenceExpression>>
 
-class SkeletonEnumeration(project: Project, file: BBFFile,
-                          amountOfTransformations: Int = 1, probPercentage: Int = 100):
+class SkeletonEnumeration(project: Project, file: BBFFile):
     Transformation(project, file,
-        amountOfTransformations, probPercentage) {
+        1, 100) {
     override fun transform() {
         var prevScope = 0
         val ctx = PSICreator.analyze(file.psiFile) ?: return
