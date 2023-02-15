@@ -63,7 +63,7 @@ class Mutator: AbstractVerticle() {
                         executeMutation(transformation)
                     }
                     try {
-                        futureExitCode.get(30L, TimeUnit.SECONDS)
+                        futureExitCode.get(timeoutSeconds, TimeUnit.SECONDS)
                         finished++
                         if (transformation.file.text != initialText) {
                             changed++
@@ -86,7 +86,7 @@ class Mutator: AbstractVerticle() {
                 finished=$finished
                 changed=$changed
                 failed with exception=$failedWithException
-                timeout of 30 seconds=$timeouts
+                timeout of ${timeoutSeconds} seconds=$timeouts
                 average time=$avgTime seconds
                 
                 exceptions:
@@ -98,6 +98,7 @@ class Mutator: AbstractVerticle() {
         }
     }
 
+    private val timeoutSeconds = 30L
     private val MagicConst = 25
 
     private val log = Logger.getLogger("mutatorLogger")

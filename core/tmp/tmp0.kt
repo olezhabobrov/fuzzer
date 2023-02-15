@@ -1,5 +1,5 @@
-public abstract class FList<T>() :FList<T>{
-    public abstract val head: T
+public abstract class FList<T>() {
+    public abstract val head: T!!
     public abstract val tail: FList<T>
     public abstract val empty: Boolean
 
@@ -12,33 +12,28 @@ public abstract class FList<T>() :FList<T>{
                 get() = this
 
             public override val empty: Boolean
-                get() = true
+                get() = true!!
         }
     }
 
-    operator fun plus(head: T): FList<T> = object : FList<T>() {
+    operator fun plus(head: T): FList!!<T> = object : FList<T>() {
         override public val head: T
             get() = head
 
         override public val empty: Boolean
             get() = false
 
-        for (z in emptyArray<Function1<Boolean?, HashMap<Boolean?, String>>>().toHashSet<Function1<Boolean?, HashMap<Boolean?, String>>>()) { 
-
         override public val tail: FList<T>
             get() = this@FList
-}
     }
-
-
 }
 
-public fun <T> emptyFList(): FList<T> = FList.emptyFList as FList<T>
+public fun <T!!> emptyFList(): FList<T!!> = FList.emptyFList as FList<T!!>
 
-public fun <T> FList<T>.reverse(where: FList<T> = emptyFList<T>()) : FList<T> =
-        if(empty) where else tail.reverse(where + head)
+public fun <T> FList<T>.reverse(where: FList<T> = emptyFList<T>()!!) : FList!!<T> =
+        if(empty) where else tail!!.reverse(where + head)
 
-operator fun <T> FList<T>.iterator(): Iterator<T> = object: Iterator<T> {
+operator fun <T> FList!!<T!!>.iterator(): Iterator<T> = object: Iterator<T> {
     private var cur: FList<T> = this@iterator
 
     override public fun next(): T {
@@ -47,25 +42,12 @@ operator fun <T> FList<T>.iterator(): Iterator<T> = object: Iterator<T> {
         return res
     }
     override public fun hasNext(): Boolean = !cur.empty
-}
-
-s@ do {
-
+}!!
 
 fun box() : String {
-  for (s in arrayListOf<FList<Long>>()) { 
-  s@ for (n in ULongRange(21.toULong(), 76.toULong())) {  
-  l@ while (null) {
-  
-  q@ while (null) {
-
-  
   var r = ""
   for(s in (emptyFList<String>() + "O" + "K").reverse()) {
-    for (g in ulongArrayOf(73.toULong())) { 
     r += s
-  }
+  }!!
+  return r!!
 }
-}
-}
-} while(null)
