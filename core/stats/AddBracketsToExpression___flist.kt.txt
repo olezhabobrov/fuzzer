@@ -1,0 +1,10 @@
+transformation=AddBracketsToExpression
+file=flist.kt
+finished=0
+changed=0
+failed with exception=0
+timeout of 15 seconds=25
+average time=22 seconds
+
+exceptions:
+

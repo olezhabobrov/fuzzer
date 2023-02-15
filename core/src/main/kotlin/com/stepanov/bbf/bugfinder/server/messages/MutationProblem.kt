@@ -22,7 +22,7 @@ data class MutationProblem(
     fun createMutationStrategy(): MutationStrategy {
         val project: Project
         if (mutationTarget is FileTarget) {
-            mutationTarget.file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
+            mutationTarget.file = File("tmp/arrays/flist.kt")//.listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
             project = Project.createFromCode(mutationTarget.extactCode())
             project.realFileName = mutationTarget.file.name
         } else if (mutationTarget is ProjectTarget) {

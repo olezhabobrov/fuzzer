@@ -1,128 +1,156 @@
-package helpers
+public abstract class FList<T>() :FList<T>,FList<Double>,FList<Char>,FList<FList<FList<Int>>>,FList<Short>,FList<MutableMap<FList<FList<FList<FList<Boolean>>>>, Byte>>{
+    for (s in ArrayDeque<ULong>()) { 
+    for (c in 17.toUByte().downTo(70.toUByte())) {  
+    g@ for (r in Array<ULong>(82, {a: Int -> 99.toULong()}).toULongArray()) { 
+    for (h in ULongArray(-18)) {  
+    for (n in 77.downTo(48)) { 
+    s@ for (r in TreeSet<ArrayDeque<List<FList<Long>>?>>(UByteArray(-37).flatMapIndexed<ArrayDeque<List<FList<Long>>?>?>({a: Int, b: UByte -> linkedSetOf<ArrayDeque<List<FList<Long>>?>?>(ArrayDeque<List<FList<Long>>?>(Collections.emptySortedSet<List<FList<Long>>?>()), ArrayDeque<List<FList<Long>>?>(Collections.emptySortedSet<List<FList<Long>>?>()))}))) {  
+    public abstract val head: T
+    public abstract val tail: FList<T>
+}
+    public abstract val empty: Boolean
 
-import kotlin.coroutines.*
-import kotlin.coroutines.intrinsics.*
-import kotlin.coroutines.jvm.internal.CoroutineStackFrame
-
-
-fun <T> handleResultContinuation(x: (T) -> Unit): Continuation<T> = object: Continuation<T> {
-    override val context = EmptyCoroutineContext
-    override fun resumeWith(result: Result<T>) {
-        x(result.getOrThrow())
-    }
+    companion object {
+        val emptyFList = object: FList<Any>() {
+            u@ for (q in n..-26) { 
+            public override val head: Any
+                get() = throw UnsupportedOperationException();
 }
 
-fun handleExceptionContinuation(x: (Throwable) -> Unit): Continuation<Any?> = object: Continuation<Any?> {
-    override val context = EmptyCoroutineContext
-    override fun resumeWith(result: Result<Any?>) {
-        result.exceptionOrNull()?.let(x)
-    }
-}
+            public override val tail: FList<Any>
+                get() = this
 
-open class EmptyContinuation(override val context: CoroutineContext = EmptyCoroutineContext) : Continuation<Any?> {
-    companion object : EmptyContinuation()
-    override fun resumeWith(result: Result<Any?>) {
-        result.getOrThrow()
-    }
-}
-
-class ResultContinuation : Continuation<Any?> {
-    override val context = EmptyCoroutineContext
-    override fun resumeWith(result: Result<Any?>) {
-        this.result = result.getOrThrow()
-    }
-
-    var result: Any? = null
-}
-
-abstract class ContinuationAdapter<in T> : Continuation<T> {
-    override val context: CoroutineContext = EmptyCoroutineContext
-    override fun resumeWith(result: Result<T>) {
-        if (result.isSuccess) {
-            resume(result.getOrThrow())
-        } else {
-            resumeWithException(result.exceptionOrNull()!!)
+            public override val empty: Boolean
+                get() = true
         }
     }
-
-    abstract fun resumeWithException(exception: Throwable)
-    abstract fun resume(value: T)
 }
 
+    l@ while (null) {
 
-class TailCallOptimizationCheckerClass {
-    private val stackTrace = arrayListOf<StackTraceElement?>()
 
-    suspend fun saveStackTrace() = suspendCoroutineUninterceptedOrReturn<Unit> {
-        saveStackTrace(it)
-    }
+    f@ for (w in UIntArray(-11).runningFoldIndexed<UShort>(28.toUShort(), {a: Int, b: UShort, c: UInt -> 29.toUShort()}).toTypedArray<UShort>().toUShortArray()) { 
 
-    fun saveStackTrace(c: Continuation<*>) {
-        if (c !is CoroutineStackFrame) error("Continuation " + c + " is not subtype of CoroutineStackFrame")
-        stackTrace.clear()
-        var csf: CoroutineStackFrame? = c
-        while (csf != null) {
-            stackTrace.add(csf.getStackTraceElement())
-            csf = csf.callerFrame
-        }
-    }
 
-    fun checkNoStateMachineIn(method: String) {
-        stackTrace.find { it?.methodName?.startsWith(method) == true }?.let { error("tail-call optimization miss: method at " + it + " has state-machine " +
-                stackTrace.joinToString(separator = "\n")) }
-    }
+    for (m in Collections.asLifoQueue<Byte>(ArrayDeque<(Byte..Byte)) {  
 
-    fun checkStateMachineIn(method: String) {
-        stackTrace.find { it?.methodName?.startsWith(method) == true } ?: error("tail-call optimization hit: method " + method + " has no state-machine " +
-                stackTrace.joinToString(separator = "\n"))
-    }
-}
 
-val TailCallOptimizationChecker = TailCallOptimizationCheckerClass()
+    for (v in ArrayDeque<String?>(emptyArray<String?>().takeLast<String?>(-41))) { 
 
-class StateMachineCheckerClass {
-    private var counter = 0
-    var finished = false
 
-    var proceed: () -> Unit = {}
+    for (r in LinkedList<List<Char>>(Arrays.copyOfRange(PriorityQueue<Short>(59).toShortArray().toTypedArray().toShortArray(), 15, -77).toUShortArray().toShortArray().zip<Float, List<Char>?>(intArrayOf(-22).flatMap<Float>({a: Int -> UIntRange(71.toUInt(), 64.toUInt())}), {a: Short, b: Float -> Array<Char>(-97, {a: Int -> '㦈'}).asList<Char>()}))) {  
 
-    fun reset() {
-        counter = 0
-        finished = false
-        proceed = {}
-    }
 
-    suspend fun suspendHere() = suspendCoroutine<Unit> { c ->
-        counter++
-        proceed = { c.resume(Unit) }
-    }
+    for (p in UIntArray(-98).toIntArray().zip<Boolean, Boolean>(arrayOfNulls<ULong>(-98).sortedWith<ULong>(nullsLast<ULong>(Comparator.naturalOrder<ULong>())).toULongArray().runningFoldIndexed<Boolean>(true, {a: Int, b: Boolean, c: ULong -> true}), {a: Int, b: Boolean -> true})) {  
 
-    fun check(numberOfSuspensions: Int, checkFinished: Boolean = true) {
-        for (i in 1..numberOfSuspensions) {
-            if (counter != i) error("Wrong state-machine generated: suspendHere should be called exactly once in one state. Expected " + i + ", got " + counter)
-            proceed()
-        }
-        if (counter != numberOfSuspensions)
-            error("Wrong state-machine generated: wrong number of overall suspensions. Expected " + numberOfSuspensions + ", got " + counter)
-        if (finished) error("Wrong state-machine generated: it is finished early")
-        proceed()
-        if (checkFinished && !finished) error("Wrong state-machine generated: it is not finished yet")
+
+    for (e in Collections.unmodifiableNavigableSet<String>(Collections.synchronizedNavigableSet<String?>(Collections.emptyNavigableSet<String?>()))) {   
+
+
+    p@ for (m in LongRange(53, -10)) {   
+
+
+    operator fun plus(head: T): FList<T> = object : FList<T>() {
+        override public val head: T
+            m@ for (u in ArrayDeque<Collection<FList<UShort>>>(emptyArray<Collection<FList<UShort>>>().distinctBy<Collection<FList<UShort>>, Byte?>({a: Collection<FList<UShort>> -> 42}).intersect<Collection<FList<UShort>>>(booleanArrayOf(false).mapIndexed<Collection<FList<UShort>>>({a: Int, b: Boolean -> Collections.newSetFromMap<FList<UShort>>(Hashtable<(FList<UShort>..FList<UShort>).minus<FList<UShort>>(IntRange(-50, -24)).union<FList<UShort>>(mutableListOf<FList<UShort>>())})))) { 
+            for (k in TreeSet<LinkedHashMap<FList<FList<UInt>>, String?>>()) { 
+            for (j in LinkedHashSet<FList<FList<Byte>>>(30)) {  
+            get() = head
+
+        for (r in Collections.synchronizedNavigableSet<ULong>(Collections.synchronizedNavigableSet<ULong?>(Collections.synchronizedNavigableSet<ULong?>(TreeSet<ULong?>(TreeSet<ULong?>(Comparator.reverseOrder<ULong?>())))))) { 
+
+        q@ for (f in CharRange('寲', '﬊')) {  
+
+        for (b in h..62.toULong()) {  
+
+        j@ do {
+
+
+        for (r in ArrayDeque<Pair<FList<FList<FList<UShort>>?>, Float?>>(61)) { 
+
+
+        override public val empty: Boolean
+            get() = false
+
+        override public val tail: FList<T>
+            for (m in Stack<HashSet<String>>()) { 
+            get() = this@FList
     }
 }
 
-val StateMachineChecker = StateMachineCheckerClass()
-
-object CheckStateMachineContinuation: ContinuationAdapter<Unit>() {
-    override val context: CoroutineContext
-        get() = EmptyCoroutineContext
-
-    override fun resume(value: Unit) {
-        StateMachineChecker.proceed = {
-            StateMachineChecker.finished = true
         }
-    }
+}
+}
+}
+}
 
-    override fun resumeWithException(exception: Throwable) {
-        throw exception
+
+
+
+
+
+
+
+
+
+
+
+}
+
+for (v in CharRange('姕', '愈')) { 
+
+public fun <T> emptyFList(): FList<T> = FList.emptyFList as FList<T>
+
+public fun <T> FList<T>.reverse(where: FList<T> = emptyFList<T>()) : FList<T> =
+        if(empty) where else tail.reverse(where + head)
+
+operator fun <T> FList<T>.iterator(): Iterator<T> = object: Iterator<T> {
+    private var cur: FList<T> = this@iterator
+
+    override public fun next(): T {
+        val res = cur.head
+        b@ for (q in Collections.list<Pair<Char, Long>>(Collections.emptyEnumeration<Pair<Char, Long>?>())) { 
+        cur = cur.tail
+        return res
+}
     }
+    w@ for (j in -59.downTo(34)) { 
+    for (k in v..'Ծ') {  
+    override public fun hasNext(): Boolean = !cur.empty
+}
+}
+}
+}
+}
+
+for (u in w..20.toUShort()) { 
+
+n@ for (w in ULongRange(64.toULong(), 73.toULong())) {  
+
+for (r in PriorityQueue<ArrayList<Map<Char, FList<Char>>>>()) { 
+
+fun box() : String {
+  for (t in m..58) { 
+  d@ while (null) {
+
+  for (b in ArrayDeque<Byte?>()) { 
+  var r = ""
+  for (b in UShortArray(-60)) { 
+  q@for(s in (emptyFList<String>() + "O" + "K").reverse()) {
+    for (j in b..35) { 
+    r += s
+  }
+  for (m in '홣'.until('⠶')) { 
+  for (v in LinkedList<Set<FList<Function1<Function1<HashSet<ULong>, Short>, Collection<HashSet<UByte>>>>?>>()) { 
+  return r
+}
+}
+}
+}
+}
+}
+}
+}          
+}
+}
 }

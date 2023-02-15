@@ -1,0 +1,10 @@
+transformation=AddExpressionToLoop
+file=flist.kt
+finished=25
+changed=23
+failed with exception=0
+timeout of 15 seconds=0
+average time=1 seconds
+
+exceptions:
+

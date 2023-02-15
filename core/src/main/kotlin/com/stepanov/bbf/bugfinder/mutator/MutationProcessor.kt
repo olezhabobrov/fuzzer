@@ -40,6 +40,7 @@ object MutationProcessor {
                 return replCopy
             } catch (e: Error) {
                 log.debug("Caught error in MutationProcessor while replacing node: ${e.stackTraceToString()}")
+                throw e
             }
         }
         return null
@@ -47,19 +48,6 @@ object MutationProcessor {
 
     fun replaceNodeReturnNode(node: PsiElement, replacement: PsiElement, curFile: BBFFile, filenameOpt: String? = null): Boolean =
         replaceNodeReturnNode(node.node, replacement.node, curFile, filenameOpt) != null
-
-    fun checkCompiling(): Boolean {
-        TODO()
-//        if (CompilerArgs.checkCompilationWhileMutating) {
-//            eventBus.request(VertxAddresses.compileCheck,
-//                Json.encodeToString(CompileRequestMessage(curFile.name, curFile.text))) {
-//                    compilationResult: AsyncResult<Message<String>> ->
-//                val result = Json.decodeFromString<KotlincInvokeStatus>(compilationResult.result().body())
-//
-//            }
-//        }
-//        return true
-    }
 
     fun saveMutation(file: BBFFile, pathToSave: String) {
         File(CompilerArgs.pathToMutatedDir).mkdirs()

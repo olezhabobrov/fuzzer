@@ -1,0 +1,10 @@
+transformation=AddLoop
+file=flist.kt
+finished=3
+changed=3
+failed with exception=0
+timeout of 30 seconds=22
+average time=31 seconds
+
+exceptions:
+

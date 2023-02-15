@@ -1,0 +1,10 @@
+transformation=AddBlockToExpression
+file=flist.kt
+finished=7
+changed=7
+failed with exception=0
+timeout of 15 seconds=18
+average time=13 seconds
+
+exceptions:
+

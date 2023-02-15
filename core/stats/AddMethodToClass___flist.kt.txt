@@ -1,0 +1,10 @@
+transformation=AddMethodToClass
+file=flist.kt
+finished=0
+changed=0
+failed with exception=0
+timeout of 30 seconds=25
+average time=33 seconds
+
+exceptions:
+

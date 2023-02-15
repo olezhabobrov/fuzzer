@@ -1,0 +1,56 @@
+                transformation=AddFunInvocations
+                file=flist.kt
+                finished=0
+                changed=0
+                failed with exception=23
+                timeout of 15 seconds=2
+                average time=1 seconds
+                
+                exceptions:
+                
+                java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+
+java.lang.AssertionError: File text mismatch: tree.length=1393; psi.length=1403; this=KtFile: /home/olezhka/fuzzer/core/tmp/tmp.kt; vp=com.intellij.psi.SingleRootFileViewProvider{vFile=LightVirtualFile: //home/olezhka/fuzzer/core/tmp/tmp.kt, content=VirtualFileContent{size=1403}, eventSystemEnabled=false}
+

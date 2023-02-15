@@ -63,7 +63,7 @@ class Mutator: AbstractVerticle() {
                         executeMutation(transformation)
                     }
                     try {
-                        futureExitCode.get(15L, TimeUnit.SECONDS)
+                        futureExitCode.get(30L, TimeUnit.SECONDS)
                         finished++
                         if (transformation.file.text != initialText) {
                             changed++
@@ -86,7 +86,7 @@ class Mutator: AbstractVerticle() {
                 finished=$finished
                 changed=$changed
                 failed with exception=$failedWithException
-                timeout of 15 seconds=$timeouts
+                timeout of 30 seconds=$timeouts
                 average time=$avgTime seconds
                 
                 exceptions:

@@ -1,0 +1,10 @@
+transformation=AddBracketsToExpression
+file=overrideNullableInlineClassWithNonNullAny.kt
+finished=1
+changed=1
+failed with exception=0
+timeout of 15 seconds=24
+average time=25 seconds
+
+exceptions:
+

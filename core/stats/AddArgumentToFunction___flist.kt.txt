@@ -1,0 +1,10 @@
+transformation=AddArgumentToFunction
+file=flist.kt
+finished=25
+changed=25
+failed with exception=0
+timeout of 15 seconds=0
+average time=4 seconds
+
+exceptions:
+

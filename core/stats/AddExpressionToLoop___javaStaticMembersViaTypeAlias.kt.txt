@@ -1,0 +1,10 @@
+transformation=AddExpressionToLoop
+file=javaStaticMembersViaTypeAlias.kt
+finished=25
+changed=0
+failed with exception=0
+timeout of 15 seconds=0
+average time=0 seconds
+
+exceptions:
+

@@ -1,0 +1,10 @@
+transformation=AddBlockToExpression
+file=overrideNullableInlineClassWithNonNullAny.kt
+finished=11
+changed=11
+failed with exception=0
+timeout of 15 seconds=14
+average time=10 seconds
+
+exceptions:
+

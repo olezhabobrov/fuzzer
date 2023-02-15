@@ -1,8 +1,3 @@
-import kotlin.test.assertEquals
+typealias JT = JTest
 
-fun box(): String {
-    val j = J::class.java
-    assertEquals(j, j.kotlin.java)
-
-    return "OK"
-}
+fun box(): String = JT.o() + JT.K
