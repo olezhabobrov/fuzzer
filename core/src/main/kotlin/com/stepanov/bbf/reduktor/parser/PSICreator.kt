@@ -4,13 +4,16 @@ import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.extensions.ExtensionPoint
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.source.tree.TreeCopyHandler
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
+import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.kootstrap.FooBarCompiler.setupMyCfg
 import com.stepanov.bbf.kootstrap.FooBarCompiler.setupMyEnv
+import com.stepanov.bbf.kootstrap.FooBarCompiler.tearDownMyEnv
 import com.stepanov.bbf.kootstrap.util.opt
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoots
@@ -31,8 +34,8 @@ import java.io.File
 object PSICreator {
 
     private var targetFiles: List<KtFile> = listOf()
-    private lateinit var cfg: CompilerConfiguration
-    private lateinit var env: KotlinCoreEnvironment
+    private var cfg: CompilerConfiguration? = null
+    private var env: KotlinCoreEnvironment? = null
     var curProject: com.stepanov.bbf.bugfinder.project.Project? = null
 
     fun getPsiForJava(text: String, proj: Project = Factory.file.project) =
@@ -51,13 +54,22 @@ object PSICreator {
         return getPSIForFile(path)
     }
 
+
+
     fun getPSIForFile(path: String): KtFile {
+
         val newArgs = arrayOf("-t", path)
 
         val cmd = opt.parse(newArgs)
 
         cfg = setupMyCfg(cmd)
-        env = setupMyEnv(cfg)
+
+        if (env != null) {
+            FooBarCompiler.tearDownMyEnv(env!!)
+        }
+
+        env = setupMyEnv(cfg!!)
+
 
         if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
             Extensions.getRootArea().registerExtensionPoint(
@@ -67,11 +79,12 @@ object PSICreator {
             )
         }
 
-        targetFiles = env.getSourceFiles().map {
+        targetFiles = env!!.getSourceFiles().map {
             val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
             f.originalFile = it
             f
         }
+//        Disposer.dispose(env.projectEnvironment.parentDisposable)
 
         return targetFiles.first()
     }
@@ -90,11 +103,11 @@ object PSICreator {
         //if (psiFile !is KtFile) return null
         project?.saveOrRemoveToTmp(true)
         val cmd = opt.parse(arrayOf())
-        val cfg = setupMyCfg(cmd)
+        cfg = setupMyCfg(cmd)
 
-        cfg.put(JVMConfigurationKeys.INCLUDE_RUNTIME, true)
-        cfg.put(JVMConfigurationKeys.JDK_HOME, File(System.getProperty("java.home")))
-        cfg.addJvmClasspathRoots(
+        cfg!!.put(JVMConfigurationKeys.INCLUDE_RUNTIME, true)
+        cfg!!.put(JVMConfigurationKeys.JDK_HOME, File(System.getProperty("java.home")))
+        cfg!!.addJvmClasspathRoots(
             listOf(
                 CompilerArgs.getStdLibPath("kotlin-test"),
                 CompilerArgs.getStdLibPath("kotlin-test-common"),
@@ -110,18 +123,25 @@ object PSICreator {
         project?.files?.map { it.name }?.let { fileNames ->
             val kotlinSources = fileNames.filter { it.endsWith(".kt") }
             val javaSources = fileNames.filter { it.endsWith(".java") }
-            cfg.addJavaSourceRoots(javaSources.map { File(it) })
-            cfg.addKotlinSourceRoots(kotlinSources)
+            cfg!!.addJavaSourceRoots(javaSources.map { File(it) })
+            cfg!!.addKotlinSourceRoots(kotlinSources)
         }
 
-        val env = setupMyEnv(cfg)
-        val configuration = env.configuration
+        if (env != null) {
+            tearDownMyEnv(env!!)
+        }
+
+        env = setupMyEnv(cfg!!)
+        val configuration = env!!.configuration
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "root")
+
+//        Disposer.dispose(env.projectEnvironment.parentDisposable)
+
         return try {
             if (psiFile is KtFile) {
-                JvmResolveUtil.analyze(listOf(psiFile), env, configuration)
+                JvmResolveUtil.analyze(listOf(psiFile), env!!, configuration)
             } else {
-                JvmResolveUtil.analyze(env)
+                JvmResolveUtil.analyze(env!!)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -130,6 +150,7 @@ object PSICreator {
         } catch (e: Error) {
             null
         } finally {
+//            Disposer.dispose(env.project)
             //project?.saveOrRemoveToTmp(false)
         }
     }

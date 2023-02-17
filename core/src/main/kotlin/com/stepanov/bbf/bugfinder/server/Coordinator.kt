@@ -109,16 +109,17 @@ class Coordinator: CoroutineVerticle() {
 
     private fun sendStrategyAndMutate(strategy: MutationStrategy) {
         log.debug("Sending strategy#${strategy.number}")
-        eb.request<MutationResult>(VertxAddresses.mutate, strategy) { result ->
-            if (result.succeeded()) {
-                log.debug("Got mutation result")
-                val mutatedProject = result.result().body()
-                eb.send(VertxAddresses.mutationProblemExec, strategiesMap[strategy.number])
-//                sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
-            } else {
-                log.debug("Caught exception, while mutating strategy#${strategy.number}: ${result.cause().message}")
-            }
-        }
+        eb.send(VertxAddresses.mutate, strategy)
+//        { result ->
+//            if (result.succeeded()) {
+//                log.debug("Got mutation result")
+//                val mutatedProject = result.result().body()
+//                eb.send(VertxAddresses.mutationProblemExec, strategiesMap[strategy.number])
+////                sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
+//            } else {
+//                log.debug("Caught exception, while mutating strategy#${strategy.number}: ${result.cause().message}")
+//            }
+//        }
     }
 
     private fun sendProjectToCompilers(project: Project, strategyN: Int) {

@@ -1,10 +1,50 @@
-transformation=AddMethodToClass
-file=flist.kt
-finished=9
-changed=9
-failed with exception=0
-timeout of 30 seconds=16
-average time=27 seconds
+                transformation=AddMethodToClass
+                file=flist.kt
+                finished=0
+                changed=0
+                failed with exception=20
+                timeout of 30 seconds=0
+                average time=1 seconds
+                
+                exceptions:
+                
+                java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
 
-exceptions:
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
+
+java.lang.NullPointerException: Cannot invoke "com.intellij.diagnostic.PluginProblemReporter.createPluginExceptionByClass(String, java.lang.Throwable, java.lang.Class)" because the return value of "com.intellij.diagnostic.PluginProblemReporter.getInstance()" is null
 

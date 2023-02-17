@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.*
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.reduktor.parser.PSICreator
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
 import java.io.File
@@ -27,7 +28,6 @@ class Mutator: AbstractVerticle() {
                 log.debug("Got mutation strategy#${strategy!!.number}")
                 startMutate(strategy)
                 log.debug("Sending back project, mutated by mutation strategy #${strategy.number}")
-                msg.reply(MutationResult(strategy.project, strategy.number))
 
 //                strategy.project.files.map { it.psiFile.project }.distinct().forEach {
 //                    Disposer.dispose(it)
@@ -54,7 +54,7 @@ class Mutator: AbstractVerticle() {
         log.debug("Starting mutating for strategy #${strategy.number}")
         val initial = strategy.transformations.first().file.copy()
         val initialText = initial.text
-//        val threadPool = Executors.newCachedThreadPool()
+        val threadPool = Executors.newCachedThreadPool()
         strategy.transformations.forEach { transformation ->
 
             var finished = 0
@@ -64,19 +64,19 @@ class Mutator: AbstractVerticle() {
             val exceptionsBuilder = StringBuilder()
             val time = measureTimeMillis {
                 repeat(MagicConst) {
-//                    val futureExitCode = threadPool.submit {
-//                        executeMutation(transformation)
-//                    }
-                    try {
+                    val futureExitCode = threadPool.submit {
                         executeMutation(transformation)
-//                        futureExitCode.get(timeoutSeconds, TimeUnit.SECONDS)
+                    }
+                    try {
+//                        executeMutation(transformation)
+                        futureExitCode.get(timeoutSeconds, TimeUnit.SECONDS)
                         finished++
                         if (transformation.file.text != initialText) {
                             changed++
                         }
                     } catch (e: TimeoutException) {
                         timeouts++
-//                        futureExitCode.cancel(true)
+                        futureExitCode.cancel(true)
                     } catch (e: Throwable) {
                         failedWithException++
                         exceptionsBuilder.append(e.message + "\n\n")
@@ -105,7 +105,7 @@ class Mutator: AbstractVerticle() {
     }
 
     private val timeoutSeconds = 30L
-    private val MagicConst = 30
+    private val MagicConst = 20
 
     private val log = Logger.getLogger("mutatorLogger")
 }
