@@ -115,7 +115,7 @@ object PSICreator {
         }
 
         val env = setupMyEnv(cfg)
-        val configuration = env.configuration.copy()
+        val configuration = env.configuration
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "root")
         return try {
             if (psiFile is KtFile) {

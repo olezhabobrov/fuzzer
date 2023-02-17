@@ -1,0 +1,10 @@
+transformation=ExpressionReplacer
+file=flist.kt
+finished=5
+changed=5
+failed with exception=0
+timeout of 30 seconds=0
+average time=39 seconds
+
+exceptions:
+
