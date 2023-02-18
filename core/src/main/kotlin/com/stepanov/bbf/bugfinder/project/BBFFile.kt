@@ -1,13 +1,9 @@
 package com.stepanov.bbf.bugfinder.project
 
-import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.stepanov.bbf.information.CompilerArgs
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.util.filterNotLines
-import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator
-import com.stepanov.bbf.reduktor.util.containsChildOfType
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
@@ -25,36 +21,6 @@ data class BBFFile(
             name.endsWith(".kt") -> LANGUAGE.KOTLIN
             else -> LANGUAGE.UNKNOWN
         }
-    }
-
-    fun changePsiFile(newPsiFile: PsiFile, genCtx: Boolean = false) {
-        if (!genCtx) {
-            this.psiFile = newPsiFile
-        } else {
-            changePsiFile(newPsiFile.text)
-        }
-    }
-
-    fun changePsiFile(newPsiFileText: String, checkCorrectness: Boolean = true, genCtx: Boolean = false): Boolean {
-        val psiFile = createPSI(newPsiFileText)
-        if (checkCorrectness && psiFile.containsChildOfType<PsiErrorElement>()) {
-            println("NOT CORRECT")
-            return false
-        }
-        this.psiFile = psiFile
-        return true
-    }
-
-    fun isPsiWrong(): Boolean =
-        createPSI(psiFile.text).getAllPSIChildrenOfType<PsiErrorElement>().isNotEmpty()
-
-    private fun createPSI(text: String): PsiFile {
-        val creator = PSICreator
-        val newPsi = when (getLanguage()) {
-            LANGUAGE.JAVA -> creator.getPsiForJava(text)
-            else -> creator.getPSIForText(text)
-        }
-        return newPsi
     }
 
     fun copy() = BBFFile(name, psiFile.copy() as PsiFile)
@@ -79,12 +45,15 @@ internal class BBFFileFactory(
             val pathToTmp = CompilerArgs.pathToTmpDir
             return if (names.any { it.isEmpty() }) codeWithoutComments.mapIndexed { i, code ->
                 val fileName = "$pathToTmp/$name$i.kt"
-                val ktFile = createKtFile(code)
+                File(fileName).writeText(code)
+                val env = PSICreator.getEnvForFile(fileName)
+                val ktFile = createKtFile(env)
                 //val fileToCtx = createKtFileWithCtx("${Directives.file}$fileName\n$code")
                 BBFFile(fileName, ktFile)
             }
             else names.zip(codeWithoutComments).map {
                 val fileName = "$pathToTmp/${it.first.substringAfter(Directives.file)}"
+                File(fileName).writeText(it.second)
                 val ktFile = createKtFile(it.second)
                 BBFFile(fileName, ktFile)
             }
@@ -143,6 +112,6 @@ internal class BBFFileFactory(
         return splitByFragments(text, Directives.file)
     }
 
-    private fun createKtFile(text: String): PsiFile = PSICreator.getPSIForText(text)
+    private fun createKtFile(env: KotlinCoreEnvironment): PsiFile = PSICreator.getPSIForEnv(env)
 
 }

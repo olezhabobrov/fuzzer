@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.cli.jvm.compiler.*
 import org.jetbrains.kotlin.cli.jvm.config.addJavaSourceRoots
 import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
-import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -33,17 +32,8 @@ object PSICreator {
     fun getPsiForJava(text: String, proj: Project = Factory.file.project) =
         PsiFileFactory.getInstance(proj).createFileFromText(JavaLanguage.INSTANCE, text)
 
-    fun getPSIForText(text: String, generateCtx: Boolean = true): KtFile {
-        //Save to tmp
-        val path = "tmp/tmp.kt"
-        File(path).writeText(text)
-        return getPSIForFile(path)
-    }
+    fun getCtx(): BindingContext {
 
-    fun getPsiForTextWithName(text: String, fileName: String): KtFile {
-        val path = "tmp/$fileName"
-        File(path).writeText(text)
-        return getPSIForFile(path)
     }
 
     fun getEnvForFile(path: String): KotlinCoreEnvironment {
@@ -55,8 +45,7 @@ object PSICreator {
         return setupMyEnv(cfg)
     }
 
-    fun getPSIForFile(path: String): KtFile {
-        val env = getEnvForFile(path)
+    fun getPSIForEnv(env: KotlinCoreEnvironment): KtFile {
 
         if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
             Extensions.getRootArea().registerExtensionPoint(
