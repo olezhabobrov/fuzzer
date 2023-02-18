@@ -8,9 +8,16 @@ import com.stepanov.bbf.bugfinder.util.filterNotLines
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.containsChildOfType
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
 
-data class BBFFile(val name: String, var psiFile: PsiFile) {
+data class BBFFile(
+    val name: String,
+    var psiFile: PsiFile,
+    val env: KotlinCoreEnvironment,
+    val ctx: BindingContext
+) {
 
     fun getLanguage(): LANGUAGE {
         return when {
@@ -78,12 +85,8 @@ internal class BBFFileFactory(
             }
             else names.zip(codeWithoutComments).map {
                 val fileName = "$pathToTmp/${it.first.substringAfter(Directives.file)}"
-                if (fileName.contains(".java"))
-                    BBFFile(fileName, PSICreator.getPsiForJava(it.second, Factory.file.project))
-                else {
-                    val ktFile = createKtFile(it.second)
-                    BBFFile(fileName, ktFile)
-                }
+                val ktFile = createKtFile(it.second)
+                BBFFile(fileName, ktFile)
             }
         } catch (e: Throwable) {
             println(e)

@@ -33,60 +33,6 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
         return funInvocationGenerator.generateTopLevelFunInvocation(desc)
     }
 
-    private fun generateRandomTypeParams(
-        typeParameters: List<KtTypeParameter>,
-        valueParameters: List<KtParameter>,
-        name: String,
-        ctx: BindingContext,
-        typeProjections: List<TypeProjection> = listOf(),
-        func: KtNamedFunction? = null
-    ): Pair<List<KtTypeReference>, Map<String, String>>? {
-        randomTypeGenerator.setFileAndContext(file, ctx)
-        if (typeParameters.isEmpty()) return null
-        val generatedTypeParams =
-            (if (func != null) typeParameters.map {
-                randomTypeGenerator.generateRandomTypeWithCtx(
-                    it.extendsBound?.getAbbreviatedTypeOrType(
-                        ctx
-                    )
-                )
-            }.map { it?.asTypeProjection() ?: return null }
-            else randomTypeGenerator.getTypeFromFile(name)?.arguments)
-                ?: return null
-        //require(generatedTypeParams != null) { println("cant generate type params") }
-        val generatedTypeParamsPsi =
-            if (typeProjections.isEmpty())
-                generatedTypeParams.map { Factory.psiFactory.createType(it.type.toString()) }
-            else
-                generatedTypeParams.zip(typeProjections)
-                    .map { if (it.second.type.isTypeParameter()) it.first else it.second }
-                    .map { Factory.psiFactory.createType(it.type.toString()) }
-//        val generatedTypeParamsPsi =
-//            generatedTypeParams.arguments.map { Factory.psiFactory.createType(it.type.toString()) }
-        val strTypeParamToRandomType = mutableMapOf<String, String>()
-        typeParameters.zip(generatedTypeParamsPsi)
-            .forEach { strTypeParamToRandomType[it.first.name!!] = it.second.text }
-        valueParameters.forEach { param ->
-            param.typeReference?.getAllPSIChildrenOfType<KtReferenceExpression>()?.map { typeRef ->
-                strTypeParamToRandomType[typeRef.text]?.let { typeRef.replaceThis(Factory.psiFactory.createType(it)) }
-            }
-        }
-        if (func != null) {
-            listOfNotNull(func.typeReference, func.receiverTypeReference).forEach { param ->
-                param.getAllPSIChildrenOfType<KtReferenceExpression>().map { typeRef ->
-                    strTypeParamToRandomType[typeRef.text]?.let {
-                        typeRef.replaceThis(
-                            Factory.psiFactory.createType(
-                                it
-                            )
-                        )
-                    }
-                }
-            }
-        }
-        return generatedTypeParamsPsi to strTypeParamToRandomType
-    }
-
     fun generateRandomInstanceOfClass(ktClass: KtClassOrObject) =
         classInstanceGenerator.generateRandomInstanceOfUserClass(ktClass)
 

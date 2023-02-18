@@ -30,11 +30,6 @@ import java.io.File
 @Suppress("DEPRECATION")
 object PSICreator {
 
-    private var targetFiles: List<KtFile> = listOf()
-    private lateinit var cfg: CompilerConfiguration
-    private lateinit var env: KotlinCoreEnvironment
-    var curProject: com.stepanov.bbf.bugfinder.project.Project? = null
-
     fun getPsiForJava(text: String, proj: Project = Factory.file.project) =
         PsiFileFactory.getInstance(proj).createFileFromText(JavaLanguage.INSTANCE, text)
 
@@ -51,13 +46,17 @@ object PSICreator {
         return getPSIForFile(path)
     }
 
-    fun getPSIForFile(path: String): KtFile {
+    fun getEnvForFile(path: String): KotlinCoreEnvironment {
         val newArgs = arrayOf("-t", path)
 
         val cmd = opt.parse(newArgs)
 
-        cfg = setupMyCfg(cmd)
-        env = setupMyEnv(cfg)
+        val cfg = setupMyCfg(cmd)
+        return setupMyEnv(cfg)
+    }
+
+    fun getPSIForFile(path: String): KtFile {
+        val env = getEnvForFile(path)
 
         if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
             Extensions.getRootArea().registerExtensionPoint(
@@ -67,7 +66,7 @@ object PSICreator {
             )
         }
 
-        targetFiles = env.getSourceFiles().map {
+        val targetFiles = env.getSourceFiles().map {
             val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
             f.originalFile = it
             f
@@ -75,10 +74,6 @@ object PSICreator {
 
         return targetFiles.first()
     }
-
-    fun analyze(psiFile: PsiFile): BindingContext? = analyze(psiFile, curProject)
-
-    fun analyzeAndGetModuleDescriptor(psiFile: PsiFile) = getAnalysisResult(psiFile, curProject)?.moduleDescriptor
 
     fun analyze(psiFile: PsiFile, project: com.stepanov.bbf.bugfinder.project.Project?): BindingContext? =
         getAnalysisResult(psiFile, project)?.bindingContext
