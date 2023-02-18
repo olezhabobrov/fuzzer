@@ -54,22 +54,16 @@ object PSICreator {
         return getPSIForFile(path)
     }
 
-
-
     fun getPSIForFile(path: String): KtFile {
-
         val newArgs = arrayOf("-t", path)
 
         val cmd = opt.parse(newArgs)
 
         cfg = setupMyCfg(cmd)
-
         if (env != null) {
-            FooBarCompiler.tearDownMyEnv(env!!)
+            Disposer.dispose(env!!.project)
         }
-
         env = setupMyEnv(cfg!!)
-
 
         if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
             Extensions.getRootArea().registerExtensionPoint(
@@ -103,11 +97,11 @@ object PSICreator {
         //if (psiFile !is KtFile) return null
         project?.saveOrRemoveToTmp(true)
         val cmd = opt.parse(arrayOf())
-        cfg = setupMyCfg(cmd)
+        val cfg = setupMyCfg(cmd)
 
-        cfg!!.put(JVMConfigurationKeys.INCLUDE_RUNTIME, true)
-        cfg!!.put(JVMConfigurationKeys.JDK_HOME, File(System.getProperty("java.home")))
-        cfg!!.addJvmClasspathRoots(
+        cfg.put(JVMConfigurationKeys.INCLUDE_RUNTIME, true)
+        cfg.put(JVMConfigurationKeys.JDK_HOME, File(System.getProperty("java.home")))
+        cfg.addJvmClasspathRoots(
             listOf(
                 CompilerArgs.getStdLibPath("kotlin-test"),
                 CompilerArgs.getStdLibPath("kotlin-test-common"),
@@ -123,25 +117,18 @@ object PSICreator {
         project?.files?.map { it.name }?.let { fileNames ->
             val kotlinSources = fileNames.filter { it.endsWith(".kt") }
             val javaSources = fileNames.filter { it.endsWith(".java") }
-            cfg!!.addJavaSourceRoots(javaSources.map { File(it) })
-            cfg!!.addKotlinSourceRoots(kotlinSources)
+            cfg.addJavaSourceRoots(javaSources.map { File(it) })
+            cfg.addKotlinSourceRoots(kotlinSources)
         }
 
-        if (env != null) {
-            tearDownMyEnv(env!!)
-        }
-
-        env = setupMyEnv(cfg!!)
-        val configuration = env!!.configuration
+        val env = setupMyEnv(cfg)
+        val configuration = env.configuration.copy()
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "root")
-
-//        Disposer.dispose(env.projectEnvironment.parentDisposable)
-
         return try {
             if (psiFile is KtFile) {
-                JvmResolveUtil.analyze(listOf(psiFile), env!!, configuration)
+                JvmResolveUtil.analyze(listOf(psiFile), env, configuration)
             } else {
-                JvmResolveUtil.analyze(env!!)
+                JvmResolveUtil.analyze(env)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -150,7 +137,7 @@ object PSICreator {
         } catch (e: Error) {
             null
         } finally {
-//            Disposer.dispose(env.project)
+            Disposer.dispose(env.project)
             //project?.saveOrRemoveToTmp(false)
         }
     }

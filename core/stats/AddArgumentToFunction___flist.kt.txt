@@ -1,10 +1,10 @@
 transformation=AddArgumentToFunction
 file=flist.kt
-finished=25
-changed=25
+finished=20
+changed=0
 failed with exception=0
-timeout of 15 seconds=0
-average time=4 seconds
+timeout of 30 seconds=0
+average time=1 seconds
 
 exceptions:
 
