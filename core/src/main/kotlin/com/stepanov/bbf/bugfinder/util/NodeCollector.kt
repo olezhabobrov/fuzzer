@@ -1,13 +1,9 @@
 package com.stepanov.bbf.bugfinder.util
 
-import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.lexer.KtTokens
-import java.io.File
 
 class NodeCollector(val dir: String) {
-    val database = mutableMapOf<IElementType, MutableSet<String>>()
 
     companion object {
         val excludes = TokenSet.create(
@@ -134,40 +130,5 @@ class NodeCollector(val dir: String) {
             KtTokens.LPAR,
             KtTokens.RPAR
         )
-    }
-
-
-    fun collect() {
-        val size = File(dir).listFiles().filter { it.name.endsWith(".kt") }.size
-        for ((ind, f) in File(dir).listFiles().filter { it.name.endsWith(".kt") }.withIndex()) {
-            println("HANDLING $ind from $size file")
-            val psiFile = PSICreator.getPSIForFile(f.path)
-            for (node in psiFile.node.getAllChildrenNodes()) {
-                if (!excludes.contains(node.elementType))
-                    database.getOrPut(node.elementType) { mutableSetOf(f.name) }.add(f.name)
-            }
-        }
-        if (File("database.txt").exists()) File("database.txt").delete()
-        val res = File("database.txt")
-        database.forEach {
-            res.appendText("${it.key} ${it.value}\n")
-        }
-    }
-
-    fun collectJavaDB() {
-        val size = File(dir).listFiles().filter { it.name.endsWith(".java") }.size
-        val proj = PSICreator.getPSIForText("").project
-        for ((ind, f) in File(dir).listFiles().filter { it.name.endsWith(".java") }.withIndex()) {
-            println("HANDLING $ind from $size file")
-            val psiFile = PSICreator.getPsiForJava(f.readText(), proj)
-            for (node in psiFile.node.getAllChildrenNodes()) {
-                database.getOrPut(node.elementType) { mutableSetOf(f.name) }.add(f.name)
-            }
-        }
-        if (File("databaseJava.txt").exists()) File("databaseJava.txt").delete()
-        val res = File("databaseJava.txt")
-        database.forEach {
-            res.appendText("${it.key} ${it.value}\n")
-        }
     }
 }

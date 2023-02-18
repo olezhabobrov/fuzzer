@@ -29,9 +29,7 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 object RandomTypeGenerator {
-
-    lateinit var file: KtFile
-    lateinit var ctx: BindingContext
+    
     var minVisibility = "public"
 
     fun isInitialized() = ::file.isInitialized && ::ctx.isInitialized
