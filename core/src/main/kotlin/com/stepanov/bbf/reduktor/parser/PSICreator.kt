@@ -32,61 +32,6 @@ import java.io.File
 @Suppress("DEPRECATION")
 object PSICreator {
 
-    fun getPsiForJava(text: String, proj: Project = Factory.file.project) =
-        PsiFileFactory.getInstance(proj).createFileFromText(JavaLanguage.INSTANCE, text)
-
-    fun getPSIForText(text: String, generateCtx: Boolean = true): KtFile {
-        //Save to tmp
-        val path = "tmp/tmp.kt"
-        File(path).writeText(text)
-        return getPSIForFile(path)
-    }
-
-    fun getPsiForTextWithName(text: String, fileName: String): KtFile {
-        val path = "tmp/$fileName"
-        File(path).writeText(text)
-        return getPSIForFile(path)
-    }
-
-    fun getPSIForFile(path: String): KtFile {
-        val newArgs = arrayOf("-t", path)
-
-        val cmd = opt.parse(newArgs)
-
-        cfg = setupMyCfg(cmd)
-        if (this::env.isInitialized) {
-            FooBarCompiler.tearDownMyEnv(env)
-        }
-        env = setupMyEnv(cfg)
-
-        if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
-            Extensions.getRootArea().registerExtensionPoint(
-                TreeCopyHandler.EP_NAME.name,
-                TreeCopyHandler::class.java.canonicalName,
-                ExtensionPoint.Kind.INTERFACE
-            )
-        }
-
-        targetFiles = env.getSourceFiles().map {
-            val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
-            f.originalFile = it
-            f
-        }
-
-        return targetFiles.first()
-    }
-
-    fun createPsiFile(fileName: String): PsiFile {
-
-    }
-
-    fun analyze(psiFile: PsiFile): BindingContext? = analyze(psiFile, curProject)
-
-    fun analyzeAndGetModuleDescriptor(psiFile: PsiFile) = getAnalysisResult(psiFile, curProject)?.moduleDescriptor
-
-    fun analyze(psiFile: PsiFile, project: com.stepanov.bbf.bugfinder.project.Project?): BindingContext? =
-        getAnalysisResult(psiFile, project)?.bindingContext
-
     fun createEnv(fileNameList: List<String>): KotlinCoreEnvironment {
         val cmd = opt.parse(arrayOf())
         val cfg = setupMyCfg(cmd)
@@ -121,59 +66,6 @@ object PSICreator {
             JvmResolveUtil.analyze(listOf(psiFile), env, configuration).bindingContext
         } else {
             JvmResolveUtil.analyze(env).bindingContext
-        }
-    }
-
-    private fun getAnalysisResult(
-        psiFile: PsiFile,
-        project: com.stepanov.bbf.bugfinder.project.Project?
-    ): AnalysisResult? {
-        //if (psiFile !is KtFile) return null
-        project?.saveOrRemoveToTmp(true)
-        val cmd = opt.parse(arrayOf())
-        cfg = setupMyCfg(cmd)
-
-        cfg.put(JVMConfigurationKeys.INCLUDE_RUNTIME, true)
-        cfg.put(JVMConfigurationKeys.JDK_HOME, File(System.getProperty("java.home")))
-        cfg.addJvmClasspathRoots(
-            listOf(
-                CompilerArgs.getStdLibPath("kotlin-test"),
-                CompilerArgs.getStdLibPath("kotlin-test-common"),
-                CompilerArgs.getStdLibPath("kotlin-test-annotations-common"),
-                //CompilerArgs.getStdLibPath("kotlin-test-junit"),
-                CompilerArgs.getStdLibPath("kotlin-reflect"),
-                CompilerArgs.getStdLibPath("kotlin-stdlib-common"),
-                CompilerArgs.getStdLibPath("kotlin-stdlib"),
-                CompilerArgs.getStdLibPath("kotlin-stdlib-jdk8")
-            ).map { File(it) }
-        )
-
-        project?.files?.map { it.name }?.let { fileNames ->
-            val kotlinSources = fileNames.filter { it.endsWith(".kt") }
-            val javaSources = fileNames.filter { it.endsWith(".java") }
-            cfg.addJavaSourceRoots(javaSources.map { File(it) })
-            cfg.addKotlinSourceRoots(kotlinSources)
-        }
-        if (this::env.isInitialized) {
-            FooBarCompiler.tearDownMyEnv(env)
-        }
-        env = setupMyEnv(cfg)
-        val configuration = env.configuration.copy()
-        configuration.put(CommonConfigurationKeys.MODULE_NAME, "root")
-        return try {
-            if (psiFile is KtFile) {
-                JvmResolveUtil.analyze(listOf(psiFile), env, configuration)
-            } else {
-                JvmResolveUtil.analyze(env)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-//            println(e)
-            null
-        } catch (e: Error) {
-            null
-        } finally {
-            //project?.saveOrRemoveToTmp(false)
         }
     }
 }
