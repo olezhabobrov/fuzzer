@@ -1,8 +1,6 @@
 package com.stepanov.bbf.bugfinder.util
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.project.Project
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
@@ -62,11 +60,6 @@ fun KotlinType.isIterable() =
     this.memberScope.getDescriptorsFiltered { true }.any {
         it.toString().contains("operator fun iterator")
     }
-
-fun KotlinType.isUserType(project: Project, module: ModuleDescriptor): Boolean {
-    val userClasses = StdLibraryGenerator.getUserClassesDescriptorsFromProject(project, module)
-    return userClasses.any { it.name == this.constructor.declarationDescriptor?.name }
-}
 
 fun getAllClassesFromPackage(pack: PackageViewDescriptor) =
     pack.memberScope
