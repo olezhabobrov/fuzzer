@@ -20,12 +20,10 @@ import java.io.File
 import org.jetbrains.kotlin.psi.KtFile
 
 class Project(
-    var configuration: Header,
-    var files: List<BBFFile>,
-    val language: LANGUAGE = LANGUAGE.KOTLIN
+    fileNameList: List<String>
 ) {
-
-    constructor(configuration: Header, file: BBFFile, language: LANGUAGE) : this(configuration, listOf(file), language)
+    val env = PSICreator.createEnv(fileNameList)
+    val files: List<BBFFile> = env.getSourceFiles().map { BBFFile(it, env) }
 
     companion object {
         fun createBBFilesFromCode(code: String): List<BBFFile>? {
