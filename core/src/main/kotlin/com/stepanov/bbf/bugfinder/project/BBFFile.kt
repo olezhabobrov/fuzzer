@@ -26,5 +26,5 @@ class BBFFile(
     val text: String
         get() = psiFile.text
 
-    private fun updateCtx() = PSICreator.updateBindingContext(psiFile, env)
+    fun updateCtx() = PSICreator.updateBindingContext(psiFile, env)
 }
