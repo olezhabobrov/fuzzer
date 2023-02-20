@@ -3,14 +3,8 @@ package com.stepanov.bbf.bugfinder.util
 import com.intellij.psi.*
 import com.intellij.util.IncorrectOperationException
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
-import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
-import org.jetbrains.kotlin.psi.psiUtil.parents
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
-import org.jetbrains.kotlin.resolve.calls.callUtil.getType
-import org.jetbrains.kotlin.types.KotlinType
 
 fun PsiFile.getNodesBetweenWhitespaces(begin: Int, end: Int): List<PsiElement> {
     val resList = mutableListOf<PsiElement>()
@@ -40,31 +34,6 @@ fun KtClassBody.addBeforeRBrace(psiElement: PsiElement): PsiElement {
         this.addAfter(Factory.psiFactory.createWhiteSpace("\n"), res)
         res
     } ?: psiElement
-}
-
-fun KtFile.getAvailableValuesToInsertIn(
-    node: PsiElement,
-    ctx: BindingContext
-): List<Pair<KtExpression, KotlinType?>> {
-    val nodeParents = node.parents.toList()
-    val parameters = nodeParents
-        .filterIsInstance<KtCallableDeclaration>()
-        .flatMap { it.valueParameters }
-        .filter { it.name != null }
-        .map { Factory.psiFactory.createExpression(it.name ?: "") to it.typeReference?.getAbbreviatedTypeOrType(ctx) }
-        .filter { it.second != null }
-    val props = nodeParents
-        .flatMap { it.getAllPSIDFSChildrenOfType<PsiElement>().takeWhile { it != node } }
-        .filterIsInstance<KtProperty>()
-        .filterDuplicates { a: KtProperty, b: KtProperty -> if (a == b) 0 else 1 }
-        .filter { it.parents.filter { it is KtBlockExpression }.all { it in nodeParents } }
-        .filter { it.name != null }
-        .map {
-            val kotlinType = it.typeReference?.getAbbreviatedTypeOrType(ctx) ?: it.initializer?.getType(ctx)
-            Factory.psiFactory.createExpression(it.name ?: "") to kotlinType
-        }
-        .filter { it.second != null }
-    return parameters + props
 }
 
 fun PsiElement.addAfterThisWithWhitespace(psiElement: PsiElement, whiteSpace: String): PsiElement {
