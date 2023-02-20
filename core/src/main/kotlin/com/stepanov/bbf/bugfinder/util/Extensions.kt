@@ -573,10 +573,6 @@ fun KtProperty.getVisibility() =
         else -> "public"
     }
 
-fun KtNamedFunction.getReturnType(context: BindingContext): KotlinType? =
-    if (this.isUnit()) DefaultKotlinTypes.unitType
-    else this.typeReference?.getAbbreviatedTypeOrType(context) ?: this.initializer?.getType(context)
-
 fun KtProperty.getPropertyType(context: BindingContext): KotlinType? =
     this.typeReference?.getAbbreviatedTypeOrType(context) ?: this.initializer?.getType(context)
 
