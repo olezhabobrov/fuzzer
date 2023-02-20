@@ -8,7 +8,6 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.stepanov.bbf.bugfinder.project.LANGUAGE
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.reduktor.util.getAllChildren
 import com.stepanov.bbf.reduktor.util.getAllChildrenOfCurLevel
 import org.jetbrains.kotlin.KtNodeTypes
@@ -407,28 +406,6 @@ fun KtBlockExpression.addProperty(prop: KtProperty): PsiElement? {
 fun KtFile.getBoxFuncs(): List<KtNamedFunction>? =
     this.getAllPSIChildrenOfType { it.text.contains(Regex("""fun box\d*\(""")) }
 
-fun PsiFile.addAtTheEnd(psiElement: PsiElement): PsiElement {
-    return this.getAllPSIDFSChildrenOfType<PsiElement>().last().parent.let {
-        it.add(Factory.psiFactory.createWhiteSpace("\n\n"))
-        val res = it.add(psiElement)
-        it.add(Factory.psiFactory.createWhiteSpace("\n\n"))
-        res
-    }
-}
-
-
-fun PsiFile.addToTheTop(psiElement: PsiElement): PsiElement {
-    val firstChild = this.allChildren.first!!
-    firstChild.add(Factory.psiFactory.createWhiteSpace("\n"))
-    val res = firstChild.add(psiElement)
-    firstChild.add(Factory.psiFactory.createWhiteSpace("\n"))
-    return res
-}
-
-fun KtFile.addImport(import: String, isAllUnder: Boolean) {
-    val importDirective = Factory.psiFactory.createImportDirective(ImportPath(FqName(import), isAllUnder))
-    this.addImport(importDirective)
-}
 
 fun KtFile.addImport(importDir: KtImportDirective) {
     if (this.importDirectives.any { it.text == importDir.text }) return
