@@ -11,7 +11,6 @@ abstract class Transformation(
     val probPercentage: Int
 ) {
     protected abstract fun transform()
-    protected var useCounter = 0
 
     fun execTransformations() {
         repeat(amountOfTransformations) { transform() }

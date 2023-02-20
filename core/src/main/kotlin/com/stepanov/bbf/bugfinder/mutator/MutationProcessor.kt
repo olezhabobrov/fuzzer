@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.mutator
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeElement
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.project.BBFFile
@@ -28,12 +27,7 @@ object MutationProcessor {
                 p.replaceChild(node, replCopy)
                 if (oldText == curFile.text)
                     continue
-                if (CompilerArgs.checkCompilationWhileMutating) {
-                    // TODO: send file to be checked
-
-                }
                 if (CompilerArgs.shouldSaveMutatedFiles) {
-//                    require(filenameOpt != null)
                     if (filenameOpt != null)
                         saveMutation(curFile, CompilerArgs.pathToMutatedDir + filenameOpt)
                 }
@@ -48,37 +42,10 @@ object MutationProcessor {
     fun replaceNodeReturnNode(node: PsiElement, replacement: PsiElement, curFile: BBFFile, filenameOpt: String? = null): Boolean =
         replaceNodeReturnNode(node.node, replacement.node, curFile, filenameOpt) != null
 
-    fun checkCompiling(): Boolean {
-        TODO()
-//        if (CompilerArgs.checkCompilationWhileMutating) {
-//            eventBus.request(VertxAddresses.compileCheck,
-//                Json.encodeToString(CompileRequestMessage(curFile.name, curFile.text))) {
-//                    compilationResult: AsyncResult<Message<String>> ->
-//                val result = Json.decodeFromString<KotlincInvokeStatus>(compilationResult.result().body())
-//
-//            }
-//        }
-//        return true
-    }
-
     fun saveMutation(file: BBFFile, pathToSave: String) {
         File(CompilerArgs.pathToMutatedDir).mkdirs()
         File(pathToSave).writeText(file.psiFile.text)
     }
-
-    fun addNodeToNodeWithFileReplacement(
-        newFile: PsiFile,
-        originalFile: BBFFile,
-        anchor: PsiElement,
-        node: PsiElement,
-        before: Boolean = false
-    ) = makeASTModificationWithFileReplacement(newFile, originalFile) {
-        addNode(
-            anchor,
-            node,
-            before
-        )
-    } as PsiElement?
 
     fun addNode(anchor: PsiElement, node: PsiElement, before: Boolean = false): PsiElement? {
         log.debug("Trying to add $node to $anchor")
@@ -94,41 +61,6 @@ object MutationProcessor {
             return null
         }
     }
-
-    private fun makeASTModificationWithFileReplacement(
-        newFile: PsiFile,
-        originalFile: BBFFile,
-        action: () -> Any?
-    ): Any? {
-        val originalPsi = originalFile.psiFile.copy() as PsiFile
-        return try {
-            originalFile.changePsiFile(newFile, false)
-            action.invoke()
-        } finally {
-            originalFile.changePsiFile(originalPsi, false)
-        }
-    }
-
-    fun replaceNodeWithNodeWithFileReplacement(
-        newFile: PsiFile,
-        originalFile: BBFFile,
-        node: ASTNode,
-        replacement: ASTNode
-    ) = makeASTModificationWithFileReplacement(newFile, originalFile) {
-        replaceNodeReturnNode(
-            node,
-            replacement,
-            originalFile
-        )
-    } as ASTNode?
-
-    fun replacePSINodeWithFileReplacement(
-        newFile: PsiFile,
-        originalFile: BBFFile,
-        psiElement: PsiElement,
-        replacement: PsiElement
-    ) = replaceNodeWithNodeWithFileReplacement(newFile, originalFile, psiElement.node, replacement.node)
-
     private val DUMMY_HOLDER_INDEX: Short = 86
     private val log = Logger.getLogger("mutatorLogger")
 }
