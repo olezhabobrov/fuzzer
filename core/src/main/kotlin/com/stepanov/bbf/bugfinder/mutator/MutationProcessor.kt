@@ -7,9 +7,13 @@ import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.getAllParentsWithoutNode
 import org.apache.log4j.Logger
+import org.jetbrains.kotlin.psi.KtPsiFactory
 import java.io.File
 
 object MutationProcessor {
+
+    fun createExpression(file: BBFFile, text: String) =
+            KtPsiFactory(file.psiFile.project).createExpression(text)
 
     fun replaceNodeReturnNode(node: ASTNode, replacement: ASTNode, curFile: BBFFile, filenameOpt: String? = null): ASTNode? {
         log.debug("Trying to replace $node on $replacement")
