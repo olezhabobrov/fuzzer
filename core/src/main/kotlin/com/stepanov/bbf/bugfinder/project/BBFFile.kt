@@ -4,12 +4,13 @@ import com.intellij.psi.PsiFile
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.resolve.BindingContext
 
 class BBFFile(
     val psiFile: PsiFile,
     val env: KotlinCoreEnvironment
 ) {
-    val ctx = updateCtx()
+    lateinit var ctx: BindingContext
     val name = psiFile.name
 
     fun getLanguage(): LANGUAGE {
@@ -26,5 +27,11 @@ class BBFFile(
     val text: String
         get() = psiFile.text
 
-    fun updateCtx() = PSICreator.updateBindingContext(psiFile, env)
+    fun updateCtx() {
+        ctx = PSICreator.updateBindingContext(psiFile, env)
+    }
+
+    init {
+        updateCtx()
+    }
 }
