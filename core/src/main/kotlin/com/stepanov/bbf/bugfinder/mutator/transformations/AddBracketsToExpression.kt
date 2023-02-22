@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getRandomBoolean
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 class AddBracketsToExpression(project: Project, file: BBFFile):
     Transformation(project, file,
@@ -20,7 +19,7 @@ class AddBracketsToExpression(project: Project, file: BBFFile):
             .forEach {
                 if (it is KtWhenExpression) return@forEach
                 try {
-                    val newExpr = psiFactory.createExpression("(${it.text})")
+                    val newExpr = MutationProcessor.createExpression(file, "(${it.text})")
                     MutationProcessor.replaceNodeReturnNode(it, newExpr, file)
                 } catch (e: Exception) {
                     return@forEach
