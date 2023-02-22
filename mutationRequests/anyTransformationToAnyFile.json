@@ -7,7 +7,7 @@
         "type": "All"
     },
     "mutationTarget": {
-        "type": "file"
+        "type": "random"
     },
     "mutationCount": 5
 }
