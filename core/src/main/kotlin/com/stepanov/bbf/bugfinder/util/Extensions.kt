@@ -8,7 +8,6 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.stepanov.bbf.bugfinder.project.LANGUAGE
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.reduktor.util.getAllChildren
 import com.stepanov.bbf.reduktor.util.getAllChildrenOfCurLevel
 import org.jetbrains.kotlin.KtNodeTypes
@@ -345,9 +344,6 @@ fun getTrueWithProbability(probability: Int): Boolean = Random().nextInt(100) in
 fun Random.getRandomVariableName(length: Int = 5): String =
     this.nextString(('a'..'z').asCharSequence(), length, length + 1)
 
-fun kotlin.random.Random.getRandomVariableName(length: Int = 5): String =
-    Random().nextString(('a'..'z').asCharSequence(), length, length + 1)
-
 fun String.isSubstringOf(other: String): Boolean {
     val m = this.length
     val n = other.length
@@ -410,28 +406,6 @@ fun KtBlockExpression.addProperty(prop: KtProperty): PsiElement? {
 fun KtFile.getBoxFuncs(): List<KtNamedFunction>? =
     this.getAllPSIChildrenOfType { it.text.contains(Regex("""fun box\d*\(""")) }
 
-fun PsiFile.addAtTheEnd(psiElement: PsiElement): PsiElement {
-    return this.getAllPSIDFSChildrenOfType<PsiElement>().last().parent.let {
-        it.add(Factory.psiFactory.createWhiteSpace("\n\n"))
-        val res = it.add(psiElement)
-        it.add(Factory.psiFactory.createWhiteSpace("\n\n"))
-        res
-    }
-}
-
-
-fun PsiFile.addToTheTop(psiElement: PsiElement): PsiElement {
-    val firstChild = this.allChildren.first!!
-    firstChild.add(Factory.psiFactory.createWhiteSpace("\n"))
-    val res = firstChild.add(psiElement)
-    firstChild.add(Factory.psiFactory.createWhiteSpace("\n"))
-    return res
-}
-
-fun KtFile.addImport(import: String, isAllUnder: Boolean) {
-    val importDirective = Factory.psiFactory.createImportDirective(ImportPath(FqName(import), isAllUnder))
-    this.addImport(importDirective)
-}
 
 fun KtFile.addImport(importDir: KtImportDirective) {
     if (this.importDirectives.any { it.text == importDir.text }) return
@@ -572,10 +546,6 @@ fun KtProperty.getVisibility() =
         this.text.contains("protected") -> "protected"
         else -> "public"
     }
-
-fun KtNamedFunction.getReturnType(context: BindingContext): KotlinType? =
-    if (this.isUnit()) DefaultKotlinTypes.unitType
-    else this.typeReference?.getAbbreviatedTypeOrType(context) ?: this.initializer?.getType(context)
 
 fun KtProperty.getPropertyType(context: BindingContext): KotlinType? =
     this.typeReference?.getAbbreviatedTypeOrType(context) ?: this.initializer?.getType(context)

@@ -42,11 +42,9 @@ class Mutator: AbstractVerticle() {
     private fun executeMutation(t: Transformation) {
         if (Random.nextInt(0, 100) < t.probPercentage) {
             //Update ctx
-            t.updateCtx()
-            t.ctx ?: return
+            t.file.updateCtx()
             log.debug("Cur transformation ${t::class.simpleName}")
             t.execTransformations()
-            t.file.changePsiFile(t.file.text)
         }
     }
 

@@ -5,12 +5,15 @@ import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
+import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.information.VertxAddresses
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
+
 
 @Serializable
 data class MutationProblem(
@@ -22,34 +25,25 @@ data class MutationProblem(
     fun createMutationStrategy(): MutationStrategy {
         val project: Project
         if (mutationTarget is FileTarget) {
-            mutationTarget.file = File("tmp/arrays/flist.kt")//.listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
-            project = Project.createFromCode(mutationTarget.extactCode())
-            project.realFileName = mutationTarget.file.name
+            mutationTarget.writeFile()
+            project = Project(listOf(mutationTarget.realFileName()))
         } else if (mutationTarget is ProjectTarget) {
-            val fileIter = mutationTarget.getFileIter()
-            project = Project.createFromCode(fileIter.next())
-            while (fileIter.hasNext()) {
-                val file = Project.createBBFilesFromCode(fileIter.next())
-                require(file!!.size == 1)
-                project.addFile(file.first())
-            }
+            mutationTarget.writeProject()
+            project = Project(mutationTarget.files.map { file ->
+                mutationTarget.realFileTarget(file).realFileName()
+            })
         } else {
             error("mutationTarget is not file or project wtf")
         }
         // TODO: probably shouldn't mutate random file
         // i.e. for a certain mutation we should mutate certain file
         // and should fix params
-        return MutationStrategy(listOfTransformations.map { transformation ->
-            transformation.primaryConstructor!!.call(project, project.files.random())
+        return MutationStrategy(List(mutationCount) { _ ->
+            val transformation = listOfTransformations.random()
+            transformation.primaryConstructor!!
+                .call(project, project.files.random())
         }, project)
-//        MutationStrategy(List(mutationCount) { _ ->
-//            val transformation = listOfTransformations.random()
-//            transformation.primaryConstructor!!
-//                .call(project, project.files.random())
-//        }, project)
     }
-
-
 
     val listOfTransformations: List<KClass<out Transformation>>
         get() {
@@ -110,10 +104,37 @@ data class FileTarget(
     val fileName: String? = null,
     val code: String? = null
 ): MutationTarget() {
-    @Contextual
-    var file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
-    fun extactCode(): String = file.readText()
+    fun realFileName(): String {
+        val tmpFolder = "projectTmp/${Random().getRandomVariableName()}/"
+        if (fileName == null) {
+            return tmpFolder + "tmp.kt"
+        }
+        if (!File(fileName).exists()) {
+            return tmpFolder + fileName
+        }
+        return tmpFolder + fileName.removePrefix("tmp/arrays/")
+    }
 
+    fun writeFile() {
+        val realFileName = realFileName()
+        File(realFileName.substringBeforeLast("/")).mkdir()
+        if (code != null)
+            File(realFileName).writeText(code)
+        else
+            File(realFileName).writeText(
+                File(fileName!!).readText()
+            )
+    }
+
+//    fun extactCode(): String {
+//        if (code != null)
+//            return code
+//        if (fileName != null)
+//            return File(fileName).readText()
+//        val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()
+//            ?: error("wtf couldn't choose random file for some reason")
+//        return file.readText()
+//    }
 
     override fun validate() {
         if (code == null &&
@@ -138,14 +159,18 @@ data class ProjectTarget(
             if (file.fileName == null) {
                 throw IllegalArgumentException("Provided project, but fileName not provided wtf")
             }
-            FileTarget(File(File(projectRoot), file.fileName).path, file.code).validate()
+            realFileTarget(file).validate()
         }
     }
 
-    fun getFileIter() = iterator {
-        files.forEach { yield(it.extactCode()) }
+    fun writeProject() {
+        files.forEach { file ->
+            realFileTarget(file).writeFile()
+        }
     }
 
+    fun realFileTarget(file: FileTarget): FileTarget =
+        FileTarget(File(File(projectRoot), file.fileName!!).path, file.code)
 }
 
 fun parseMutationProblem(data: String): MutationProblem =

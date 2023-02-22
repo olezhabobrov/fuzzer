@@ -2,9 +2,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
-import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.apache.log4j.Logger
-import org.jetbrains.kotlin.resolve.BindingContext
 
 abstract class Transformation(
     val project: Project,
@@ -13,15 +11,9 @@ abstract class Transformation(
     val probPercentage: Int
 ) {
     protected abstract fun transform()
-    protected var useCounter = 0
 
     fun execTransformations() {
         repeat(amountOfTransformations) { transform() }
-    }
-
-    var ctx: BindingContext? = null
-    fun updateCtx() {
-        ctx = PSICreator.analyze(file.psiFile, project)
     }
 
     companion object {
