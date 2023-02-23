@@ -1,6 +1,9 @@
 package com.stepanov.bbf.reduktor.parser
 
+import com.intellij.openapi.extensions.ExtensionPoint
+import com.intellij.openapi.extensions.Extensions
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.TreeCopyHandler
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.kootstrap.FooBarCompiler.setupMyCfg
 import com.stepanov.bbf.kootstrap.FooBarCompiler.setupMyEnv
@@ -12,6 +15,7 @@ import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.lazy.JvmResolveUtil
 import java.io.File
@@ -44,6 +48,20 @@ object PSICreator {
         cfg.addKotlinSourceRoots(kotlinSources)
 
         val env = setupMyEnv(cfg)
+
+        if (!Extensions.getRootArea().hasExtensionPoint(TreeCopyHandler.EP_NAME.name)) {
+            Extensions.getRootArea().registerExtensionPoint(
+                TreeCopyHandler.EP_NAME.name,
+                TreeCopyHandler::class.java.canonicalName,
+                ExtensionPoint.Kind.INTERFACE
+            )
+        }
+
+        env.getSourceFiles().map {
+            val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
+            f.originalFile = it
+            f
+        }
         return env
     }
 
