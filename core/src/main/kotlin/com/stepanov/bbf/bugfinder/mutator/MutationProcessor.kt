@@ -38,6 +38,7 @@ object MutationProcessor {
                 return replCopy
             } catch (e: Error) {
                 log.debug("Caught error in MutationProcessor while replacing node: ${e.stackTraceToString()}")
+                throw e
             }
         }
         return null

@@ -25,6 +25,7 @@ import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.apache.log4j.Logger
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class Coordinator: CoroutineVerticle() {
 
@@ -141,7 +142,9 @@ class Coordinator: CoroutineVerticle() {
 
         vertx.deployVerticle(mutator,
             DeploymentOptions().setWorker(true)
-                .setWorkerPoolName("mutators-pool") //.setMaxWorkerExecuteTime(10L)
+                .setWorkerPoolName("mutators-pool")
+                .setMaxWorkerExecuteTimeUnit(TimeUnit.DAYS)
+                .setMaxWorkerExecuteTime(1L)
         ) { res ->
             if (res.failed()) {
                 log.debug("Deployment of mutators failed with exception: ${res.cause().stackTraceToString()}")

@@ -4,12 +4,17 @@ import com.intellij.psi.PsiErrorElement
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class Project(
     fileNameList: List<String>
 ) {
     val env = PSICreator.createEnv(fileNameList)
-    val files: List<BBFFile> = env.getSourceFiles().map { BBFFile(it, env) }
+    val files: List<BBFFile> = env.getSourceFiles().map {
+        val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
+        f.originalFile = it
+        BBFFile(f, env)
+    }
 
     fun isSyntaxCorrect(): Boolean =
         files.all { it.psiFile.getAllPSIChildrenOfType<PsiErrorElement>().isEmpty() }

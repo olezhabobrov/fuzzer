@@ -119,36 +119,6 @@ object FooBarCompiler {
     }
 
 
-    //    fun setupMyEnv(cfg: CompilerConfiguration): KotlinCoreEnvironment {
-//
-//        val disposable = Disposer.newDisposable()
-//        //Use for windows
-//        //System.setProperty("idea.io.use.fallback", "true")
-//        val env = KotlinCoreEnvironment.createForProduction(
-//            disposable,
-//            cfg,
-//            EnvironmentConfigFiles.JVM_CONFIG_FILES
-//        )
-//        val project = env.project as MockProject
-//        project.registerService(
-//            TreeAspect::class.java,
-//            TreeAspect()
-//        )
-//
-//        class MyPomModelImpl(env: KotlinCoreEnvironment) : PomModelImpl(env.project) {
-//            override fun runTransaction(pt: PomTransaction) = pt.run()
-//        }
-//
-//
-//        val pomModel = MyPomModelImpl(env)
-//
-//        project.registerService(
-//            PomModel::class.java,
-//            pomModel
-//        )
-//        return env
-//    }
-
     fun tearDownMyEnv(env: KotlinCoreEnvironment) = Disposer.dispose(env.project)
 
 }
