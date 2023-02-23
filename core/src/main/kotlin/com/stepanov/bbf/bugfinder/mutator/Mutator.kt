@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator
 
 import com.intellij.openapi.util.Disposer
+import com.intellij.psi.PsiFile
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
@@ -50,7 +51,7 @@ class Mutator: AbstractVerticle() {
 
     private fun startMutate(strategy: MutationStrategy) {
         log.debug("Starting mutating for strategy #${strategy.number}")
-        val initial = strategy.transformations.first().file.copy()
+        val initial = strategy.transformations.first().file.psiFile.copy()
         val initialText = initial.text
         val threadPool = Executors.newCachedThreadPool()
         strategy.transformations.forEach { transformation ->
@@ -79,14 +80,14 @@ class Mutator: AbstractVerticle() {
                         failedWithException++
                         exceptionsBuilder.append(e.message + "\n\n")
                     } finally {
-                        transformation.file = initial
+                        transformation.file.psiFile = initial as PsiFile
                     }
                 }
             }
             val avgTime = time / MagicConst / 1000
             val result = """
                 transformation=${transformation.javaClass.simpleName}
-                file=${transformation.project.realFileName}
+                file=${transformation.file.name}
                 finished=$finished
                 changed=$changed
                 failed with exception=$failedWithException
@@ -97,7 +98,8 @@ class Mutator: AbstractVerticle() {
                 
                 $exceptionsBuilder
             """.trimIndent()
-            val fileName = transformation.javaClass.simpleName + "___" + transformation.project.realFileName + ".txt"
+            val fileName = transformation.javaClass.simpleName + "___" + transformation.file.name.substringAfterLast("/") + ".txt"
+            log.debug("Writing stat result to $fileName")
             File("stats/$fileName").writeText(result)
         }
     }

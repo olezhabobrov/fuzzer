@@ -1,0 +1,170 @@
+                transformation=AddBracketsToExpression
+                file=/home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+                finished=0
+                changed=0
+                failed with exception=20
+                timeout of 30 seconds=0
+                average time=0 seconds
+                
+                exceptions:
+                
+                org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (24,27) in /home/olezhka/fuzzer/core/projectTmp/stepThenReversedThenStep2.kt
+
+Attachments:
+expression.kt
+for (i in ((((charProgression step 2).reversed()) step 3))) {
+        ((charList (+= i))
+    }
+

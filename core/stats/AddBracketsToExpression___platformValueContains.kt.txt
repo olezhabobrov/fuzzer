@@ -1,0 +1,130 @@
+                transformation=AddBracketsToExpression
+                file=/home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+                finished=0
+                changed=0
+                failed with exception=20
+                timeout of 30 seconds=0
+                average time=0 seconds
+                
+                exceptions:
+                
+                org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (43,13) in /home/olezhka/fuzzer/core/projectTmp/platformValueContains.kt
+
+Attachments:
+expression.kt
+J.nullValue() (in mySet
+

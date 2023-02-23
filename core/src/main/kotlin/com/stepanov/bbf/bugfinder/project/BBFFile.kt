@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class BBFFile(
-    val psiFile: PsiFile,
+    var psiFile: PsiFile,
     val env: KotlinCoreEnvironment
 ) {
     lateinit var ctx: BindingContext

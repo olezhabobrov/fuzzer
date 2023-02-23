@@ -1,0 +1,130 @@
+                transformation=AddBracketsToExpression
+                file=/home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+                finished=0
+                changed=0
+                failed with exception=20
+                timeout of 30 seconds=0
+                average time=0 seconds
+                
+                exceptions:
+                
+                org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
+org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression at (15,23) in /home/olezhka/fuzzer/core/projectTmp/compoundAssignmentToPropertyImportedFromObject.kt
+
+Attachments:
+expression.kt
+x (!= (3)
+
