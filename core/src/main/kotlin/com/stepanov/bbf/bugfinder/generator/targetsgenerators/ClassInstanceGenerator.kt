@@ -157,7 +157,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         val implementations = StdLibraryGenerator.findImplementationFromFile(implementedType, true)
         val randomImpl = implementations.randomOrNull()?.defaultType ?: return null
         val classDescriptor = randomImpl.constructor.declarationDescriptor as? ClassDescriptor ?: return null
-        val typeParamsToRealTypes = TypeParamsReplacer.throwTypeParams(implementedType, classDescriptor)?.second ?: return null
+        val typeParamsToRealTypes = TypeParamsReplacer.throwTypeParams(file, implementedType, classDescriptor)?.second ?: return null
         val replacedTypeArgs = randomImpl.arguments.map { typeParamsToRealTypes[it.type.getNameWithoutError()]?.asTypeProjection() ?: it }
         val typeToImplement = randomImpl.replace(replacedTypeArgs)
         val instance =

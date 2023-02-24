@@ -84,7 +84,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
         depth: Int = 0
     ): KtCallExpression? {
         val randomInstanceGenerator = RandomInstancesGenerator(file)
-        val (descriptorWithoutTypeParams, realTypeParams) = TypeParamsReplacer.throwTypeParams(null, func)
+        val (descriptorWithoutTypeParams, realTypeParams) = TypeParamsReplacer.throwTypeParams(file, null, func)
             ?: return null
         val extensionReceiverType = descriptorWithoutTypeParams.extensionReceiverParameter?.value?.type
         val realTypeParamsAsString =

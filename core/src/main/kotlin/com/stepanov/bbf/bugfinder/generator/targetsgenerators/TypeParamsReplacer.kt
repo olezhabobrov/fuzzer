@@ -2,6 +2,7 @@ package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
@@ -12,6 +13,7 @@ import org.jetbrains.kotlin.types.typeUtil.*
 object TypeParamsReplacer {
 
     fun throwTypeParams(
+        file: BBFFile,
         fromType: KotlinType?,
         targetDescriptor: FunctionDescriptor
     ): Pair<FunctionDescriptor, Map<String, KotlinType?>>? {
@@ -29,7 +31,7 @@ object TypeParamsReplacer {
                 if (realTypeParams.isNotEmpty() && index != -1 && !realTypeParams[index].isAnyOrNullableAny()) {
                     realTypeParams[index]
                 } else {
-                    RandomTypeGenerator.generateRandomTypeWithCtx(upperBound)
+                    RandomTypeGenerator(file).generateRandomTypeWithCtx(upperBound)
                 }
             if (newTypeParameter != null && upperBound != null && !weakCheckTypeParamsBounds(newTypeParameter, upperBound)) {
                 return null
@@ -49,11 +51,12 @@ object TypeParamsReplacer {
 //            }
 //        }
         //val oldToRealTypeParams = targetDescriptor.typeParameters.map { it.name.asString() }.zip(typeParams).toMap()
-        val substitutedDescriptor = substituteTypeParams(targetDescriptor, oldToRealTypeParams) ?: return null
+        val substitutedDescriptor = substituteTypeParams(file, targetDescriptor, oldToRealTypeParams) ?: return null
         return substitutedDescriptor to oldToRealTypeParams
     }
 
     fun throwTypeParams(
+        file: BBFFile,
         fromType: KotlinType,
         targetDescriptor: ClassDescriptor,
         withoutParams: Boolean = false
@@ -90,14 +93,14 @@ object TypeParamsReplacer {
                 if (index != -1 && realTypeParams.size > index && !realTypeParams[index].type.isAnyOrNullableAny()) {
                     realTypeParams[index].type
                 } else {
-                    RandomTypeGenerator.generateRandomTypeWithCtx(upperBound)
+                    RandomTypeGenerator(file).generateRandomTypeWithCtx(upperBound)
                 }
             if (newTypeParameter != null && upperBound != null && !weakCheckTypeParamsBounds(newTypeParameter, upperBound)) {
                 return null
             }
             oldToRealTypeParams[name.asString()] = newTypeParameter
         }
-        val substitutedDescriptor = substituteTypeParams(implConstr, oldToRealTypeParams) ?: return null
+        val substitutedDescriptor = substituteTypeParams(file, implConstr, oldToRealTypeParams) ?: return null
         return substitutedDescriptor to oldToRealTypeParams
 
 //        val valueParams = produceValueParamsForConstructor(implConstr, oldToRealTypeParams)
@@ -114,6 +117,7 @@ object TypeParamsReplacer {
     }
 
     private fun substituteTypeParams(
+        file: BBFFile,
         targetFunc: FunctionDescriptor,
         oldToRealTypeParams: Map<String, KotlinType?>
     ) = targetFunc.substitute(
@@ -122,7 +126,7 @@ object TypeParamsReplacer {
                 .withIndex()
                 .associateBy({ it.value.typeConstructor }) {
                     val newType =
-                        oldToRealTypeParams[it.value.name.asString()] ?: RandomTypeGenerator.generateType("Any")!!
+                        oldToRealTypeParams[it.value.name.asString()] ?: RandomTypeGenerator(file).generateType("Any")!!
                     TypeProjectionImpl(newType)
                 }
         )
