@@ -1,12 +1,11 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators
 
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.generator.constructor.util.StandardLibraryInheritanceTree
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator.getDeclDescriptorOf
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.KotlinTypeCreator.createType
-import com.stepanov.bbf.reduktor.parser.PSICreator
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.builtins.UnsignedType
@@ -26,23 +25,10 @@ import org.jetbrains.kotlin.types.replace
 import org.jetbrains.kotlin.types.typeUtil.isAnyOrNullableAny
 import org.jetbrains.kotlin.types.typeUtil.substitute
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
-object RandomTypeGenerator {
+class RandomTypeGenerator(val file: BBFFile) {
     
     var minVisibility = "public"
-
-    fun isInitialized() = ::file.isInitialized && ::ctx.isInitialized
-
-    fun setFileAndContext(file: KtFile, project: Project? = null) {
-        RandomTypeGenerator.file = file
-        ctx = PSICreator.analyze(file, project) ?: exitProcess(0)
-    }
-
-    fun setFileAndContext(file: KtFile, ctx: BindingContext) {
-        RandomTypeGenerator.file = file
-        RandomTypeGenerator.ctx = ctx
-    }
 
     fun generateRandomTypeWithCtx(upperBounds: KotlinType? = null, depth: Int = 0): KotlinType? {
         if (depth > MAX_DEPTH) return null
@@ -88,7 +74,7 @@ object RandomTypeGenerator {
     private fun generateWithUpperBounds(upperBounds: KotlinType, depth: Int = 0): KotlinType? {
         var fromFile = false
         val impls =
-            if (file.getAllPSIChildrenOfType<KtClassOrObject>()
+            if (file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
                     .any { it.name == "$upperBounds".substringBefore('<') }
             ) {
                 fromFile = true
@@ -116,13 +102,13 @@ object RandomTypeGenerator {
     fun getTypeFromFile(name: String = "", depth: Int = 0): KotlinType? {
         val randomClass =
             if (name.isEmpty())
-                file.getAllPSIChildrenOfType<KtClassOrObject>()
+                file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
                     .filter { it.name != null }
                     .filter { !it.isLocal }
                     .filter { it.parents.all { !(it is KtClassOrObject) } }
                     .randomOrNull() ?: return generateType(primitives.random())
             else
-                file.getAllPSIChildrenOfType<KtClassOrObject>().find { it.name == name } ?: return generateType(
+                file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().find { it.name == name } ?: return generateType(
                     primitives.random()
                 )
         val typeParamToType = mutableMapOf<String, KotlinType>()
@@ -138,7 +124,7 @@ object RandomTypeGenerator {
         sortedTypeParams.forEach {
             val upperBounds =
                 if (it.extendsBound != null) {
-                    val upperBounds = it.extendsBound?.getAbbreviatedTypeOrType(ctx) ?: return null
+                    val upperBounds = it.extendsBound?.getAbbreviatedTypeOrType(file.ctx!!) ?: return null
                     typeParamToType.getOrElse(it.extendsBound!!.text) {
                         val substitutedArgs = upperBounds.arguments.map { arg ->
                             arg.substitute {
@@ -191,9 +177,8 @@ object RandomTypeGenerator {
     }
 
     fun generateType(name: String): KotlinType? {
-        if (!RandomTypeGenerator::file.isInitialized || !RandomTypeGenerator::ctx.isInitialized) return null
         if (name.isEmpty()) return null
-        generateType(file, ctx, name.trim()).let {
+        generateType(file.psiFile, file.ctx!!, name.trim()).let {
             if (it == null) {
                 println("CANT GENERATE TYPE $name")
             }
@@ -202,12 +187,10 @@ object RandomTypeGenerator {
     }
 
     fun generateKTypeForClass(klass: KtClassOrObject): KotlinType? {
-        if (RandomTypeGenerator::file.isInitialized && RandomTypeGenerator::ctx.isInitialized) {
-            val programTypes = getExprsAndReferences(file, ctx)
-            programTypes
-                .find { it.constructor.declarationDescriptor?.findPsi() as? KtClassOrObject == klass }
-                ?.let { return it.constructor.declarationDescriptor?.defaultType }
-        }
+        val programTypes = getExprsAndReferences(file.psiFile, file.ctx!!)
+        programTypes
+            .find { it.constructor.declarationDescriptor?.findPsi() as? KtClassOrObject == klass }
+            ?.let { return it.constructor.declarationDescriptor?.defaultType }
         val name = klass.name
         val tp =
             if (klass.typeParameters.isEmpty())
@@ -267,7 +250,7 @@ object RandomTypeGenerator {
     fun generateOpenClassType(onlyFromFile: Boolean = false, onlyInterfaces: Boolean = false): ClassDescriptor? {
         val fromSrc = run {
             val randomClass =
-                file.getAllPSIChildrenOfType<KtClass>()
+                file.psiFile.getAllPSIChildrenOfType<KtClass>()
                     .filter { it.isInterface() || it.modalityModifierType()?.value?.trim() == "open" }
                     .filter { it.isInterface() || !onlyInterfaces }
                     .filter { !it.hasModifier(KtTokens.PRIVATE_KEYWORD) }
