@@ -108,6 +108,8 @@ object KotlinTypeCreator {
         val func = "fun $typeParams abcq(a: $n$typeParamsWithoutBounds){}"
         val prop = "val abcq1: $n$typeParamsWithoutBounds = TODO()"
         val newFile = psiFactory(file).createFile("$prefix\n\n$prop\n\n$func\n\n${fileCopy.text}")
+        val newFileBBF = BBFFile(newFile, file.env)
+
         val psiFunc = newFile.getAllPSIChildrenOfType<KtNamedFunction>().firstOrNull() ?: return null
         val psiProp = newFile.getAllPSIChildrenOfType<KtProperty>().firstOrNull() ?: return null
         val funTypeReference =
@@ -130,7 +132,7 @@ object KotlinTypeCreator {
                 val import = psiFactory(file).createImportDirective(ImportPath(FqName(pack.fqName.toUnsafe()), true))
                 newFile.addImport(import)
             }
-        val ctx = file.updateCtx() ?: return null
+        val ctx = newFileBBF.updateCtx() ?: return null
         val propType = psiProp.typeReference?.getAbbreviatedTypeOrType(ctx)
         if (propType != null && !propType.isErrorType()) return propType
         return psiFunc.valueParameters.firstOrNull()?.typeReference?.getAbbreviatedTypeOrType(ctx)
