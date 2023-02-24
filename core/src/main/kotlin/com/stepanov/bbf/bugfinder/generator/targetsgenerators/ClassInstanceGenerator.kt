@@ -1,7 +1,7 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.types.*
@@ -58,7 +57,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         }
         val i = unsafeGenerateRandomInstanceOfClass(curClassAsKType, depth) ?: return null
         res.add(i.first?.text ?: "")
-        return Factory.psiFactory.createExpressionIfPossible(res.joinToString(".")) to curClassAsKType
+        return psiFactory(file).createExpressionIfPossible(res.joinToString(".")) to curClassAsKType
     }
 
     fun generateRandomInstanceOfUserClass(
@@ -78,7 +77,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
                     .filterIsInstance<ClassDescriptor>()
                     .reversed()
                     .joinToString(".") { it.name.asString() }
-            return Factory.psiFactory.createExpressionIfPossible(fullName) to klOrObjType
+            return psiFactory(file).createExpressionIfPossible(fullName) to klOrObjType
         }
         val psiClassOrObj = classDescriptor.findPsi() as? KtClassOrObject ?: return null
         if (classDescriptor.kind == ClassKind.ENUM_CLASS || classDescriptor.kind == ClassKind.ENUM_ENTRY) {
@@ -92,14 +91,11 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         )
         //return null
         if (classDescriptor.kind == ClassKind.ANNOTATION_CLASS) return null
-        if (!rtg.isInitialized()) {
-            rtg.setFileAndContext(file)
-        }
         if (psiClassOrObj.parents.any { it is KtClassOrObject }) {
             return generateInstanceOfLocalClass(classDescriptor, psiClassOrObj, depth)
         }
         if (psiClassOrObj is KtObjectDeclaration) {
-            val expr = Factory.psiFactory.createExpression(psiClassOrObj.name!!)
+            val expr = psiFactory(file).createExpression(psiClassOrObj.name!!)
             return expr to klOrObjType
         }
         if (klOrObjType.isInterface() || klOrObjType.isAbstractClass() || classDescriptor.isSealed()) return generateImplementation(
@@ -124,11 +120,8 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         if (klOrObj.hasModifier(KtTokens.ENUM_KEYWORD) || klOrObj is KtEnumEntry) {
             return generateEnumInstance(klOrObj) to null
         }
-        if (!rtg.isInitialized()) {
-            rtg.setFileAndContext(file)
-        }
         val classType =
-            (klOrObj.getDeclarationDescriptorIncludingConstructors(rtg.ctx) as? ClassDescriptor)?.defaultType
+            (klOrObj.getDeclarationDescriptorIncludingConstructors(file.ctx!!) as? ClassDescriptor)?.defaultType
                 ?: rtg.generateKTypeForClass(klOrObj)
                 ?: return null
         if (klOrObj.parents.any { it is KtClassOrObject }) {
@@ -139,7 +132,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
             )
         }
         if (klOrObj is KtObjectDeclaration) {
-            val expr = Factory.psiFactory.createExpression(klOrObj.name!!)
+            val expr = psiFactory(file).createExpression(klOrObj.name!!)
             return expr to classType
         }
         if (classType.isInterface() || classType.isAbstractClass()) return generateImplementation(
@@ -157,7 +150,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
                 klOrObj
             } ?: klOrObj
         val randomEnum = klass.body?.enumEntries?.randomOrNull() ?: return null
-        return Factory.psiFactory.createExpression("${klass.name}.${randomEnum.name}")
+        return psiFactory(file).createExpression("${klass.name}.${randomEnum.name}")
     }
 
     private fun generateImplementation(implementedType: KotlinType, depth: Int): Pair<PsiElement?, KotlinType>? {
@@ -225,9 +218,9 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
 
         val type = "Function$numberOfParams$substitutedTypeParamsAsString"
         val typeAsKotlinType = rtg.generateType(type) ?: return null
-        val generatedConstructor = RandomInstancesGenerator(file, ctx).generateValueOfType(typeAsKotlinType, depth + 1)
+        val generatedConstructor = RandomInstancesGenerator(file).generateValueOfType(typeAsKotlinType, depth + 1)
         val instance = "${classDescriptor.name}${typeParamsForDeclaration}$generatedConstructor"
-        val psiInstance = Factory.psiFactory.createExpressionIfPossible(instance) ?: return null
+        val psiInstance = psiFactory(file).createExpressionIfPossible(instance) ?: return null
         return psiInstance to subClassDescr.defaultType.replace(newTypeParameters.map { it.asTypeProjection() })
     }
 
@@ -250,7 +243,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
             if (member is PropertyDescriptor) {
                 val rtv = member.type
                 val initialValue =
-                    RandomInstancesGenerator(file, ctx).generateValueOfType(rtv, depth + 1)
+                    RandomInstancesGenerator(file).generateValueOfType(rtv, depth + 1)
                         .let { if (it.isEmpty()) "TODO" else it }
                 res.appendLine("override $memberToString: $rtv = $initialValue")
             } else if (member is FunctionDescriptor) {
@@ -258,14 +251,14 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
                 if (psi != null && psi.hasBody() && Random.getTrue(85)) continue
                 val rtv = member.returnType ?: continue
                 val initialValue =
-                    RandomInstancesGenerator(file, ctx).generateValueOfType(rtv, depth + 1)
+                    RandomInstancesGenerator(file).generateValueOfType(rtv, depth + 1)
                         .let { if (it.isEmpty()) "TODO" else it }
                 res.appendLine("override $memberToString: $rtv = $initialValue")
             }
         }
         res.appendLine("}")
         return try {
-            val expr = Factory.psiFactory.createObject(res.toString())
+            val expr = psiFactory(file).createObject(res.toString())
             expr to interfaceType
         } catch (e: Exception) {
             null
@@ -305,7 +298,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         val typeArgs = classWOTPType.arguments.take(numOfTP)
             .let { if (it.isEmpty()) "" else it.joinToString(prefix = "<", postfix = ">") }
         val generatedExp =
-            Factory.psiFactory.createExpressionIfPossible("$name$typeArgs(${generatedValueParams.joinToString()})")
+            psiFactory(file).createExpressionIfPossible("$name$typeArgs(${generatedValueParams.joinToString()})")
         return generatedExp to classWOTPType
     }
 
