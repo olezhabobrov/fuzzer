@@ -225,8 +225,8 @@ open class RandomInstancesGenerator(private val file: BBFFile) {
             return generateDefValuesAsString(el.name.asString())
         file.updateCtx() ?: return ""
         val (resFunDescriptor, typeParams) = when (el) {
-            is SimpleFunctionDescriptor -> TypeParamsReplacer.throwTypeParams(typeWOTypeParams, el)
-            is ClassDescriptor -> TypeParamsReplacer.throwTypeParams(typeWOTypeParams, el, withoutParams)
+            is SimpleFunctionDescriptor -> TypeParamsReplacer.throwTypeParams(file, typeWOTypeParams, el)
+            is ClassDescriptor -> TypeParamsReplacer.throwTypeParams(file, typeWOTypeParams, el, withoutParams)
             else -> return ""
         } ?: return ""
         val invocation =

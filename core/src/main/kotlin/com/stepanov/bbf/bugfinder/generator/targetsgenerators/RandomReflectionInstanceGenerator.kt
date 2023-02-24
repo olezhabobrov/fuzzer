@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
@@ -34,7 +35,7 @@ class RandomReflectionInstanceGenerator(
                 val randomKlass = fileClasses.random()
                 getParentClassesNames(randomKlass) + randomKlass.name + "::class"
             } else {
-                randomTypeGenerator.generateRandomType().substringBefore('<') + "::class"
+                RandomTypeGenerator.generateRandomType().substringBefore('<') + "::class"
             }
         } else {
             "${type.arguments.first().type.toString().substringBefore('<')}::class"

@@ -3,7 +3,7 @@
 package com.stepanov.bbf.bugfinder.util
 
 import java.util.*
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator.generateRandomType
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.util.kcheck.asCharSequence
 import com.stepanov.bbf.bugfinder.util.kcheck.nextChar
 import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
@@ -18,8 +18,8 @@ fun generateDefValuesAsString(type: String): String {
             "${generateDefValuesAsString(type.substring(1))}.to$type()".substringAfter('-')
         type.let { it == "UByte?" || it == "UShort?" || it == "UInt?" || it == "ULong?" } ->
             "${generateDefValuesAsString(type.substring(1))}.to$type()".substringAfter('-')
-        type == "Any" -> generateDefValuesAsString(generateRandomType())
-        type == "Any?" -> generateDefValuesAsString(generateRandomType())
+        type == "Any" -> generateDefValuesAsString(RandomTypeGenerator.generateRandomType())
+        type == "Any?" -> generateDefValuesAsString(RandomTypeGenerator.generateRandomType())
         type == "String" -> "\"${generateDefValuesForDefaultTypes<String>(type)}\""
         type == "Number" -> generateDefValuesForDefaultTypes<Int>("Int").toString()
         type == "Number?" -> generateDefValuesForDefaultTypes<Int>("Int").toString()

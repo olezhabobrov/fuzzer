@@ -214,13 +214,7 @@ class RandomTypeGenerator(val file: BBFFile) {
     }
 
 
-    fun generateRandomType(upperBounds: KotlinType? = null): String {
-        if (upperBounds == null) return if (Random.nextBoolean()) generateContainer() else generatePrimitive()
-        val implementations = StandardLibraryInheritanceTree.getSubtypesOf(upperBounds.toString().substringBefore("<"))
-        return primitives.intersect(implementations).randomOrNull()
-            ?: containers.intersect(implementations).randomOrNull()
-            ?: upperBounds.toString()
-    }
+
 
 
     private fun generateContainer1(depth: Int = 0): String {
@@ -234,18 +228,6 @@ class RandomTypeGenerator(val file: BBFFile) {
         return "$container$strTypeParams"
     }
 
-    private fun generateContainer(): String {
-        val container = containers.random()
-        val descr = getDeclDescriptorOf(container) as ClassDescriptor
-        val typeParams = descr.typeConstructor.parameters.map {
-            if (Random.nextBoolean()) {
-                generatePrimitive()
-            } else {
-                generateContainer()
-            }
-        }.joinToString(prefix = "<", postfix = ">")
-        return "$container$typeParams"
-    }
 
     fun generateOpenClassType(onlyFromFile: Boolean = false, onlyInterfaces: Boolean = false): ClassDescriptor? {
         val fromSrc = run {
@@ -269,27 +251,55 @@ class RandomTypeGenerator(val file: BBFFile) {
         //return UsageSamplesGeneratorWithStLibrary.generateOpenClassType(onlyInterfaces)
     }
 
-    private val MAX_DEPTH = 10
 
-    fun generatePrimitive(): String = primitives.random()
-
-    val primitives: List<String> =
-        enumValues<PrimitiveType>().map { it.typeName.asString() } +
-                enumValues<UnsignedType>().map { it.typeName.asString() } +
-                listOf("String")
-
-    val signedPrimitives: List<String> =
-        enumValues<PrimitiveType>().map { it.typeName.asString() } +
-                listOf("String")
-
-    val containers = listOf(
-        "ArrayList", "List", "Set", "Map", "Array", "HashMap", "MutableMap",
-        "HashSet", "LinkedHashMap", "LinkedHashSet", "Collection", "ArrayDeque",
-        "Pair", "Triple", "Sequence"
-    )
 
     val typeParamComparator = Comparator { t1: KtTypeParameter, t2: KtTypeParameter ->
         if (t1.extendsBound == null && t2.extendsBound == null) 0
         else if (t1.getAllPSIChildrenOfType<KtTypeReference>().any { it.text == t2.name }) 1 else -1
     }
+
+    companion object {
+        fun generateRandomType(upperBounds: KotlinType? = null): String {
+            if (upperBounds == null) return if (Random.nextBoolean()) generateContainer() else generatePrimitive()
+            val implementations =
+                StandardLibraryInheritanceTree.getSubtypesOf(upperBounds.toString().substringBefore("<"))
+            return primitives.intersect(implementations).randomOrNull()
+                ?: containers.intersect(implementations).randomOrNull()
+                ?: upperBounds.toString()
+        }
+
+
+        private fun generateContainer(): String {
+            val container = containers.random()
+            val descr = getDeclDescriptorOf(container) as ClassDescriptor
+            val typeParams = descr.typeConstructor.parameters.map {
+                if (Random.nextBoolean()) {
+                    generatePrimitive()
+                } else {
+                    generateContainer()
+                }
+            }.joinToString(prefix = "<", postfix = ">")
+            return "$container$typeParams"
+        }
+
+        private val MAX_DEPTH = 10
+
+        fun generatePrimitive(): String = primitives.random()
+
+        val primitives: List<String> =
+            enumValues<PrimitiveType>().map { it.typeName.asString() } +
+                    enumValues<UnsignedType>().map { it.typeName.asString() } +
+                    listOf("String")
+
+        val signedPrimitives: List<String> =
+            enumValues<PrimitiveType>().map { it.typeName.asString() } +
+                    listOf("String")
+
+        val containers = listOf(
+            "ArrayList", "List", "Set", "Map", "Array", "HashMap", "MutableMap",
+            "HashSet", "LinkedHashMap", "LinkedHashSet", "Collection", "ArrayDeque",
+            "Pair", "Triple", "Sequence"
+        )
+    }
+
 }
