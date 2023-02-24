@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPackageStatement
 import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.util.*
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import com.stepanov.bbf.reduktor.parser.PSICreator

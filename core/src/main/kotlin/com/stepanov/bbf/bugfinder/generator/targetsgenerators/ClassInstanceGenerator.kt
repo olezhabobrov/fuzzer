@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
@@ -20,7 +21,7 @@ import org.jetbrains.kotlin.types.typeUtil.isInterface
 import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import kotlin.random.Random
 
-internal class ClassInstanceGenerator(file: KtFile, val ctx: BindingContext) : TypeAndValueParametersGenerator(file) {
+internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGenerator(file) {
 
     private val log = Logger.getLogger("mutatorLogger")
     private val MAX_DEPTH = 10

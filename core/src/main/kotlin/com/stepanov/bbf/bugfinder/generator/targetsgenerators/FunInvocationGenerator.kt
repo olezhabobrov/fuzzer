@@ -30,7 +30,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
         typeParameters: Map<String, KotlinType?>,
         depth: Int
     ): PsiElement? {
-        val randomInstanceGenerator = RandomInstancesGenerator(file.psiFile, file.ctx!!)
+        val randomInstanceGenerator = RandomInstancesGenerator(file)
         log.debug("Generating call of $functionDescriptor")
         val funcName =
             when (functionDescriptor) {
@@ -83,7 +83,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
         func: FunctionDescriptor,
         depth: Int = 0
     ): KtCallExpression? {
-        val randomInstanceGenerator = RandomInstancesGenerator(file.psiFile, file.ctx!!)
+        val randomInstanceGenerator = RandomInstancesGenerator(file)
         val (descriptorWithoutTypeParams, realTypeParams) = TypeParamsReplacer.throwTypeParams(null, func)
             ?: return null
         val extensionReceiverType = descriptorWithoutTypeParams.extensionReceiverParameter?.value?.type
