@@ -30,7 +30,6 @@ class RandomTypeGenerator(val file: BBFFile) {
     
     var minVisibility = "public"
 
-    companion object
     fun generateRandomTypeWithCtx(upperBounds: KotlinType? = null, depth: Int = 0): KotlinType? {
         if (depth > MAX_DEPTH) return null
         val resRandomType: KotlinType?
@@ -179,7 +178,7 @@ class RandomTypeGenerator(val file: BBFFile) {
 
     fun generateType(name: String): KotlinType? {
         if (name.isEmpty()) return null
-        generateType(file.psiFile, file.ctx!!, name.trim()).let {
+        generateType(file, name.trim()).let {
             if (it == null) {
                 println("CANT GENERATE TYPE $name")
             }
@@ -208,8 +207,8 @@ class RandomTypeGenerator(val file: BBFFile) {
         return exprs + references
     }
 
-    private fun generateType(file: KtFile, ctx: BindingContext, name: String): KotlinType? {
-        val programTypes = getExprsAndReferences(file, ctx)
+    private fun generateType(file: BBFFile, name: String): KotlinType? {
+        val programTypes = getExprsAndReferences(file.psiFile, file.ctx!!)
         programTypes.firstOrNull { it.toString() == name }?.let { return it }
         return createType(file, name)?.let { if (it.isErrorType()) null else it }
     }
