@@ -26,23 +26,24 @@ class AddArgumentToFunction(project: Project, file: BBFFile):
     Transformation(project, file,
         1, 100) {
 
+    private val randomTypeGenerator = RandomTypeGenerator(file)
+
     override fun transform() {
         repeat(MAGIC_CONST) {
             try {
                 val ktFile = file.psiFile as? KtFile ?: return
                 val ctx = file.updateCtx() ?: return
-                RandomTypeGenerator.setFileAndContext(ktFile, ctx)
                 val randomFunc = ktFile.getAllPSIChildrenOfType<KtNamedFunction>().randomOrNull() ?: return
                 val availableTypeParams = getTypeParamsFromCurrentScope(randomFunc).toList()
-                var newType = RandomTypeGenerator.generateRandomTypeWithCtx() ?: return
+                var newType = randomTypeGenerator.generateRandomTypeWithCtx() ?: return
                 if (availableTypeParams.isNotEmpty()) {
                     val rt = newType.replaceTypeOrRandomSubtypeOnTypeParam(availableTypeParams)
-                    newType = RandomTypeGenerator.generateType(rt) ?: return@repeat
+                    newType = randomTypeGenerator.generateType(rt) ?: return@repeat
                 }
                 //Add default value
                 val defaultValue =
                     if (Random.getTrue(20)) {
-                        RandomInstancesGenerator(ktFile, ctx).generateValueOfType(newType)
+                        RandomInstancesGenerator(file).generateValueOfType(newType)
                     } else ""
                 val defaultValueAsString = if (defaultValue.isEmpty()) "" else " = $defaultValue"
                 val callers = ktFile.getAllPSIChildrenOfType<KtCallExpression>()
@@ -62,9 +63,9 @@ class AddArgumentToFunction(project: Project, file: BBFFile):
                             .map { resolvedTypeParams[it] ?: it }
                             .joinToString(separator = "")
                     val resolvedNewTypeAsKotlinType =
-                        RandomTypeGenerator.generateType(resolvedNewType) ?: return@forEach
+                        randomTypeGenerator.generateType(resolvedNewType) ?: return@forEach
                     var generatedValue =
-                        RandomInstancesGenerator(ktFile, ctx).generateValueOfType(resolvedNewTypeAsKotlinType)
+                        RandomInstancesGenerator(file).generateValueOfType(resolvedNewTypeAsKotlinType)
                     if (generatedValue.isNotEmpty()) {
                         if (resolvedNewType.trim() == "$newType".trim() && generatedValue.contains('<')) {
                             generatedValue =
