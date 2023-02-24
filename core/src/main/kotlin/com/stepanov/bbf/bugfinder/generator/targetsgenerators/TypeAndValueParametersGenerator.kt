@@ -14,15 +14,7 @@ import kotlin.system.exitProcess
 
 open class TypeAndValueParametersGenerator(val file: BBFFile) {
 
-    val rtg = RandomTypeGenerator
-
-    init {
-        if (!rtg.isInitialized()) {
-            val ctx = file.updateCtx() ?: exitProcess(0)
-            rtg.setFileAndContext(file, ctx)
-        }
-    }
-
+    val rtg = RandomTypeGenerator(file)
 
     fun generateTypeParameters(typeParameters: List<TypeParameterDescriptor>): List<KotlinType> {
         val typeParamToType = mutableMapOf<String, KotlinType>()
@@ -47,7 +39,7 @@ open class TypeAndValueParametersGenerator(val file: BBFFile) {
         }
 
     fun generateValueParameters(valueParameters: List<ValueParameterDescriptor>, depth: Int): List<String> {
-        val rig = RandomInstancesGenerator(file.psiFile, file.ctx ?: return listOf())
+        val rig = RandomInstancesGenerator(file)
         val res = mutableListOf<String>()
         for (param in valueParameters) {
             val instance = rig.generateValueOfType(param.type, depth + 1)

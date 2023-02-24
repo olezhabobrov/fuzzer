@@ -1,20 +1,25 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
+import com.intellij.psi.PsiElement
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.KotlinTypeCreator.recreateType
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.builtins.isExtensionFunctionType
 import org.jetbrains.kotlin.builtins.isFunctionOrSuspendFunctionType
 import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.descriptors.impl.EnumEntrySyntheticClassDescriptor
 import org.jetbrains.kotlin.ir.expressions.typeParametersCount
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.descriptorUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.types.*
@@ -22,7 +27,7 @@ import org.jetbrains.kotlin.types.typeUtil.*
 import kotlin.random.Random
 
 //TODO add project
-open class RandomInstancesGenerator(private val file: KtFile, private var ctx: BindingContext) {
+open class RandomInstancesGenerator(private val file: BBFFile) {
 
     //Type parameters will be replaced by randomly generated types
     fun generateFunctionCall(desc: FunctionDescriptor): PsiElement? {
@@ -40,7 +45,7 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
         nullIsPossible: Boolean = true
     ): KtExpression? =
         try {
-            Factory.psiFactory.createExpression(generateValueOfType(t, depth, onlyImpl, withoutParams, nullIsPossible))
+            psiFactory(file).createExpression(generateValueOfType(t, depth, onlyImpl, withoutParams, nullIsPossible))
         } catch (e: Error) {
             null
         } catch (e: Exception) {
@@ -84,7 +89,7 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
         //if (type.isAnyOrNullableAny()) return generateDefValuesAsString(generateRandomType())
         if (type.isAnyOrNullableAny()) return generateDefValuesAsString("String")
         if (type.isError || type.arguments.flatten<TypeProjection>().any { it.type.isError }) {
-            val recreatedType = recreateType(fileCopy, type)
+            val recreatedType = recreateType(file, type)
             log.debug("RECREATED ERROR TYPE = $recreatedType")
             if (recreatedType == null || recreatedType.isError) {
                 val name = (type as? UnresolvedType)?.presentableName ?: return ""
@@ -99,16 +104,16 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
                 .filterIsInstance<ClassDescriptor>()
                 .reversed()
                 .joinToString(".") { it.name.asString().trim() }
-            file.getClassWithName(className)?.let {
+            file.psiFile.getClassWithName(className)?.let {
                 val res = classInstanceGenerator.generateRandomInstanceOfUserClass(type, depth + 1)
                 return res?.first?.text ?: ""
             }
         }
         if (type.constructor.declarationDescriptor.let { it is ClassDescriptor && it.name.asString() == "Enum" }) {
             val enumClassesFromFile =
-                file.getAllPSIChildrenOfType<KtClass>()
+                file.psiFile.getAllPSIChildrenOfType<KtClass>()
                     .filter { it.isEnum() }
-                    .mapNotNull { ctx?.let { ctx -> it.getDeclarationDescriptorIncludingConstructors(ctx) as? ClassDescriptor } }
+                    .mapNotNull { file.ctx?.let { ctx -> it.getDeclarationDescriptorIncludingConstructors(ctx) as? ClassDescriptor } }
             return if (enumClassesFromFile.isNotEmpty() && Random.getTrue(60)) {
                 classInstanceGenerator
                     .generateRandomInstanceOfUserClass(enumClassesFromFile.random().defaultType)
@@ -130,7 +135,7 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
         }
         if (type.isPrimitiveTypeOrNullablePrimitiveTypeOrString())
             generateDefValuesAsString(type.toString()).let { if (it.isNotEmpty()) return it }
-        if (type.isKType()) return RandomReflectionInstanceGenerator(file, type, ctx).generateReflection()
+        if (type.isKType()) return RandomReflectionInstanceGenerator(file, type).generateReflection()
         if (type.isFunctionOrSuspendFunctionType) {
             if (type.arguments.isEmpty()) return ""
             val args =
@@ -151,7 +156,7 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
         val replacedArgs =
             type.arguments.map {
                 if (it.type.isTypeParameter()) {
-                    RandomTypeGenerator.generateRandomTypeWithCtx()?.asTypeProjection() ?: return null
+                    randomTypeGenerator.generateRandomTypeWithCtx()?.asTypeProjection() ?: return null
                 } else {
                     it
                 }
@@ -218,7 +223,7 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
             }
         if (el is ClassDescriptor && el.defaultType.isPrimitiveTypeOrNullablePrimitiveTypeOrString())
             return generateDefValuesAsString(el.name.asString())
-        ctx?.let { randomTypeGenerator.setFileAndContext(file, it) } ?: return ""
+        file.updateCtx() ?: return ""
         val (resFunDescriptor, typeParams) = when (el) {
             is SimpleFunctionDescriptor -> TypeParamsReplacer.throwTypeParams(typeWOTypeParams, el)
             is ClassDescriptor -> TypeParamsReplacer.throwTypeParams(typeWOTypeParams, el, withoutParams)
@@ -229,11 +234,10 @@ open class RandomInstancesGenerator(private val file: KtFile, private var ctx: B
         return invocation?.text ?: ""
     }
 
-    private val fileCopy = file.copy() as KtFile
 
-    internal val classInstanceGenerator = ClassInstanceGenerator(file, ctx)
-    internal val funInvocationGenerator = FunInvocationGenerator(file, ctx)
-    val randomTypeGenerator = RandomTypeGenerator
+    internal val classInstanceGenerator = ClassInstanceGenerator(file)
+    internal val funInvocationGenerator = FunInvocationGenerator(file)
+    val randomTypeGenerator = RandomTypeGenerator(file)
     private val MAGIC_CONST = 15
     private val log = Logger.getLogger("mutatorLogger")
 
