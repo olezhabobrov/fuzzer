@@ -5,9 +5,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPackageStatement
 import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
+import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
 import com.stepanov.bbf.bugfinder.util.*
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
-import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.EnumEntrySyntheticClassDescriptor
@@ -30,11 +32,15 @@ object StdLibraryGenerator {
     private val maxDepth = 2
     private val blockList = listOf("hashCode", "toString")
     private val userClasses: MutableList<ClassDescriptor> = mutableListOf()
+    private val fileHelper: BBFFile
 
     //TODO
     init {
-        val psi = PSICreator.getPSIForText("val a: StringBuilder = StringBuilder(\"\")")
-        val ctx = PSICreator.analyze(psi)!!
+        val tmpFile = SourceFileTarget("val a: StringBuilder = StringBuilder(\"\")").also {it.writeFile()}
+        val project = Project(listOf(tmpFile.getLocalName()))
+        fileHelper = project.files.first()
+        val psi = fileHelper.psiFile
+        val ctx = fileHelper.ctx!!
         val kType =
             psi.getAllPSIChildrenOfType<KtProperty>().map { it.typeReference?.getAbbreviatedTypeOrType(ctx) }[0]!!
         val module = kType.constructor.declarationDescriptor!!.module
@@ -210,7 +216,7 @@ object StdLibraryGenerator {
                     rtvName == it.name && prefix.size == maxDepth - 1 -> null
                     Random.getTrue(prob) && isNeedTypeSatisfyingToBounds -> needType
                     prob == 100 -> null
-                    else -> RandomTypeGenerator.generateRandomTypeWithCtx(bound)
+                    else -> RandomTypeGenerator(fileHelper).generateRandomTypeWithCtx(bound)
                 } ?: return@forEach
                 val newArgs = newType
                     .getAllTypeParamsWithItself()
@@ -365,7 +371,7 @@ object StdLibraryGenerator {
         decl: DeclarationDescriptor
     ): KtNamedFunction? {
         val funDecl =
-            decl as? CallableMemberDescriptor ?: return Factory.psiFactory.createFunction("fun a()")
+            decl as? CallableMemberDescriptor ?: return psiFactory(fileHelper).createFunction("fun a()")
         val typeParam =
             if (funDecl.typeParameters.isNotEmpty()) {
                 val withUpperBounds = funDecl.typeParameters.map {
@@ -386,7 +392,7 @@ object StdLibraryGenerator {
         val params = handleParams(decl.valueParameters, typeParamsToArgs)
         val func = "fun $typeParam $recWithoutTypeParam.${decl.name}($params): ${decl.returnType}{}"
         return try {
-            Factory.psiFactory.createFunction(func)
+            psiFactory(fileHelper).createFunction(func)
         } catch (e: Exception) {
             println("cant create fun ${func}")
             System.exit(1)

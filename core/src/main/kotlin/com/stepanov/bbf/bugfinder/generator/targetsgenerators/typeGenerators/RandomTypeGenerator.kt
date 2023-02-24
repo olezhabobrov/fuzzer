@@ -30,6 +30,7 @@ class RandomTypeGenerator(val file: BBFFile) {
     
     var minVisibility = "public"
 
+    companion object
     fun generateRandomTypeWithCtx(upperBounds: KotlinType? = null, depth: Int = 0): KotlinType? {
         if (depth > MAX_DEPTH) return null
         val resRandomType: KotlinType?
