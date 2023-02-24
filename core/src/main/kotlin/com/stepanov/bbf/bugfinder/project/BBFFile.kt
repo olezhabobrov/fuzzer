@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class BBFFile(
-    val psiFile: KtFile,
+    var psiFile: KtFile,
     val env: KotlinCoreEnvironment
 ) {
     var ctx: BindingContext? = null

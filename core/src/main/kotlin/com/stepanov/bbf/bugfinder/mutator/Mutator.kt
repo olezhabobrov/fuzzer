@@ -9,6 +9,7 @@ import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -80,7 +81,7 @@ class Mutator: AbstractVerticle() {
                         failedWithException++
                         exceptionsBuilder.append(e.message + "\n\n")
                     } finally {
-                        transformation.file.psiFile = initial as PsiFile
+                        transformation.file.psiFile = initial as KtFile
                     }
                 }
             }
@@ -101,6 +102,7 @@ class Mutator: AbstractVerticle() {
             val fileName = transformation.javaClass.simpleName + "___" + transformation.file.name.substringAfterLast("/") + ".txt"
             log.debug("Writing stat result to $fileName")
             File("stats/$fileName").writeText(result)
+
         }
     }
 

@@ -1,0 +1,10 @@
+transformation=AddArgumentToFunction
+file=/home/olezhka/fuzzer/core/projectTmp/jvmFieldInInterfaceCompanion.kt
+finished=20
+changed=0
+failed with exception=0
+timeout of 30 seconds=0
+average time=0 seconds
+
+exceptions:
+
