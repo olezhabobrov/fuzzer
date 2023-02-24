@@ -65,13 +65,18 @@ object PSICreator {
         return env
     }
 
-    fun updateBindingContext(psiFile: PsiFile, env: KotlinCoreEnvironment): BindingContext {
+    fun updateBindingContext(psiFile: PsiFile, env: KotlinCoreEnvironment): BindingContext? {
         val configuration = env.configuration.copy()
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "root")
-        return if (psiFile is KtFile) {
-            JvmResolveUtil.analyze(listOf(psiFile), env, configuration).bindingContext
-        } else {
-            JvmResolveUtil.analyze(env).bindingContext
+        return try {
+            if (psiFile is KtFile) {
+                JvmResolveUtil.analyze(listOf(psiFile), env, configuration).bindingContext
+            } else {
+                JvmResolveUtil.analyze(env).bindingContext
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            null
         }
     }
 }

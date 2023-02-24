@@ -15,6 +15,8 @@ object MutationProcessor {
     fun createExpression(file: BBFFile, text: String) =
             KtPsiFactory(file.psiFile.project).createExpression(text)
 
+    fun psiFactory(file: BBFFile) = KtPsiFactory(file.psiFile.project)
+
     fun replaceNodeReturnNode(node: ASTNode, replacement: ASTNode, curFile: BBFFile, filenameOpt: String? = null): ASTNode? {
         log.debug("Trying to replace $node on $replacement")
         if (node.text.isEmpty() || node == replacement) {
