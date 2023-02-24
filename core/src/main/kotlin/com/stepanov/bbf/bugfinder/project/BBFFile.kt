@@ -10,7 +10,7 @@ class BBFFile(
     val psiFile: PsiFile,
     val env: KotlinCoreEnvironment
 ) {
-    lateinit var ctx: BindingContext
+    var ctx: BindingContext? = null
     val name = psiFile.name
 
     fun getLanguage(): LANGUAGE {
@@ -27,8 +27,9 @@ class BBFFile(
     val text: String
         get() = psiFile.text
 
-    fun updateCtx() {
+    fun updateCtx(): BindingContext? {
         ctx = PSICreator.updateBindingContext(psiFile, env)
+        return ctx
     }
 
     init {
