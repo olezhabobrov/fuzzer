@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.getTrue
@@ -133,6 +134,6 @@ internal class FunInvocationGenerator(file: BBFFile) :
             }
         val callExpressionAsString =
             "$generatedExtensionReceiver${func.name}$realTypeParamsAsString$valueArgsAsString"
-        return Factory.psiFactory.tryToCreateExpression(callExpressionAsString) as? KtCallExpression
+        return MutationProcessor.createExpressionOrThrow(file, callExpressionAsString) as? KtCallExpression
     }
 }

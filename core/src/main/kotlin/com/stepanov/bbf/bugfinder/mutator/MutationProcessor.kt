@@ -15,6 +15,12 @@ object MutationProcessor {
     fun createExpression(file: BBFFile, text: String) =
             KtPsiFactory(file.psiFile.project).createExpression(text)
 
+    fun createExpressionOrThrow(file: BBFFile, text: String) = try {
+        KtPsiFactory(file.psiFile.project).createExpression(text)
+    } catch (_: Throwable) {
+        null
+    }
+
     fun psiFactory(file: BBFFile) = KtPsiFactory(file.psiFile.project)
 
     fun replaceNodeReturnNode(node: ASTNode, replacement: ASTNode, curFile: BBFFile, filenameOpt: String? = null): ASTNode? {
