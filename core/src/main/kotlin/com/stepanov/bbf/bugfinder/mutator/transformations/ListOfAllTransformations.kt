@@ -20,7 +20,7 @@ object Constants {
         AddNotNullAssertions::class,
 //        AddNullabilityTransformer::class,
         AddPossibleModifiers::class,
-//        AddPropertiesToClass::class,
+        AddPropertiesToClass::class,
 //        AddRandomAnnotation::class,
         AddRandomClass::class,
 //        AddRandomComponent::class,
