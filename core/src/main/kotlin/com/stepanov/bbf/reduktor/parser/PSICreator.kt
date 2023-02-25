@@ -33,6 +33,15 @@ object PSICreator {
             return KtPsiFactory(project.files.first().psiFile.project)
         }
 
+    fun tryToCreateExpression(text: String) =
+        try {
+            psiFactory.createExpressionIfPossible(text)
+        } catch (e: Exception) {
+            null
+        } catch (e: Error) {
+            null
+        }
+
     fun createEnv(fileNameList: List<String>): KotlinCoreEnvironment {
         val cmd = opt.parse(arrayOf())
         val cfg = setupMyCfg(cmd)
