@@ -19,7 +19,7 @@ object Constants {
 //        AddMethodToClass::class,
         AddNotNullAssertions::class,
 //        AddNullabilityTransformer::class,
-//        AddPossibleModifiers::class,
+        AddPossibleModifiers::class,
 //        AddPropertiesToClass::class,
 //        AddRandomAnnotation::class,
         AddRandomClass::class,
