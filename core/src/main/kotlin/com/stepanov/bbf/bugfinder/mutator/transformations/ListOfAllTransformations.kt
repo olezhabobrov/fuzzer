@@ -21,7 +21,7 @@ object Constants {
 //        AddNullabilityTransformer::class,
         AddPossibleModifiers::class,
         AddPropertiesToClass::class,
-//        AddRandomAnnotation::class,
+        AddRandomAnnotation::class,
         AddRandomClass::class,
 //        AddRandomComponent::class,
 //        AddRandomControlStatements::class,
