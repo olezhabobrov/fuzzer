@@ -31,7 +31,7 @@ object Constants {
 //        AddSameFunctions::class,
 //        AddTryExpression::class,
 //        ChangeArgToAnotherValue::class,
-//        ChangeConstants::class,
+        ChangeConstants::class,
 //        ChangeModifiers::class,
 //        ChangeOperators::class,
 //        ChangeOperatorsToFunInvocations::class,
