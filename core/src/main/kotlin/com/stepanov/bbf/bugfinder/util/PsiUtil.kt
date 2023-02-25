@@ -1,9 +1,8 @@
 package com.stepanov.bbf.bugfinder.util
 
 import com.intellij.psi.*
-import com.intellij.util.IncorrectOperationException
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.allChildren
 
 fun PsiFile.getNodesBetweenWhitespaces(begin: Int, end: Int): List<PsiElement> {
     val resList = mutableListOf<PsiElement>()
@@ -15,6 +14,19 @@ fun PsiFile.getNodesBetweenWhitespaces(begin: Int, end: Int): List<PsiElement> {
         if (whiteSpacesCounter > end) break
     }
     return resList
+}
+
+
+fun KtClassOrObject.addPsiToBody(prop: PsiElement): PsiElement? =
+    this.body?.addBeforeRBrace(prop) ?: this.add(psiFactory.createNonEmptyClassBody(prop.text))
+
+fun KtClassBody.addBeforeRBrace(psiElement: PsiElement): PsiElement {
+    return this.rBrace?.let { rBrace ->
+        val ws = this.addBefore(psiFactory.createWhiteSpace("\n"), rBrace)
+        val res = this.addAfter(psiElement, ws)
+        this.addAfter(psiFactory.createWhiteSpace("\n"), res)
+        res
+    } ?: psiElement
 }
 
 fun KtNamedFunction.isUnit() = this.typeReference == null && this.hasBlockBody()
