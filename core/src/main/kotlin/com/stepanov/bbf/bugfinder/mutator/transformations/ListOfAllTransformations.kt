@@ -8,7 +8,7 @@ object Constants {
         AddArgumentToFunction::class,
 //        AddBlockToExpression::class,
         AddBracketsToExpression::class,
-//        AddCallableReference::class,
+        AddCallableReference::class,
         AddCasts::class,
         AddDefaultValueToArg::class,
         AddExpressionToLoop::class,
