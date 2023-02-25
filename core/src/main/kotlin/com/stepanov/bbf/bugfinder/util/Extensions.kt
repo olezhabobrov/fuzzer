@@ -541,6 +541,10 @@ fun KotlinType.getMinModifier() =
         ?.name ?: "public"
 
 
+fun KtNamedFunction.getReturnType(context: BindingContext): KotlinType? =
+    if (this.isUnit()) DefaultKotlinTypes.unitType
+    else this.typeReference?.getAbbreviatedTypeOrType(context) ?: this.initializer?.getType(context)
+
 fun compareDescriptorVisibilitiesAsStrings(v1: String, v2: String): Int {
     return when {
         v1 == v2 -> 0
