@@ -11,7 +11,7 @@ object Constants {
 //        AddCallableReference::class,
 //        AddCasts::class,
         AddDefaultValueToArg::class,
-//        AddExpressionToLoop::class,
+        AddExpressionToLoop::class,
         AddFunInvocations::class,
 //        AddInheritance::class,
         AddLabels::class,
