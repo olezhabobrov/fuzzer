@@ -6,7 +6,7 @@ object Constants {
     // TODO: all transformation classes should be here
     val allTransformations: List<KClass<out Transformation>> = listOf(
         AddArgumentToFunction::class,
-//        AddBlockToExpression::class,
+        AddBlockToExpression::class,
         AddBracketsToExpression::class,
         AddCallableReference::class,
         AddCasts::class,
