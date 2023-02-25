@@ -14,7 +14,7 @@ object Constants {
 //        AddExpressionToLoop::class,
         AddFunInvocations::class,
 //        AddInheritance::class,
-//        AddLabels::class,
+        AddLabels::class,
         AddLoop::class,
 //        AddMethodToClass::class,
         AddNotNullAssertions::class,
