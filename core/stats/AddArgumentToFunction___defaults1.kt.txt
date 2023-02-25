@@ -1,10 +1,10 @@
 transformation=AddArgumentToFunction
 file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
-finished=20
-changed=20
+finished=18
+changed=16
 failed with exception=0
-timeout of 30 seconds=0
-average time=0 seconds
+timeout of 30 seconds=2
+average time=6 seconds
 
 exceptions:
 

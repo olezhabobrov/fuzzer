@@ -52,8 +52,7 @@ class Mutator: AbstractVerticle() {
 
     private fun startMutate(strategy: MutationStrategy) {
         log.debug("Starting mutating for strategy #${strategy.number}")
-        val initial = strategy.transformations.first().file.psiFile.copy()
-        val initialText = initial.text
+//        val initial = strategy.transformations.first().file.psiFile.copy()
         val threadPool = Executors.newCachedThreadPool()
         strategy.transformations.forEach { transformation ->
 
@@ -64,6 +63,7 @@ class Mutator: AbstractVerticle() {
             val exceptionsBuilder = StringBuilder()
             val time = measureTimeMillis {
                 repeat(MagicConst) {
+                    val initialText = transformation.file.text
                     val futureExitCode = threadPool.submit {
                         executeMutation(transformation)
                     }
@@ -81,7 +81,7 @@ class Mutator: AbstractVerticle() {
                         failedWithException++
                         exceptionsBuilder.append(e.message + "\n\n")
                     } finally {
-                        transformation.file.psiFile = initial as KtFile
+//                        transformation.file.psiFile = initial as KtFile
                     }
                 }
             }

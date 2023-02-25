@@ -36,7 +36,7 @@ object StdLibraryGenerator {
 
     //TODO
     init {
-        val tmpFile = SourceFileTarget("val a: StringBuilder = StringBuilder(\"\")").also {it.writeFile()}
+        val tmpFile = SourceFileTarget("val a: StringBuilder = StringBuilder(\"\")").also { it.writeFile() }
         val project = Project(listOf(tmpFile.getLocalName()))
         fileHelper = project.files.first()
         val psi = fileHelper.psiFile
