@@ -10,7 +10,7 @@ object Constants {
         AddBracketsToExpression::class,
 //        AddCallableReference::class,
 //        AddCasts::class,
-//        AddDefaultValueToArg::class,
+        AddDefaultValueToArg::class,
 //        AddExpressionToLoop::class,
         AddFunInvocations::class,
 //        AddInheritance::class,
