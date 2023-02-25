@@ -15,10 +15,8 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.js.descriptorUtils.nameIfStandardType
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
-import org.jetbrains.kotlin.resolve.ImportPath
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
@@ -27,7 +25,10 @@ import org.jetbrains.kotlin.types.typeUtil.supertypes
 import com.stepanov.bbf.bugfinder.util.kcheck.asCharSequence
 import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
 import com.stepanov.bbf.bugfinder.util.kcheck.nextString
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.ImportPath
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
@@ -41,6 +42,22 @@ import java.util.*
 import java.util.function.BiPredicate
 import kotlin.reflect.KClass
 
+fun PsiFile.addToTheTop(psiElement: PsiElement): PsiElement {
+    val firstChild = this.allChildren.first!!
+    firstChild.add(psiFactory.createWhiteSpace("\n"))
+    val res = firstChild.add(psiElement)
+    firstChild.add(psiFactory.createWhiteSpace("\n"))
+    return res
+}
+
+fun PsiFile.addAtTheEnd(psiElement: PsiElement): PsiElement {
+    return this.getAllPSIDFSChildrenOfType<PsiElement>().last().parent.let {
+        it.add(psiFactory.createWhiteSpace("\n\n"))
+        val res = it.add(psiElement)
+        it.add(psiFactory.createWhiteSpace("\n\n"))
+        res
+    }
+}
 
 fun KtProperty.getLeft(): List<PsiElement> =
     if (this.allChildren.toList().any { it.node.elementType.index.toInt() == 179 }) this.allChildren.toList()
@@ -409,6 +426,10 @@ fun KtBlockExpression.addProperty(prop: KtProperty): PsiElement? {
 fun KtFile.getBoxFuncs(): List<KtNamedFunction>? =
     this.getAllPSIChildrenOfType { it.text.contains(Regex("""fun box\d*\(""")) }
 
+fun KtFile.addImport(import: String, isAllUnder: Boolean) {
+    val importDirective = psiFactory.createImportDirective(ImportPath(FqName(import), isAllUnder))
+    this.addImport(importDirective)
+}
 
 fun KtFile.addImport(importDir: KtImportDirective) {
     if (this.importDirectives.any { it.text == importDir.text }) return

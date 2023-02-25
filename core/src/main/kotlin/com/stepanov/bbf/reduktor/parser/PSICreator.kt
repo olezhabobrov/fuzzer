@@ -4,6 +4,8 @@ import com.intellij.openapi.extensions.ExtensionPoint
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeCopyHandler
+import com.stepanov.bbf.bugfinder.project.Project
+import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.kootstrap.FooBarCompiler.setupMyCfg
 import com.stepanov.bbf.kootstrap.FooBarCompiler.setupMyEnv
@@ -23,6 +25,13 @@ import java.io.File
 
 @Suppress("DEPRECATION")
 object PSICreator {
+
+    val psiFactory: KtPsiFactory
+        get() {
+            val tmpFile = SourceFileTarget("").also { it.writeFile() }
+            val project = Project(listOf(tmpFile.getLocalName()))
+            return KtPsiFactory(project.files.first().psiFile.project)
+        }
 
     fun createEnv(fileNameList: List<String>): KotlinCoreEnvironment {
         val cmd = opt.parse(arrayOf())
