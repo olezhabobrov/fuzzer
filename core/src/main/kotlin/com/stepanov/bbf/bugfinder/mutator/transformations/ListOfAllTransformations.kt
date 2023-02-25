@@ -23,7 +23,7 @@ object Constants {
         AddPropertiesToClass::class,
         AddRandomAnnotation::class,
         AddRandomClass::class,
-//        AddRandomComponent::class,
+        AddRandomComponent::class,
 //        AddRandomControlStatements::class,
 //        AddRandomDS::class,
 //        AddRandomNode::class,
