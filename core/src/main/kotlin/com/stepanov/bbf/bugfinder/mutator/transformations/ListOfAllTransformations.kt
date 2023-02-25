@@ -13,7 +13,7 @@ object Constants {
         AddDefaultValueToArg::class,
         AddExpressionToLoop::class,
         AddFunInvocations::class,
-//        AddInheritance::class,
+        AddInheritance::class,
         AddLabels::class,
         AddLoop::class,
 //        AddMethodToClass::class,
