@@ -33,7 +33,7 @@ object Constants {
 //        ChangeArgToAnotherValue::class,
         ChangeConstants::class,
 //        ChangeModifiers::class,
-//        ChangeOperators::class,
+        ChangeOperators::class,
 //        ChangeOperatorsToFunInvocations::class,
 //        ChangeRandomASTNodes::class,
 //        ChangeRandomASTNodesFromAnotherTrees::class,
