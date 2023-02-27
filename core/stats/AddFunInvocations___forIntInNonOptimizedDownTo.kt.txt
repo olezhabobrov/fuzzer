@@ -1,10 +1,10 @@
 transformation=AddFunInvocations
-file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
+file=/home/olezhka/fuzzer/core/projectTmp/forIntInNonOptimizedDownTo.kt
 finished=5
 changed=0
 failed with exception=0
 timeout of 10 seconds=0
-average time=4 seconds
+average time=3 seconds
 
 exceptions:
 
