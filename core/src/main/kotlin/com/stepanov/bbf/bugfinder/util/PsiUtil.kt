@@ -1,8 +1,10 @@
 package com.stepanov.bbf.bugfinder.util
 
 import com.intellij.psi.*
+import com.intellij.util.IncorrectOperationException
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.allChildren
 
 fun PsiFile.getNodesBetweenWhitespaces(begin: Int, end: Int): List<PsiElement> {
     val resList = mutableListOf<PsiElement>()
@@ -33,4 +35,17 @@ fun KtNamedFunction.isUnit() = this.typeReference == null && this.hasBlockBody()
 
 fun KtPsiFactory.createNonEmptyClassBody(body: String): KtClassBody {
     return createClass("class A(){\n$body\n}").body!!
+}
+
+
+fun PsiElement.addAfterThisWithWhitespace(psiElement: PsiElement, whiteSpace: String): PsiElement {
+    return try {
+        val placeToInsert = this.allChildren.lastOrNull() ?: this
+        placeToInsert.add(psiFactory.createWhiteSpace(whiteSpace))
+        val res = placeToInsert.add(psiElement)
+        placeToInsert.add(psiFactory.createWhiteSpace(whiteSpace))
+        res
+    } catch (e: IncorrectOperationException) {
+        this
+    }
 }

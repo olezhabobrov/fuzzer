@@ -24,7 +24,7 @@ object Constants {
         AddRandomAnnotation::class,
         AddRandomClass::class,
         AddRandomComponent::class,
-//        AddRandomControlStatements::class,
+        AddRandomControlStatements::class,
 //        AddRandomDS::class,
 //        AddRandomNode::class,
 //        AddReificationToTypeParam::class,
