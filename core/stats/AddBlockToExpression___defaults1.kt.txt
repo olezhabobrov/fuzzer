@@ -1,10 +1,10 @@
-transformation=AddArgumentToFunction
+transformation=AddBlockToExpression
 file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
-finished=5
+finished=2
 changed=2
 failed with exception=0
-timeout of 10 seconds=0
-average time=1 seconds
+timeout of 10 seconds=3
+average time=8 seconds
 
 exceptions:
 

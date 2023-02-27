@@ -106,8 +106,8 @@ class Mutator: AbstractVerticle() {
         }
     }
 
-    private val timeoutSeconds = 30L
-    private val MagicConst = 20
+    private val timeoutSeconds = 10L
+    private val MagicConst = 5
 
     private val log = Logger.getLogger("mutatorLogger")
 }

@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder
 
 import com.stepanov.bbf.bugfinder.server.Coordinator
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
@@ -8,6 +9,8 @@ import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager
 import org.apache.log4j.PropertyConfigurator
 
 fun main() {
+    psiFactory.createExpressionIfPossible("qwerty + 5")
+    psiFactory.createExpressionIfPossible("")
     PropertyConfigurator.configure("src/main/resources/bbfLog4j.properties")
     val manager = HazelcastClusterManager()
     Vertx.clusteredVertx(VertxOptions().setClusterManager(manager)) { res ->

@@ -1,0 +1,10 @@
+transformation=AddRandomClass
+file=/home/olezhka/fuzzer/core/projectTmp/reflectOnSuspendLambdaInField.kt
+finished=10
+changed=10
+failed with exception=0
+timeout of 30 seconds=0
+average time=4 seconds
+
+exceptions:
+

@@ -35,11 +35,14 @@ data class MutationProblem(
         // TODO: probably shouldn't mutate random file
         // i.e. for a certain mutation we should mutate certain file
         // and should fix params
-        return MutationStrategy(List(mutationCount) { _ ->
-            val transformation = listOfTransformations.random()
-            transformation.primaryConstructor!!
-                .call(project, project.files.random())
+        return MutationStrategy(listOfTransformations.map { transformation ->
+            transformation.primaryConstructor!!.call(project, project.files.random())
         }, project)
+//        MutationStrategy(List(mutationCount) { _ ->
+//            val transformation = listOfTransformations.random()
+//            transformation.primaryConstructor!!
+//                .call(project, project.files.random())
+//        }, project)
     }
 
     val listOfTransformations: List<KClass<out Transformation>>
