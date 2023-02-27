@@ -1,14 +1,16 @@
-                transformation=AddRandomClass
+                transformation=AddRandomComponent
                 file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
-                finished=1
-                changed=1
-                failed with exception=4
+                finished=0
+                changed=0
+                failed with exception=5
                 timeout of 10 seconds=0
                 average time=0 seconds
                 
                 exceptions:
                 
                 java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
+
+java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 
 java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 

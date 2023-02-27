@@ -1,4 +1,4 @@
-                transformation=AddExpressionToLoop
+                transformation=AddFunInvocations
                 file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
                 finished=0
                 changed=0

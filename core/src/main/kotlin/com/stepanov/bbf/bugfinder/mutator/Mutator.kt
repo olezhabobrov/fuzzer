@@ -55,7 +55,7 @@ class Mutator: AbstractVerticle() {
 //        val initial = strategy.transformations.first().file.psiFile.copy()
         val threadPool = Executors.newCachedThreadPool()
         strategy.transformations.forEach { transformation ->
-
+            println("STARTED ${transformation.javaClass.simpleName}")
             var finished = 0
             var changed = 0
             var failedWithException = 0
@@ -102,7 +102,7 @@ class Mutator: AbstractVerticle() {
             val fileName = transformation.javaClass.simpleName + "___" + transformation.file.name.substringAfterLast("/") + ".txt"
             log.debug("Writing stat result to $fileName")
             File("stats/$fileName").writeText(result)
-
+            println("FINISHED ${transformation.javaClass.simpleName}")
         }
     }
 

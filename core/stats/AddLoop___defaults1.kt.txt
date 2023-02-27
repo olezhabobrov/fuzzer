@@ -1,10 +1,10 @@
-transformation=AddArgumentToFunction
+transformation=AddLoop
 file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
 finished=5
-changed=5
+changed=3
 failed with exception=0
 timeout of 10 seconds=0
-average time=0 seconds
+average time=2 seconds
 
 exceptions:
 

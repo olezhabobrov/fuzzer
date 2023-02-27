@@ -1,4 +1,4 @@
-transformation=AddArgumentToFunction
+transformation=AddNotNullAssertions
 file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
 finished=5
 changed=5
