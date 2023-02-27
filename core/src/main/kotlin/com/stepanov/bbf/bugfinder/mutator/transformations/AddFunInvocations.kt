@@ -114,7 +114,7 @@ class AddFunInvocations(project: Project, file: BBFFile):
         val block = psiFactory.createBlock(node.text)
         block.lBrace?.delete()
         block.rBrace?.delete()
-        MutationProcessor.addNode(tree, this)
+        MutationProcessor.addNode(this, block)
     }
 
     private fun getInsertableExpressions(
