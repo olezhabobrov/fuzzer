@@ -27,11 +27,12 @@ import java.io.File
 object PSICreator {
 
     val psiFactory: KtPsiFactory
-        get() {
-            val tmpFile = SourceFileTarget("").also { it.writeFile() }
-            val project = Project(listOf(tmpFile.getLocalName()))
-            return KtPsiFactory(project.files.first().psiFile.project)
-        }
+
+    init {
+        val tmpFile = SourceFileTarget("").also { it.writeFile() }
+        val project = Project(listOf(tmpFile.getLocalName()))
+        psiFactory = KtPsiFactory(project.files.first().psiFile.project)
+    }
 
     fun tryToCreateExpression(text: String) =
         try {
