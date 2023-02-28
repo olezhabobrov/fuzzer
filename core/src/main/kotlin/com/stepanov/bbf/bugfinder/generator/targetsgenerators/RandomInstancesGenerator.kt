@@ -83,14 +83,14 @@ open class RandomInstancesGenerator(private val file: BBFFile) {
             } else {
                 t.makeNotNullable()
             }
-        log.debug("generating value of type = $type ${type.isPrimitiveTypeOrNullablePrimitiveTypeOrString()} depth = $depth")
+//        log.debug("generating value of type = $type ${type.isPrimitiveTypeOrNullablePrimitiveTypeOrString()} depth = $depth")
         if (depth > MAGIC_CONST) return ""
         //TODO deal with Any KReflection
         //if (type.isAnyOrNullableAny()) return generateDefValuesAsString(generateRandomType())
         if (type.isAnyOrNullableAny()) return generateDefValuesAsString("String")
         if (type.isError || type.arguments.flatten<TypeProjection>().any { it.type.isError }) {
             val recreatedType = recreateType(file, type)
-            log.debug("RECREATED ERROR TYPE = $recreatedType")
+//            log.debug("RECREATED ERROR TYPE = $recreatedType")
             if (recreatedType == null || recreatedType.isError) {
                 val name = (type as? UnresolvedType)?.presentableName ?: return ""
                 return generateDefValuesAsString(name)

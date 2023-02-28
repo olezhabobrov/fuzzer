@@ -31,7 +31,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
         depth: Int
     ): PsiElement? {
         val randomInstanceGenerator = RandomInstancesGenerator(file)
-        log.debug("Generating call of $functionDescriptor")
+//        log.debug("Generating call of $functionDescriptor")
         val funcName =
             when (functionDescriptor) {
                 is JavaClassConstructorDescriptor -> functionDescriptor.constructedClass.name

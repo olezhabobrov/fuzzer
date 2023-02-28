@@ -36,7 +36,7 @@ class AddRandomAnnotation(project: Project, file: BBFFile):
     private val RANDOM_CONST = 50
 
     private fun insert(t: PsiElement, type: KotlinType?, kl: KtClass?) {
-        log.debug("trying to insert ${type ?: kl!!.name}")
+//        log.debug("trying to insert ${type ?: kl!!.name}")
         val instance =
             type?.let { randomInstancesGenerator.generateValueOfType(type) }
                 ?: randomInstancesGenerator.generateRandomInstanceOfClass(kl!!)?.first?.text

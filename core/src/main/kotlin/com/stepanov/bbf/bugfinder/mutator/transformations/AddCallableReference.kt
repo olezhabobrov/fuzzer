@@ -51,10 +51,10 @@ class AddCallableReference(project: Project, file: BBFFile):
                 if (!argType.isFunctionType) return@forEach
                 for (ref in potentialCallableReferences.shuffled()) {
                     val newCallable = psiFactory.createCallableReferenceExpression("::${ref.text}")
-                    log.debug("TRYING TO REPLACE ${arg.text} on ${newCallable?.text} ")
+//                    log.debug("TRYING TO REPLACE ${arg.text} on ${newCallable?.text} ")
                     if (newCallable != null) {
                         if (MutationProcessor.replaceNodeReturnNode(arg, newCallable, file)) {
-                            log.debug("Successfully replaced")
+//                            log.debug("Successfully replaced")
                         }
                     }
                 }

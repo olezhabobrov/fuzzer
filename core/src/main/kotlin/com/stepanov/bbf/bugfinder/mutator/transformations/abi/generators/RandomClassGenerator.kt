@@ -122,7 +122,7 @@ open class RandomClassGenerator(
                 openClass.constructors.any { it.valueParameters.isNotEmpty() && it.visibility.isPublicAPI } -> {
                     val generated = randomInstancesGenerator.generateValueOfType(openClass.defaultType, onlyImpl = true)
                     if (generated.isEmpty()) {
-                        println("CANT GENERATE EXPRESSION FROM ${openClass.defaultType}")
+//                        println("CANT GENERATE EXPRESSION FROM ${openClass.defaultType}")
                         "()"
                     } else {
                         val call = psiFactory.createExpression(generated) as KtCallExpression
