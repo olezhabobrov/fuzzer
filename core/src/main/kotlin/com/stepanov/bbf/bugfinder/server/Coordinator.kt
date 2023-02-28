@@ -16,6 +16,7 @@ import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.ProjectCodec
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.DeploymentOptions
@@ -78,21 +79,13 @@ class Coordinator: CoroutineVerticle() {
         vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
     }
 
-//    fun <T> EventBus.consumerWithLogging(address: String, handler: Handler<Message<T>>) {
-//        consumer<T>(address) {
-//            // log.in
-//            handler.handle(it)
-//            // log.out
-//        }
-//    }
-
     private fun establishConsumers() {
         eb.consumer<MutationProblem>(VertxAddresses.mutationProblemExec) { msg ->
             log.debug("Consumer got parsed MutationProblem")
             val mutationProblem = msg.body()
             val strategy = mutationProblem.createMutationStrategy()
             log.debug("Created mutation strategy: $strategy")
-            strategiesMap[strategy.number] = mutationProblem
+            strategiesMap[strategy.number] = strategy
             sendStrategyAndMutate(strategy)
         }
 
@@ -105,41 +98,35 @@ class Coordinator: CoroutineVerticle() {
                 vertx.eventBus().send(VertxAddresses.bugManager, bug)
             }
         }
-    }
 
-    private fun sendStrategyAndMutate(strategy: MutationStrategy) {
-        log.debug("Sending strategy#${strategy.number}")
-        eb.request<MutationResult>(VertxAddresses.mutate, strategy) { result ->
-            if (result.succeeded()) {
-                log.debug("Got mutation result")
-                val mutatedProject = result.result().body()
-                sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
-            } else {
-                log.debug("Caught exception, while mutating strategy#${strategy.number}: ${result.cause().message}")
+        eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
+            log.debug("Got mutation result")
+            val mutatedProject = result.body()
+            sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
+            if (mutatedProject.isFinal) {
+                val strategy = strategiesMap[mutatedProject.strategyNumber]!!
+                FooBarCompiler.tearDownMyEnv(strategy.project.env)
+                val mutationProblem = strategiesMap.remove(strategy.number)!!.mutationProblem
+                sendMutationProblem(mutationProblem)
             }
         }
     }
 
+    private fun sendStrategyAndMutate(strategy: MutationStrategy) {
+        log.debug("Sending strategy#${strategy.number}")
+        eb.send(VertxAddresses.mutate, strategy)
+    }
+
     private fun sendProjectToCompilers(project: Project, strategyN: Int) {
-        if (project.isSyntaxCorrect()) {
-            strategiesMap[strategyN]!!.compilers.forEach { address ->
-                eb.send(address, project.getProjectMessage())
-            }
-        } else {
-            log.debug("resulted project is not syntax correct. Not sending to compilers")
+        log.debug("Sending project to compiler after/while mutating by strategy#$strategyN")
+        strategiesMap[strategyN]!!.mutationProblem.compilers.forEach { address ->
+            eb.send(address, project.getProjectMessage())
         }
     }
 
     private fun deployMutators() {
         // TODO: case of several mutators
         val mutator = Mutator()
-
-//        val res = awaitResult<String> {
-//            vertx.deployVerticle(mutator,
-//                workerOptions().setMaxWorkerExecuteTime(10L)
-//            )
-//        }
-
         vertx.deployVerticle(mutator,
             DeploymentOptions().setWorker(true)
                 .setWorkerPoolName("mutators-pool")
@@ -171,7 +158,7 @@ class Coordinator: CoroutineVerticle() {
         File(CompilerArgs.pathToMutatedDir).deleteRecursively()
     }
 
-    private val strategiesMap = hashMapOf<Int, MutationProblem>()
+    private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }

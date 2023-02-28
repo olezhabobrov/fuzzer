@@ -39,7 +39,7 @@ data class MutationProblem(
             val transformation = listOfTransformations.random()
             transformation.primaryConstructor!!
                 .call(project, project.files.random())
-        }, project)
+        }, project, this)
     }
 
     val listOfTransformations: List<KClass<out Transformation>>
