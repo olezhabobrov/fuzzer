@@ -16,6 +16,7 @@ import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.ProjectCodec
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.DeploymentOptions
@@ -54,6 +55,55 @@ class Coordinator: CoroutineVerticle() {
                     log.debug("Got mutation request: $input")
                     val mutationProblem = parseMutationProblem(input)
                     sendMutationProblem(mutationProblem)
+                    context.request().response()
+                        .setStatusCode(200)
+                        .send()
+                } catch (e: Exception) {
+                    log.debug(e.message)
+                    context.request().response()
+                        .setStatusCode(400)
+                        .setStatusMessage("An error occurred: ${e.message}")
+                        .send()
+                }
+            }
+
+        var strategyS: MutationStrategy? = null
+
+        router.route("/upd_ctx")
+            .consumes("application/json")
+            .handler(BodyHandler.create())
+            .handler { context ->
+                try {
+                    val input = context.body().asString()
+                    log.debug("Got mutation request: $input")
+                    val mutationProblem = parseMutationProblem(input)
+                    strategyS = mutationProblem.createMutationStrategy()
+                    repeat(100) {
+                        if (it % 10 == 0)
+                            println(it)
+                        strategyS!!.transformations.first().file.updateCtx()
+                    }
+                    println("FINISHED")
+                    context.request().response()
+                        .setStatusCode(200)
+                        .send()
+                } catch (e: Exception) {
+                    log.debug(e.message)
+                    context.request().response()
+                        .setStatusCode(400)
+                        .setStatusMessage("An error occurred: ${e.message}")
+                        .send()
+                }
+            }
+
+        router.route("/clear")
+            .consumes("application/json")
+            .handler(BodyHandler.create())
+            .handler { context ->
+                try {
+                    println("In cleaning")
+                    FooBarCompiler.tearDownMyEnv(strategyS!!.project.env)
+                    println("FINISHED CLEANING")
                     context.request().response()
                         .setStatusCode(200)
                         .send()
