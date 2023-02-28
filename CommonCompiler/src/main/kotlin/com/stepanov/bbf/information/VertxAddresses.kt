@@ -15,4 +15,6 @@ object VertxAddresses {
     const val JVMCompiler = "JVMCompiler"
 
     const val NativeCompiler = "NativeCompiler"
+
+    const val mutationResult = "MutationResult"
 }

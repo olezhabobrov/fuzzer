@@ -20,8 +20,7 @@ class Mutator: AbstractVerticle() {
                 val strategy = msg.body()
                 log.debug("Got mutation strategy#${strategy!!.number}")
                 startMutate(strategy)
-                log.debug("Sending back project, mutated by mutation strategy #${strategy.number}")
-                msg.reply(MutationResult(strategy.project, strategy.number))
+                sendMutationResult(MutationResult(strategy.project, strategy.number, true))
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
                 msg.fail(1, e.message)
@@ -41,8 +40,16 @@ class Mutator: AbstractVerticle() {
     private fun startMutate(strategy: MutationStrategy) {
         log.debug("Starting mutating for strategy #${strategy.number}")
         strategy.transformations.forEach {
+            if (Random.nextInt(0, 100) < 30) {
+                sendMutationResult(MutationResult(strategy.project, strategy.number))
+            }
             executeMutation(it)
         }
+    }
+
+    private fun sendMutationResult(mutationResult: MutationResult) {
+        log.debug("Sending back project, mutated by mutation strategy #${mutationResult.strategyNumber}")
+        vertx.eventBus().send(VertxAddresses.mutationResult, mutationResult)
     }
 
     private val log = Logger.getLogger("mutatorLogger")
