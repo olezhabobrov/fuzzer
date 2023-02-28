@@ -1,0 +1,10 @@
+transformation=AddRandomClass
+file=/home/olezhka/fuzzer/core/projectTmp/kt47840.kt
+finished=2
+changed=2
+failed with exception=0
+timeout of 10 seconds=3
+average time=8 seconds
+
+exceptions:
+

@@ -1,0 +1,12 @@
+transformation=AddLoop
+file=/home/olezhka/fuzzer/core/projectTmp/kt47840.kt
+finished=0
+changed=0
+failed with exception=1
+timeout of 10 seconds=4
+average time=8 seconds
+
+exceptions:
+
+java.lang.AssertionError: Assertion failed
+

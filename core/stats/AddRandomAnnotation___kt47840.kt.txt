@@ -1,0 +1,14 @@
+                transformation=AddRandomAnnotation
+                file=/home/olezhka/fuzzer/core/projectTmp/kt47840.kt
+                finished=3
+                changed=3
+                failed with exception=2
+                timeout of 10 seconds=0
+                average time=2 seconds
+                
+                exceptions:
+                
+                com.intellij.psi.PsiInvalidElementAccessException: Element class com.intellij.psi.impl.source.tree.CompositeElement of type TYPE_REFERENCE (class org.jetbrains.kotlin.psi.stubs.elements.KtPlaceHolderStubElementType)
+
+com.intellij.psi.PsiInvalidElementAccessException: Element class com.intellij.psi.impl.source.tree.CompositeElement of type TYPE_REFERENCE (class org.jetbrains.kotlin.psi.stubs.elements.KtPlaceHolderStubElementType)
+

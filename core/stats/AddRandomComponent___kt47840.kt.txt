@@ -1,0 +1,10 @@
+transformation=AddRandomComponent
+file=/home/olezhka/fuzzer/core/projectTmp/kt47840.kt
+finished=0
+changed=0
+failed with exception=0
+timeout of 10 seconds=5
+average time=10 seconds
+
+exceptions:
+

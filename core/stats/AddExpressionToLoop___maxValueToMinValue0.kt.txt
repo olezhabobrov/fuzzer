@@ -1,0 +1,20 @@
+                transformation=AddExpressionToLoop
+                file=/home/olezhka/fuzzer/core/projectTmp/maxValueToMinValue0.kt
+                finished=0
+                changed=0
+                failed with exception=5
+                timeout of 10 seconds=0
+                average time=0 seconds
+                
+                exceptions:
+                
+                java.lang.NullPointerException: No operation reference for binary expression: [PARENTHESIZED, BINARY_EXPRESSION, CALL_EXPRESSION]
+
+java.lang.NullPointerException: No operation reference for binary expression: [PARENTHESIZED, BINARY_EXPRESSION, CALL_EXPRESSION]
+
+java.lang.NullPointerException: No operation reference for binary expression: [PARENTHESIZED, BINARY_EXPRESSION, CALL_EXPRESSION]
+
+java.lang.NullPointerException: No operation reference for binary expression: [PARENTHESIZED, BINARY_EXPRESSION, CALL_EXPRESSION]
+
+java.lang.NullPointerException: No operation reference for binary expression: [PARENTHESIZED, BINARY_EXPRESSION, CALL_EXPRESSION]
+

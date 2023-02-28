@@ -1,0 +1,10 @@
+transformation=AddCasts
+file=/home/olezhka/fuzzer/core/projectTmp/maxValueToMinValue0.kt
+finished=5
+changed=0
+failed with exception=0
+timeout of 10 seconds=0
+average time=0 seconds
+
+exceptions:
+
