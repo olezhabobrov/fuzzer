@@ -8,11 +8,9 @@ package org.jetbrains.kotlin.resolve.lazy
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.analyzer.AnalysisResult
-import org.jetbrains.kotlin.cli.jvm.compiler.CliBindingTrace
-import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
-import org.jetbrains.kotlin.cli.jvm.compiler.NoScopeRecordCliBindingTrace
-import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
+import org.jetbrains.kotlin.cli.jvm.compiler.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.container.ComponentProvider
 import org.jetbrains.kotlin.library.KotlinLibrary
 import org.jetbrains.kotlin.load.kotlin.PackagePartProvider
@@ -85,7 +83,8 @@ object JvmResolveUtil {
 
     @JvmStatic
     fun analyze(files: Collection<KtFile>, environment: KotlinCoreEnvironment, configuration: CompilerConfiguration): AnalysisResult =
-        analyze(environment.project, files, configuration, environment::createPackagePartProvider)
+        analyze(environment.project, files, configuration, {
+                scope -> JvmPackagePartProvider(environment.configuration.languageVersionSettings, scope) })
 
     private fun analyze(
         project: Project,

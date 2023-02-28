@@ -78,7 +78,7 @@ class Coordinator: CoroutineVerticle() {
                     log.debug("Got mutation request: $input")
                     val mutationProblem = parseMutationProblem(input)
                     strategyS = mutationProblem.createMutationStrategy()
-                    repeat(100) {
+                    repeat(200) {
                         if (it % 10 == 0)
                             println(it)
                         strategyS!!.transformations.first().file.updateCtx()

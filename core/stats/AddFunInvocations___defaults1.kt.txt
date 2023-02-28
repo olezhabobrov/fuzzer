@@ -1,10 +1,20 @@
-transformation=AddFunInvocations
-file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
-finished=5
-changed=0
-failed with exception=0
-timeout of 10 seconds=0
-average time=4 seconds
+                transformation=AddFunInvocations
+                file=/home/olezhka/fuzzer/core/projectTmp/defaults1.kt
+                finished=0
+                changed=0
+                failed with exception=5
+                timeout of 10 seconds=0
+                average time=0 seconds
+                
+                exceptions:
+                
+                java.lang.NullPointerException: No operation reference for binary expression: [REFERENCE_EXPRESSION, BINARY_EXPRESSION, PARENTHESIZED]
 
-exceptions:
+java.lang.NullPointerException: No operation reference for binary expression: [REFERENCE_EXPRESSION, BINARY_EXPRESSION, PARENTHESIZED]
+
+java.lang.NullPointerException: No operation reference for binary expression: [REFERENCE_EXPRESSION, BINARY_EXPRESSION, STRING_TEMPLATE]
+
+java.lang.NullPointerException: No operation reference for binary expression: [REFERENCE_EXPRESSION, BINARY_EXPRESSION, STRING_TEMPLATE]
+
+java.lang.NullPointerException: No operation reference for binary expression: [REFERENCE_EXPRESSION, BINARY_EXPRESSION, PARENTHESIZED]
 

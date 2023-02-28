@@ -4,7 +4,7 @@ finished=5
 changed=5
 failed with exception=0
 timeout of 10 seconds=0
-average time=4 seconds
+average time=5 seconds
 
 exceptions:
 

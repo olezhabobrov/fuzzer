@@ -8,13 +8,13 @@
                 
                 exceptions:
                 
-                java.lang.NullPointerException: No operation reference for binary expression: [BINARY_EXPRESSION, PARENTHESIZED, PARENTHESIZED]
+                java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 
-java.lang.NullPointerException: No operation reference for binary expression: [BINARY_EXPRESSION, PARENTHESIZED, PARENTHESIZED]
+java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 
-java.lang.NullPointerException: No operation reference for binary expression: [BINARY_EXPRESSION, PARENTHESIZED, PARENTHESIZED]
+java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 
-java.lang.NullPointerException: No operation reference for binary expression: [BINARY_EXPRESSION, PARENTHESIZED, PARENTHESIZED]
+java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 
-java.lang.NullPointerException: No operation reference for binary expression: [BINARY_EXPRESSION, PARENTHESIZED, PARENTHESIZED]
+java.lang.IllegalStateException: @NotNull method org/jetbrains/kotlin/psi/KtUnaryExpression.getOperationReference must not return null
 
