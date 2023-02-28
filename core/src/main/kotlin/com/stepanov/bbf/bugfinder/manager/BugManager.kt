@@ -94,7 +94,7 @@ class BugManager: AbstractVerticle() {
                 else -> ""
             }
             if (field.isNotEmpty()) StatisticCollector.incField(field)
-            println("SAVING ${bug.type} BUG")
+            log.debug("SAVING ${bug.type} BUG")
             if (ReportProperties.getPropAsBoolean("SAVE_STATS") == true) saveStats()
             //Report bugs
             if (ReportProperties.getPropAsBoolean("TEXT_REPORTER") == true) {

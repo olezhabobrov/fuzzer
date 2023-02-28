@@ -180,7 +180,7 @@ class RandomTypeGenerator(val file: BBFFile) {
         if (name.isEmpty()) return null
         generateType(file, name.trim()).let {
             if (it == null) {
-                println("CANT GENERATE TYPE $name")
+//                println("CANT GENERATE TYPE $name")
             }
             return it
         }

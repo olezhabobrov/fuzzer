@@ -24,7 +24,7 @@ object MutationProcessor {
     fun psiFactory(file: BBFFile) = KtPsiFactory(file.psiFile.project)
 
     fun replaceNodeReturnNode(node: ASTNode, replacement: ASTNode, curFile: BBFFile, filenameOpt: String? = null): ASTNode? {
-        log.debug("Trying to replace $node on $replacement")
+//        log.debug("Trying to replace $node on $replacement")
         if (node.text.isEmpty() || node == replacement) {
             return node
         }
@@ -61,7 +61,7 @@ object MutationProcessor {
     }
 
     fun addNode(anchor: PsiElement, node: PsiElement, before: Boolean = false): PsiElement? {
-        log.debug("Trying to add $node to $anchor")
+//        log.debug("Trying to add $node to $anchor")
         if (node.text.isEmpty() || node == anchor) return null
         try {
             val addedNode =
@@ -70,7 +70,7 @@ object MutationProcessor {
             addedNode.parent.node.removeChild(addedNode.node)
             return null
         } catch (e: Throwable) {
-            println("e = $e")
+            log.debug("e = $e")
             return null
         }
     }

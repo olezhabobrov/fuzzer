@@ -393,7 +393,7 @@ object StdLibraryGenerator {
         return try {
             psiFactory(fileHelper).createFunction(func)
         } catch (e: Exception) {
-            println("cant create fun ${func}")
+//            println("cant create fun ${func}")
             System.exit(1)
             null
         }

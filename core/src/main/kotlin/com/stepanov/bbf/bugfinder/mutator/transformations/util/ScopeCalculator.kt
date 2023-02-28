@@ -82,7 +82,7 @@ class ScopeCalculator(private val file: BBFFile, private val project: Project) {
             func: CallableDescriptor,
             scopeElements: List<ScopeCalculator.ScopeComponent>
         ): KtExpression? {
-            log.debug("GENERATION of call of type $func")
+//            log.debug("GENERATION of call of type $func")
             val name = func.name
             val valueParams = func.valueParameters.map { vp ->
                 val fromUsages = scopeElements.filter { usage ->
@@ -93,7 +93,7 @@ class ScopeCalculator(private val file: BBFFile, private val project: Project) {
                 //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
             }
             if (valueParams.any { it.isEmpty() }) {
-                log.debug("CANT GENERATE PARAMS FOR $func")
+//                log.debug("CANT GENERATE PARAMS FOR $func")
                 return null
             }
             val inv = "$name(${valueParams.joinToString()})"

@@ -39,12 +39,12 @@ class FillerGenerator(
 
     //TODO repair for Sam<(FT..FT?), (FR..FR?)>
     fun getFillExpressions(node: Pair<KtExpression, KotlinType?>, depth: Int = 0): List<KtExpression> {
-        log.debug("replacing ${node.first.text} ${node.second}")
+//        log.debug("replacing ${node.first.text} ${node.second}")
         //Nullable or most common types
         val res = mutableListOf<KtExpression>()
         val neededType = node.second ?: return emptyList()
         val needTypeDescriptor = neededType.constructor.declarationDescriptor
-        log.debug("Getting value of type $neededType")
+//        log.debug("Getting value of type $neededType")
         val isNullable = neededType.isNullable()
 
         val localRes = mutableListOf<PsiElement>()
@@ -72,7 +72,7 @@ class FillerGenerator(
             if (neededType.isNullable()) res.add(psiFactory.createExpression("null"))
             if (depth > 0) continue
             //val deeperCases = UsageSamplesGeneratorWithStLibrary.generateForStandardType(el.third!!, nodeType)
-            log.debug("GETTING ${neededType} from ${el.third.toString()}")
+//            log.debug("GETTING ${neededType} from ${el.third.toString()}")
             if (checkedTypes.contains(el.third!!.toString())) continue
             checkedTypes.add(el.third!!.toString())
             StdLibraryGenerator.generateCallSequenceToGetType(el.third!!, neededType)
@@ -80,15 +80,15 @@ class FillerGenerator(
                 .shuffled()
                 .take(10)
                 .forEach { list ->
-                    log.debug("Case = ${list.map { it }}")
+//                    log.debug("Case = ${list.map { it }}")
                     handleCallSeq(list)?.let {
                         val rtvType = list.last().returnType
                         val prefix = if (isNullable) "(${el.second})?." else "(${el.second})."
                         val exp = "$prefix${it.text}"
                         val postfix = if (exp.contains("?.") && !neededType.isNullable()) "!!" else ""
-                        log.debug("Trying to generate expression: $exp$postfix")
+//                        log.debug("Trying to generate expression: $exp$postfix")
                         psiFactory.createExpressionIfPossible("$exp$postfix")?.let {
-                            log.debug("GENERATED CALL = ${it.text}")
+//                            log.debug("GENERATED CALL = ${it.text}")
                             localRes.add(it)
                         }
                     }
@@ -120,7 +120,7 @@ class FillerGenerator(
 
     //We are not expecting typeParams
     private fun generateCallExpr(func: CallableDescriptor): KtExpression? {
-        log.debug("GENERATING call of type $func")
+//        log.debug("GENERATING call of type $func")
         val name = func.name
         val valueParams = func.valueParameters.map { vp ->
             val fromUsages = generatedUsages.filter { usage -> "${vp.type}".trim() == "${usage.third}".trim() }
@@ -129,7 +129,7 @@ class FillerGenerator(
             //getInsertableExpressions(Pair(it, it.typeReference?.getAbbreviatedTypeOrType()), 1).randomOrNull()
         }
         if (valueParams.any { it.isEmpty() }) {
-            log.debug("CANT GENERATE PARAMS FOR $func")
+//            log.debug("CANT GENERATE PARAMS FOR $func")
             return null
         }
         val inv = "$name(${valueParams.joinToString()})"

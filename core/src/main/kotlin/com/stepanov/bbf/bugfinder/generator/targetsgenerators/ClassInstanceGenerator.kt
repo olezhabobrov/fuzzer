@@ -64,13 +64,13 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         klOrObjType: KotlinType,
         depth: Int = 0
     ): Pair<PsiElement?, KotlinType?>? {
-        log.debug("Generate instance of class $klOrObjType")
+//        log.debug("Generate instance of class $klOrObjType")
         if (depth > MAX_DEPTH) return null
         val classDescriptor = klOrObjType.constructor.declarationDescriptor as? ClassDescriptor ?: return null
         if (classDescriptor.isFunInterface()) return generateFunInterfaceInstance(classDescriptor, depth)
         if (classDescriptor.name.asString().trim().isEmpty()) return null
         if (classDescriptor.parentsWithSelf.any { it is FunctionDescriptor }) return null
-        log.debug("generating klass ${classDescriptor.name} depth = $depth")
+//        log.debug("generating klass ${classDescriptor.name} depth = $depth")
         if (classDescriptor.kind == ClassKind.OBJECT) {
             val fullName =
                 classDescriptor.parentsWithSelf.toList()
@@ -111,7 +111,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         depth: Int = 0
     ): Pair<PsiElement?, KotlinType?>? {
         if (depth > MAX_DEPTH) return null
-        log.debug("generating klass ${klOrObj.name} depth = $depth text = ${klOrObj.text}")
+//        log.debug("generating klass ${klOrObj.name} depth = $depth text = ${klOrObj.text}")
         if (klOrObj.name == null
             || klOrObj.allConstructors.let { it.isNotEmpty() && it.all { it.isPrivate() } }
             || klOrObj.isAnnotation()

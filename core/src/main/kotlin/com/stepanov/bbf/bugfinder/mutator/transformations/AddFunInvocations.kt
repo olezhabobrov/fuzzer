@@ -44,7 +44,7 @@ class AddFunInvocations(project: Project, file: BBFFile):
         val randomFunc = funcs.random()
         //Avoid recursion
         if (randomPlace.parents.any { it is KtNamedFunction && it.name == randomFunc.first.name }) {
-            log.debug("AVOIDING RECURSION func: ${randomFunc.first.name}")
+//            log.debug("AVOIDING RECURSION func: ${randomFunc.first.name}")
             return
         }
         val allAvailableVars = getSlice(randomPlace)
