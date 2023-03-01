@@ -5,10 +5,12 @@ import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.BindingContext
+import java.io.File
 
 class BBFFile(
-    val psiFile: KtFile,
+    var psiFile: KtFile,
     val env: KotlinCoreEnvironment
 ) {
     var ctx: BindingContext? = null
@@ -29,6 +31,8 @@ class BBFFile(
         get() = psiFile.text
 
     fun updateCtx(): BindingContext? {
+        File(name).writeText(text)
+        psiFile = KtPsiFactory(env.project).createFile(name, text)
         ctx = PSICreator.updateBindingContext(psiFile, env)
         return ctx
     }

@@ -23,6 +23,7 @@ class Mutator: AbstractVerticle() {
                 val strategy = msg.body()
                 log.debug("Got mutation strategy#${strategy!!.number}")
                 startMutate(strategy)
+                log.debug("Completed mutation for strategy#${strategy.number}")
                 sendMutationResult(MutationResult(strategy.project, strategy.number, true))
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
