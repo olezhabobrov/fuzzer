@@ -6,6 +6,9 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import kotlin.random.Random
 
 class Mutator: AbstractVerticle() {
@@ -39,11 +42,24 @@ class Mutator: AbstractVerticle() {
 
     private fun startMutate(strategy: MutationStrategy) {
         log.debug("Starting mutating for strategy #${strategy.number}")
+        val threadPool = Executors.newCachedThreadPool()
         strategy.transformations.forEach {
+            println("STARTING ${it.javaClass.simpleName}")
             if (Random.nextInt(0, 100) < 30) {
                 sendMutationResult(MutationResult(strategy.project, strategy.number))
             }
-            executeMutation(it)
+            val futureExitCode = threadPool.submit {
+                executeMutation(it)
+            }
+            try {
+                futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
+            } catch (e: TimeoutException) {
+                futureExitCode.cancel(true)
+                log.debug("Timeout of $TIMEOUT seconds in ${it.javaClass.simpleName}")
+            } catch (e: Throwable) {
+                log.debug("Caught exception in ${it.javaClass.simpleName}: ${e.stackTraceToString()}")
+            }
+            println("FINISHING ${it.javaClass.simpleName}")
         }
     }
 
@@ -53,4 +69,6 @@ class Mutator: AbstractVerticle() {
     }
 
     private val log = Logger.getLogger("mutatorLogger")
+
+    private val TIMEOUT = 30L
 }
