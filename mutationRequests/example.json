@@ -5,12 +5,11 @@
     "allowedTransformations": {
         "type": "Some",
         "transformationsList": [
-            "ExpressionReplacer"
+            "AddBracketsToExpression"
         ]
     },
     "mutationTarget": {
-        "type": "file",
-        "fileName": "tmp/arrays/MultiDeclForComponentMemberExtensions1.kt"
+        "type": "random"
     },
     "mutationCount": 1
 }

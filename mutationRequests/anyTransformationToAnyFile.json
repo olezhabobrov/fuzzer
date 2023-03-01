@@ -9,5 +9,5 @@
     "mutationTarget": {
         "type": "random"
     },
-    "mutationCount": 5
+    "mutationCount": 20
 }
