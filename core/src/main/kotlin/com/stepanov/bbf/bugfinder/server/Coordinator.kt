@@ -107,7 +107,7 @@ class Coordinator: CoroutineVerticle() {
                 val strategy = strategiesMap[mutatedProject.strategyNumber]!!
                 FooBarCompiler.tearDownMyEnv(strategy.project.env)
                 val mutationProblem = strategiesMap.remove(strategy.number)!!.mutationProblem
-                sendMutationProblem(mutationProblem)
+//                sendMutationProblem(mutationProblem)
             }
         }
     }
