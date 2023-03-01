@@ -104,6 +104,7 @@ class Coordinator: CoroutineVerticle() {
             val mutatedProject = result.body()
             sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
             if (mutatedProject.isFinal) {
+                log.debug("Got completed mutation result by strategy#${mutatedProject.strategyNumber}")
                 val strategy = strategiesMap[mutatedProject.strategyNumber]!!
                 FooBarCompiler.tearDownMyEnv(strategy.project.env)
                 val mutationProblem = strategiesMap.remove(strategy.number)!!.mutationProblem
