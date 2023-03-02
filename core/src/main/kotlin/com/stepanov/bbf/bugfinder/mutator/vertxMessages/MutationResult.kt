@@ -12,7 +12,7 @@ data class MutationResult(
         val transformations = usefulTransformations.size
         return usefulTransformations.takeLast(10).joinToString(
             separator="\n",
-            prefix="Mutated by strategy#$strategyNumber.\n" +
+            prefix="strategy#$strategyNumber.\n" +
                     "isFinal=$isFinal\n" +
                     "Transformed $transformations times by:\n" +
                     "...\n"

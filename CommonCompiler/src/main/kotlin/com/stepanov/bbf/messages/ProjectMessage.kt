@@ -22,6 +22,6 @@ data class ProjectMessage(
     fun moveAllCodeInOneFile() =
         StringBuilder().apply {
 //            append(configuration.toString());
-            files.forEach { appendLine(it.toString()) }
+            files.forEach { appendLine(it.second) }
         }.toString()
 }
