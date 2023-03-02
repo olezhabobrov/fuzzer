@@ -4,6 +4,7 @@ import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.MessageCodec
 import io.vertx.core.json.JsonObject
+import kotlin.math.log
 
 class ProjectCodec: MessageCodec<ProjectMessage, ProjectMessage> {
     override fun name(): String = "ProjectCodec"
@@ -18,13 +19,15 @@ class ProjectCodec: MessageCodec<ProjectMessage, ProjectMessage> {
         val files = json.getJsonArray("files")
         val build = json.getString("build")
         val conf = json.getString("conf")
+        val logInfo = json.getString("logInfo")
         return ProjectMessage(
             files.map { jfile ->
                 jfile as JsonObject
                 jfile.getString("name") to jfile.getString("text")
             },
             build,
-            conf
+            conf,
+            logInfo
         )
     }
 
@@ -39,6 +42,7 @@ class ProjectCodec: MessageCodec<ProjectMessage, ProjectMessage> {
         )
         json.put("build", "tmp/build")
         json.put("conf", "")
+        json.put("logInfo", s.logInfo)
         encodeString(json.toString(), buffer!!)
     }
 }

@@ -6,6 +6,7 @@ import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import kotlin.math.log
 
 class Project(
     fileNameList: List<String>
@@ -30,13 +31,14 @@ class Project(
                 it.psiFile.text
     }
 
-    fun getProjectMessage(): ProjectMessage {
+    fun getProjectMessage(logInfo: String): ProjectMessage {
         val result = ProjectMessage(
             files.map { bbfFile ->
                 bbfFile.name to bbfFile.text
             },
             "tmp/build",
-            ""
+            "",
+            logInfo
         )
         return result
     }

@@ -94,15 +94,18 @@ class Coordinator: CoroutineVerticle() {
             val compileResult = result.body()
             if (compileResult.invokeStatus.hasCompilerCrash()) {
                 log.debug("Found some bug, sending it to BugManager")
+                log.debug("Bug recreated by: ${compileResult.project.logInfo}")
                 val bug = Bug(compileResult)
                 vertx.eventBus().send(VertxAddresses.bugManager, bug)
             }
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
-            log.debug("Got mutation result")
             val mutatedProject = result.body()
-            sendProjectToCompilers(mutatedProject.project, mutatedProject.strategyNumber)
+            log.debug("Got mutationResult, " +
+                    "mutated by strategy#${mutatedProject.strategyNumber} " +
+                    "${mutatedProject.usefulTransformations.size} times")
+            sendProjectToCompilers(mutatedProject)
             if (mutatedProject.isFinal) {
                 log.debug("Got completed mutation result by strategy#${mutatedProject.strategyNumber}")
                 val strategy = strategiesMap[mutatedProject.strategyNumber]!!
@@ -118,10 +121,10 @@ class Coordinator: CoroutineVerticle() {
         eb.send(VertxAddresses.mutate, strategy)
     }
 
-    private fun sendProjectToCompilers(project: Project, strategyN: Int) {
-        log.debug("Sending project to compiler after/while mutating by strategy#$strategyN")
-        strategiesMap[strategyN]!!.mutationProblem.compilers.forEach { address ->
-            eb.send(address, project.getProjectMessage())
+    private fun sendProjectToCompilers(mutationResult: MutationResult) {
+        log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
+        strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers.forEach { address ->
+            eb.send(address, mutationResult.project.getProjectMessage(mutationResult.logInfo()))
         }
     }
 

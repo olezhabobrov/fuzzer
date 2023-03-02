@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 data class ProjectMessage(
     val files: List<Pair<String, String>>,
     val outputDir: String,
-    val additionalConf: String
+    val additionalConf: String,
+    val logInfo: String
 ) {
     override fun hashCode(): Int {
         return files.sumOf { (name, text) -> name.hashCode() * text.hashCode() }
