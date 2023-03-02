@@ -6,6 +6,7 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.information.VertxAddresses
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
+import org.jetbrains.kotlin.backend.common.push
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -22,9 +23,12 @@ class Mutator: AbstractVerticle() {
             try {
                 val strategy = msg.body()
                 log.debug("Got mutation strategy#${strategy!!.number}")
-                startMutate(strategy)
-                log.debug("Completed mutation for strategy#${strategy.number}")
-                sendMutationResult(MutationResult(strategy.project, strategy.number, true))
+                val usefulTransformations = startMutate(strategy)
+                log.debug("""Completed mutation for strategy#${strategy.number}: 
+                    successfully mutated ${usefulTransformations.size} times
+                """.trimIndent())
+                sendMutationResult(MutationResult(strategy.project, strategy.number,
+                    usefulTransformations, true))
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
                 msg.fail(1, e.message)
@@ -41,27 +45,38 @@ class Mutator: AbstractVerticle() {
         }
     }
 
-    private fun startMutate(strategy: MutationStrategy) {
+    private fun startMutate(strategy: MutationStrategy): List<String> {
         log.debug("Starting mutating for strategy #${strategy.number}")
         val threadPool = Executors.newCachedThreadPool()
-        strategy.transformations.forEach {
-            println("STARTING ${it.javaClass.simpleName}")
+        val usefulTransformationsList: MutableList<String> = mutableListOf()
+        strategy.transformations.forEach { transformation ->
+            val simpleName = transformation.javaClass.simpleName
+            println("STARTING ${simpleName}")
+
             if (Random.nextInt(0, 100) < 30) {
-                sendMutationResult(MutationResult(strategy.project, strategy.number))
+                sendMutationResult(MutationResult(strategy.project, strategy.number,
+                    usefulTransformationsList.toMutableList()))
             }
+
+            val initialText = transformation.file.text
             val futureExitCode = threadPool.submit {
-                executeMutation(it)
+                executeMutation(transformation)
             }
             try {
                 futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
+                if (transformation.file.text != initialText) {
+                    usefulTransformationsList.push(transformation.toString())
+                    log.debug("$transformation succesfully mutated")
+                }
             } catch (e: TimeoutException) {
                 futureExitCode.cancel(true)
-                log.debug("Timeout of $TIMEOUT seconds in ${it.javaClass.simpleName}")
+                log.debug("Timeout of $TIMEOUT seconds in ${simpleName}")
             } catch (e: Throwable) {
-                log.debug("Caught exception in ${it.javaClass.simpleName}: ${e.stackTraceToString()}")
+                log.debug("Caught exception in ${simpleName}: ${e.stackTraceToString()}")
             }
-            println("FINISHING ${it.javaClass.simpleName}")
+            println("FINISHING ${simpleName}")
         }
+        return usefulTransformationsList
     }
 
     private fun sendMutationResult(mutationResult: MutationResult) {
