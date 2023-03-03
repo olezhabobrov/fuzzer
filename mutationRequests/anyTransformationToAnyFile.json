@@ -1,7 +1,6 @@
 {
     "compilers": [
-        "NativeCompiler",
-        "JVMCompiler"
+        "NativeCompiler"
     ],
     "allowedTransformations": {
         "type": "All"
@@ -9,5 +8,6 @@
     "mutationTarget": {
         "type": "random"
     },
-    "mutationCount": 20
+    "mutationCount": 20,
+    "repeatInf": true
 }
