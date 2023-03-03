@@ -18,12 +18,15 @@ data class MutationProblem(
     val compilers: List<String>,
     val allowedTransformations: AllowedTransformations,
     val mutationTarget: MutationTarget,
-    val mutationCount: Int
+    val mutationCount: Int,
+    val repeatInf: Boolean = false
 ) {
     fun createMutationStrategy(): MutationStrategy {
         val project: Project
         when (mutationTarget) {
             is SingleSourceTarget -> {
+                if (mutationTarget is RandomFileTarget)
+                    mutationTarget.updateRandomFile()
                 mutationTarget.writeFile()
                 project = Project(listOf(mutationTarget.getLocalName()))
             }
@@ -104,15 +107,24 @@ sealed class SingleSourceTarget: MutationTarget() {
 @Serializable
 @SerialName("random")
 class RandomFileTarget: SingleSourceTarget() {
-    private val tmpFileName =
-        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
-    private val code = File("tmp/arrays/$tmpFileName").readText()
-    private val name =
-        "projectTmp/$tmpFileName"
+    private var tmpFileName = randomTmpFileName()
+
+    private val code
+        get() = File("tmp/arrays/$tmpFileName").readText()
+    private val name
+        get() = "projectTmp/$tmpFileName"
 
     override fun getLocalName(): String = name
 
     override fun getSourceCode(): String = code
+
+    private fun randomTmpFileName() =
+        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
+
+
+    fun updateRandomFile() {
+        tmpFileName = randomTmpFileName()
+    }
 }
 
 @Serializable
