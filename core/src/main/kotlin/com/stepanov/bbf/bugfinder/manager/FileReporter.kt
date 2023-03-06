@@ -29,13 +29,25 @@ object FileReporter : Reporter {
         File(newPath).writeText("$diffCompilers\n${bug.crashedProject.moveAllCodeInOneFile()}")
     }
 
+    private fun currentTime(): String {
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
+        val second = c.get(Calendar.SECOND)
+        val ms = c.get(Calendar.MILLISECOND)
+        return "$year-$month-${day}_$hour-$minute-$second-$ms"
+    }
+
     override fun dump(bugs: List<Bug>) {
         val isFrontendOrBackendBug = bugs.size == 2 && (bugs.first().type == BugType.FRONTEND || bugs.first().type == BugType.BACKEND)
         val withoutDuplicates =
             if (isFrontendOrBackendBug) bugs.drop(1) else bugs
         for (bug in withoutDuplicates) {
             val resDir = CompilerArgs.resultsDir
-            val name = Random().getRandomVariableName(7) +
+            val name = currentTime() +
                     if (bug.crashedProject.files.size == 1) "_FILE" else "_PROJECT"
             val newPath = when (bug.type) {
                 BugType.BACKEND, BugType.FRONTEND -> "$resDir${bug.compiler}/${bug.type.name}_$name.kt"
@@ -56,11 +68,11 @@ object FileReporter : Reporter {
             if (bug.type == BugType.DIFFABI) {
                 File(newPath.replaceAfter('.', "html")).writeText(bug.msg)
             }
-            if (isFrontendOrBackendBug) {
-                val pathForOriginal =
-                    "$resDir${bug.compiler}/${bug.type.name}_${name}_ORIGINAL.kt"
-                File(pathForOriginal).writeText("$info\n${bugs.first().crashedProject.moveAllCodeInOneFile()}\n$commentedStackTrace")
-            }
+//            if (isFrontendOrBackendBug) {
+//                val pathForOriginal =
+//                    "$resDir${bug.compiler}/${bug.type.name}_${name}_ORIGINAL.kt"
+//                File(pathForOriginal).writeText("$info\n${bugs.first().crashedProject.moveAllCodeInOneFile()}\n$commentedStackTrace")
+//            }
             File(newPath).writeText("$info\n${bug.crashedProject.moveAllCodeInOneFile()}\n$commentedStackTrace")
         }
     }
