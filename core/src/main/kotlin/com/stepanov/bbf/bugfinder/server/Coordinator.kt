@@ -6,6 +6,7 @@ import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
+import com.stepanov.bbf.bugfinder.reducer.ResultsFilter
 import com.stepanov.bbf.bugfinder.server.codecs.BugCodec
 import com.stepanov.bbf.bugfinder.server.codecs.MutationProblemCodec
 import com.stepanov.bbf.bugfinder.server.codecs.MutationResultCodec
@@ -55,6 +56,22 @@ class Coordinator: CoroutineVerticle() {
                     log.debug("Got mutation request: $input")
                     val mutationProblem = parseMutationProblem(input)
                     sendMutationProblem(mutationProblem)
+                    context.request().response()
+                        .setStatusCode(200)
+                        .send()
+                } catch (e: Exception) {
+                    log.debug(e.message)
+                    context.request().response()
+                        .setStatusCode(400)
+                        .setStatusMessage("An error occurred: ${e.message}")
+                        .send()
+                }
+            }
+        router.route("/filter-results")
+            .handler(BodyHandler.create())
+            .handler { context ->
+                try {
+                    ResultsFilter.filter()
                     context.request().response()
                         .setStatusCode(200)
                         .send()
