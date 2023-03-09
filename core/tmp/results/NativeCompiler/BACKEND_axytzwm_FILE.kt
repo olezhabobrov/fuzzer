@@ -1,74 +1,7 @@
 // Bug happens on NativeCompiler ver 1.8.0
-public enum   class Ntr  {
 
-BP(){
-private inner  class Mwt <T: MutableIterable>  {
+inline class R(throw [FileSystemException,  FileSystemException])
 
-
-external private  fun  avupp():
-
-protected!! final fun <T>  xucoe():  = TODO()
-
-
-
-}
-}
-,
-QV(){
-inner public sealed class Rzb  {
-
-
-internal final fun <T>  zsxip(a: T):  = TODO()!!
-
-external private  fun <T: ByteIterator, S>  yrsfg():
-
-inline!!  private  fun  eeavs():  = TODO!!()
-
-
-
-
-
-
-
-
-
-}
-}
-;
-
-
-
-}
-(internal final class Eny  {
-
-
-inline  internal  fun  hceao():  = TODO()
-
-
-
-})!!
-// !LANGUAGE: +InlineClasses
-
-inline class R(throw [FileAlreadyExistsException!!, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, (TypeCastException)!!, NoWhenBranchMatchedException, NotImplementedError!!, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, (NotDirectoryException), ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException!!, (InvalidPathException), NotLinkException!!, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException!!, FileSystemNotFoundException, FileSystemException!!, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException!!, (ReadOnlyBufferException(""))
-continue
-return
- {
-    fun test() = run ({ (ok())
-continue
-break
- })
-return
-
-
-    private fun ok() = "OK"
-break
-continue
-
-}!!!!
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
-
-
-continue
 
 // STACKTRACE:
 // java.lang.IllegalArgumentException: Some properties have the same names
