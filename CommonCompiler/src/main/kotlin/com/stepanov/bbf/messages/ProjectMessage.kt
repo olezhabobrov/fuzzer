@@ -1,12 +1,13 @@
 package com.stepanov.bbf.messages
 
+import com.stepanov.bbf.information.CompilationConfiguration
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectMessage(
     val files: List<Pair<String, String>>,
     val outputDir: String,
-    val additionalConf: String,
+    val configuration: CompilationConfiguration,
     val logInfo: String
 ) {
     override fun hashCode(): Int {
@@ -16,7 +17,9 @@ data class ProjectMessage(
     override fun equals(other: Any?): Boolean {
         if (other !is ProjectMessage)
             return false
-        return hashCode() == other.hashCode()
+        return files.sortedBy { it.first }.zip(other.files.sortedBy { it.first }).all { (first, second) ->
+            first.second == second.second
+        }
     }
 
     fun moveAllCodeInOneFile() =
