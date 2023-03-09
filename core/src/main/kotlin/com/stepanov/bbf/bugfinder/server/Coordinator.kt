@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder.server
 
-import com.stepanov.bbf.bugfinder.project.Project
+import com.stepanov.bbf.CommonCompiler
 import com.stepanov.bbf.bugfinder.manager.Bug
 import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.Mutator
@@ -21,7 +21,6 @@ import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.DeploymentOptions
-import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
@@ -31,10 +30,9 @@ import java.util.concurrent.TimeUnit
 
 class Coordinator: CoroutineVerticle() {
 
-    private lateinit var eb: EventBus
+    private val eb = vertx.eventBus()
 
     override suspend fun start() {
-        eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
         establishConsumers()
@@ -142,7 +140,12 @@ class Coordinator: CoroutineVerticle() {
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
         strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers.forEach { address ->
-            eb.send(address, mutationResult.project.getProjectMessage(mutationResult.logInfo()))
+            CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
+                eb.send(address, mutationResult.project.getProjectMessage(
+                    mutationResult.logInfo(),
+                    config
+                ))
+            }
         }
     }
 
@@ -181,6 +184,7 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
+    private val projectMessageToCompilationResult = mutableMapOf<ProjectMessage, MutableList<CompilationResult>>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }

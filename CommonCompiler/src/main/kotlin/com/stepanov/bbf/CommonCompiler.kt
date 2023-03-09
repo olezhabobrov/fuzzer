@@ -2,6 +2,7 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.ProjectCodec
+import com.stepanov.bbf.information.CompilationConfiguration
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.messages.CompilationResult
@@ -91,6 +92,14 @@ abstract class CommonCompiler(
             futureExitCode.cancel(true)
             false
         }
+    }
+
+    companion object {
+        val compilerToConfigMap = mapOf(
+            VertxAddresses.NativeCompiler to listOf(
+                CompilationConfiguration.produceLibrary
+            )
+        )
     }
 
     protected val log: Logger = LoggerFactory.getLogger("CompilerLogger")

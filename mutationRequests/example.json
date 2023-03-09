@@ -3,13 +3,10 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": [
-            "AddBracketsToExpression"
-        ]
+        "type": "All"
     },
     "mutationTarget": {
         "type": "random"
     },
-    "mutationCount": 1
+    "mutationCount": 0
 }
