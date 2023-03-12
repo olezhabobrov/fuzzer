@@ -10,6 +10,7 @@ data class ProjectMessage(
     val configuration: CompilationConfiguration,
     val logInfo: String
 ) {
+
     override fun hashCode(): Int {
         return files.sumOf { (name, text) -> name.hashCode() * text.hashCode() }
     }

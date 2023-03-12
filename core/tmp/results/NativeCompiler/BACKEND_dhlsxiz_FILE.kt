@@ -1,9 +1,9 @@
 // Bug happens on NativeCompiler ver 1.8.0
 
-fun box(): String {
-    a@return@a
-    return "OK"
+fun box() {
+    label@ return@label
 }
+
 
 // STACKTRACE:
 // java.lang.NullPointerException: Cannot invoke "org.jetbrains.kotlin.com.intellij.psi.PsiElement.getParent()" because "current" is null

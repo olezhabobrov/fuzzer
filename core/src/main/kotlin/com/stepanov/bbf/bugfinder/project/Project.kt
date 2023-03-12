@@ -43,4 +43,24 @@ class Project(
         return result
     }
 
+    override fun hashCode(): Int {
+        return files.map { bbfFile ->
+            bbfFile.name to bbfFile.text
+        }.sumOf { (name, text) -> name.hashCode() * text.hashCode() }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Project)
+            return false
+        val files = files.map { bbfFile ->
+            bbfFile.name to bbfFile.text
+        }
+        val otherFiles = other.files.map { bbfFile ->
+            bbfFile.name to bbfFile.text
+        }
+        return files.sortedBy { it.first }.zip(otherFiles.sortedBy { it.first }).all { (first, second) ->
+            first.second == second.second
+        }
+    }
+
 }
