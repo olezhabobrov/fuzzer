@@ -6,6 +6,7 @@ import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.reducer.ResultsFilter
 import com.stepanov.bbf.bugfinder.server.codecs.BugCodec
 import com.stepanov.bbf.bugfinder.server.codecs.MutationProblemCodec
@@ -138,6 +139,11 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
+        if (mutationResult.project in checkedProjects) {
+            log.debug("Received project has already been compiled, going back")
+            return
+        }
+        checkedProjects.add(mutationResult.project)
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
         strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers.forEach { address ->
             CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
@@ -185,6 +191,7 @@ class Coordinator: CoroutineVerticle() {
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
     private val projectMessageToCompilationResult = mutableMapOf<ProjectMessage, MutableList<CompilationResult>>()
+    private val checkedProjects = mutableSetOf<Project>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }
