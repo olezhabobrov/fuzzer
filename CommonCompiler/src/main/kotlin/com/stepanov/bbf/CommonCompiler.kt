@@ -97,7 +97,7 @@ abstract class CommonCompiler(
     companion object {
         val compilerToConfigMap = mapOf(
             VertxAddresses.NativeCompiler to listOf(
-                CompilationConfiguration.produceLibrary
+                CompilationConfiguration.ProduceLibrary
             )
         )
     }

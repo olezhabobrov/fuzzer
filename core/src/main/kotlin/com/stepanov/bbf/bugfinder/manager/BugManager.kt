@@ -133,7 +133,7 @@ class BugManager: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<Bug>(VertxAddresses.bugManager) { msg ->
+        vertx.eventBus().consumer<List<CompilationResult>>(VertxAddresses.bugManager) { msg ->
             saveBug(msg.body())
         }
     }
