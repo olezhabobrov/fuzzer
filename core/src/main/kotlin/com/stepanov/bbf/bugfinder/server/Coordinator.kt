@@ -12,7 +12,6 @@ import com.stepanov.bbf.bugfinder.server.codecs.BugCodec
 import com.stepanov.bbf.bugfinder.server.codecs.MutationProblemCodec
 import com.stepanov.bbf.bugfinder.server.codecs.MutationResultCodec
 import com.stepanov.bbf.bugfinder.server.codecs.MutationStrategyCodec
-import com.stepanov.bbf.bugfinder.server.messages.CompilationResultsProcessor
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.bugfinder.server.messages.parseMutationProblem
 import com.stepanov.bbf.codecs.CompilationResultCodec

@@ -26,37 +26,8 @@ internal fun bugType(result: CompilationResult): BugType =
     else
         BugType.BACKEND
 
-data class Bug(val compiler: String, val msg: String, val crashedProject: ProjectMessage, val type: BugType) {
-
-    constructor(res: CompilationResult): this(
-        res.compiler,
-        res.invokeStatus.combinedOutput,
-        res.project,
-        bugType(res)
-    )
-
-    val compilerWithVersion = "$compiler version ${CompilerArgs.compilerVersion(compiler)}"
-
-    fun compareTo(other: Bug): Int =
-        if (compiler == other.compiler)
-            type.compareTo(other.type)
-        else compiler.compareTo(other.compiler)
-
-    fun getDirWithSameTypeBugs(): String =
-        CompilerArgs.resultsDir +
-                when (type) {
-                    BugType.DIFFBEHAVIOR -> "diffBehavior"
-                    BugType.DIFFCOMPILE -> "diffCompile"
-                    BugType.DIFFABI -> "diffABI"
-//                    BugType.FRONTEND, BugType.BACKEND -> compilers.first().compilerInfo.filter { it != ' ' }
-                    else -> ""
-                }
-
-    fun copy() = Bug(compiler, msg, crashedProject.copy(), type)
-
-    override fun toString(): String {
-        return "${type.name}\n${compiler}\nText:\n${crashedProject}"
-    }
+data class Bug(val results: List<CompilationResult>) {
+    val project = results.first().project
 }
 
 
@@ -72,42 +43,18 @@ class BugManager: AbstractVerticle() {
     private fun saveBug(bug: Bug) {
 
         try {
-            val field = when (bug.type) {
-                BugType.BACKEND -> "Backend"
-                BugType.FRONTEND -> "Frontend"
-                BugType.DIFFBEHAVIOR -> "Miscompilation"
-                else -> ""
-            }
-            if (field.isNotEmpty()) StatisticCollector.incField(field)
-            log.debug("SAVING ${bug.type} BUG")
+            log.debug("SAVING BUG")
             if (ReportProperties.getPropAsBoolean("SAVE_STATS") == true) saveStats()
             //Report bugs
-            if (ReportProperties.getPropAsBoolean("TEXT_REPORTER") == true) {
-                TextReporter.dump(bugs)
-            }
             if (ReportProperties.getPropAsBoolean("FILE_REPORTER") == true) {
-                val bugList =
-                    if (bug.type == BugType.FRONTEND || bug.type == BugType.BACKEND)
-                        listOf(bug, bug)
-                    else listOf(bug)
-                FileReporter.dump(bugList)
+
+                FileReporter.dump(bug)
             }
         } catch (e: Exception) {
             log.debug("Exception ${e.localizedMessage} ${e.stackTraceToString()}\n")
             System.exit(1)
         }
     }
-
-    fun haveDuplicates(bug: Bug): Boolean {
-        val dirWithSameBugs = bug.getDirWithSameTypeBugs()
-        TODO()
-    }
-
-    private fun parseTypeOfBugByMsg(msg: String): BugType =
-        if (msg.contains("Exception while analyzing expression"))
-            BugType.FRONTEND
-        else
-            BugType.BACKEND
 
     private fun saveStats() {
         val f = File("bugsPerMinute.txt")
@@ -119,18 +66,15 @@ class BugManager: AbstractVerticle() {
 
     private fun establishConsumers() {
         vertx.eventBus().consumer<List<CompilationResult>>(VertxAddresses.bugManager) { msg ->
-            saveBug(msg.body())
+            processCompilationResults(msg.body())
         }
     }
 
     private fun processCompilationResults(results: List<CompilationResult>) {
         if (isUnusualResult(results)) {
             log.debug("Found some interesting result")
-
-            return
         }
-        results.groupBy { it.compiler }.
-        saveBug(Bug(results.first()))
+        saveBug(Bug(results))
     }
 
     private fun isUnusualResult(results: List<CompilationResult>): Boolean {
