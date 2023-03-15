@@ -1,5 +1,5 @@
 package com.stepanov.bbf.bugfinder.manager
 
 interface Reporter {
-    fun dump(bugs: List<Bug>)
+    fun dump(bug: Bug)
 }
