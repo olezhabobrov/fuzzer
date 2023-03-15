@@ -107,22 +107,6 @@ class Coordinator: CoroutineVerticle() {
             sendStrategyAndMutate(strategy)
         }
 
-        eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
-            log.debug("Got compilation result")
-            val compileResult = result.body()
-            if (compileResult.invokeStatus.hasCompilerCrash()) {
-                log.debug("Found some bug")
-                log.debug("Bug recreated by: ${compileResult.project.logInfo}")
-            }
-            compilationResultsProcessor.processCompilationResult(compileResult)
-            if (compilationResultsProcessor.shouldSendToBugManager(compileResult.project)) {
-                log.debug("Sending results to BugManager")
-                vertx.eventBus().send(VertxAddresses.bugManager,
-                    compilationResultsProcessor.getCompilationResults(compileResult.project))
-                compilationResultsProcessor.removeProject(compileResult.project)
-            }
-        }
-
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
             val mutatedProject = result.body()
             log.debug("Got mutationResult, " +
@@ -153,15 +137,37 @@ class Coordinator: CoroutineVerticle() {
 
         checkedProjects.add(mutationResult.project)
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
+        val compilationsResults = mutableListOf<CompilationResult>()
         strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers.forEach { address ->
             CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
                 val projectMessage = mutationResult.project.getProjectMessage(
                     mutationResult.logInfo(),
                     config
                 )
-                compilationResultsProcessor.increaseCounter(projectMessage)
-                eb.send(address, projectMessage)
+                eb.request<CompilationResult>(address, projectMessage) { asyncResult ->
+                    if (asyncResult.succeeded()) {
+                        val result = asyncResult.result().body()
+                        log.debug("Got compilation result")
+                        if (result.invokeStatus.hasCompilerCrash()) {
+                            log.debug("Found some bug")
+                            log.debug("Bug recreated by: ${result.project.logInfo}")
+                        }
+                        compilationsResults.add(result)
+                    } else {
+                        log.debug("Some error when requesting to compile: ${asyncResult.cause()}")
+                    }
+                }
             }
+        }
+        sendToBugManager(compilationsResults)
+    }
+
+    private fun sendToBugManager(compilationResults: List<CompilationResult>) {
+        if (compilationResults.any {  result ->
+            result.invokeStatus.hasCompilerCrash()
+            }) {
+            log.debug("Sending results to BugManager")
+            eb.send(VertxAddresses.bugManager, compilationResults)
         }
     }
 
@@ -200,7 +206,6 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
-    private val compilationResultsProcessor = CompilationResultsProcessor()
     private val checkedProjects = mutableSetOf<Project>()
 
     private val log = Logger.getLogger("coordinatorLogger")

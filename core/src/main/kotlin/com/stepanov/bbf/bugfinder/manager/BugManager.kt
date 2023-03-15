@@ -57,21 +57,6 @@ data class Bug(val compiler: String, val msg: String, val crashedProject: Projec
     override fun toString(): String {
         return "${type.name}\n${compiler}\nText:\n${crashedProject}"
     }
-
-    override fun equals(other: Any?): Boolean =
-        other is Bug && other.crashedProject == this.crashedProject && other.type == this.type &&
-                other.compiler == this.compiler
-
-    override fun hashCode(): Int {
-        var result = compiler.hashCode()
-        result = 31 * result + msg.hashCode()
-        result = 31 * result + crashedProject.hashCode()
-        result = 31 * result + type.hashCode()
-        result = 31 * result + compiler.hashCode()
-        return result
-    }
-
-
 }
 
 
@@ -136,6 +121,24 @@ class BugManager: AbstractVerticle() {
         vertx.eventBus().consumer<List<CompilationResult>>(VertxAddresses.bugManager) { msg ->
             saveBug(msg.body())
         }
+    }
+
+    private fun processCompilationResults(results: List<CompilationResult>) {
+        if (isUnusualResult(results)) {
+            log.debug("Found some interesting result")
+
+            return
+        }
+        results.groupBy { it.compiler }.
+        saveBug(Bug(results.first()))
+    }
+
+    private fun isUnusualResult(results: List<CompilationResult>): Boolean {
+        if (results.distinctBy { it.invokeStatus.hasCompilerCrash() }.size > 1)
+            return true
+        if (results.distinctBy { it.invokeStatus.combinedOutput.substringBefore("\n") }.size > 1)
+            return true
+        return false
     }
 
     private val log = Logger.getLogger("bugManagerLogger")
