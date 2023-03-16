@@ -156,7 +156,7 @@ class Coordinator: CoroutineVerticle() {
 
         compilers.forEach { address ->
             CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
-                val projectMessage = mutationResult.project.getProjectMessage(
+                val projectMessage = mutationResult.project.createProjectMessage(
                     mutationResult.logInfo(),
                     config
                 )
@@ -166,7 +166,7 @@ class Coordinator: CoroutineVerticle() {
 
         compilers.forEach { address ->
             CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
-                val projectMessage = mutationResult.project.getProjectMessage(
+                val projectMessage = mutationResult.project.createProjectMessage(
                     mutationResult.logInfo(),
                     config
                 )
