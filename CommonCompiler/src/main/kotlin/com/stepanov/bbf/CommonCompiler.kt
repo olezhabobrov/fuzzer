@@ -39,11 +39,11 @@ abstract class CommonCompiler(
             log.debug("Got a project to compile")
             val project = msg.body()
             createLocalTmpProject(project)
-//            val compileResult = tryToCompile(project)
-            val compileResult = KotlincInvokeStatus("error blya", false, true, false)
+            val compileResult = tryToCompile(project)
             deleteLocalTmpProject(project)
             log.debug("Sending back compile result")
-            msg.reply(
+            eb.send(
+                VertxAddresses.compileResult,
                 CompilationResult(
                     this::class.java.simpleName,
                     compileResult,

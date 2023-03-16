@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.manager
 
+import com.stepanov.bbf.bugfinder.server.messages.CompilationResultHolder
 import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
@@ -40,20 +41,18 @@ class BugManager: AbstractVerticle() {
         log.debug("Bug manager deployed")
     }
 
-    private fun saveBug(bug: Bug) {
+    private fun saveBug(bug: Bug): String {
 
         try {
             log.debug("SAVING BUG")
             if (ReportProperties.getPropAsBoolean("SAVE_STATS") == true) saveStats()
             //Report bugs
-            if (ReportProperties.getPropAsBoolean("FILE_REPORTER") == true) {
-
-                FileReporter.dump(bug)
-            }
+            return FileReporter.dump(bug)
         } catch (e: Exception) {
             log.debug("Exception ${e.localizedMessage} ${e.stackTraceToString()}\n")
             System.exit(1)
         }
+        return ""
     }
 
     private fun saveStats() {
@@ -65,16 +64,17 @@ class BugManager: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<List<CompilationResult>>(VertxAddresses.bugManager) { msg ->
-            processCompilationResults(msg.body())
+        vertx.eventBus().consumer<CompilationResultHolder>(VertxAddresses.bugManager) { msg ->
+            processCompilationResults(msg.body().results)
         }
     }
 
     private fun processCompilationResults(results: List<CompilationResult>) {
         if (isUnusualResult(results)) {
-            log.debug("Found some interesting result")
+            log.debug("FOUND SOME INTERESTING RESULT")
         }
-        saveBug(Bug(results))
+        val resultPath = saveBug(Bug(results))
+        log.debug("Write result to $resultPath")
     }
 
     private fun isUnusualResult(results: List<CompilationResult>): Boolean {
