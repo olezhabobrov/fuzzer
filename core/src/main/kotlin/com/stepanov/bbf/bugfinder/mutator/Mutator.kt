@@ -51,7 +51,11 @@ class Mutator: AbstractVerticle() {
         val usefulTransformationsList: MutableList<String> = mutableListOf()
         strategy.transformations.forEach { transformation ->
             val simpleName = transformation.javaClass.simpleName
-            println("STARTING ${simpleName}")
+            println("STARTING $simpleName")
+            if (transformation.file.text.lines().size > MAX_LINES) {
+                log.debug("File is too big, returning back")
+                return usefulTransformationsList
+            }
 
             if (Random.nextInt(0, 100) < 30) {
                 sendMutationResult(MutationResult(strategy.project, strategy.number,
@@ -74,7 +78,7 @@ class Mutator: AbstractVerticle() {
             } catch (e: Throwable) {
                 log.debug("Caught exception in ${simpleName}: ${e.stackTraceToString()}")
             }
-            println("FINISHING ${simpleName}")
+            println("FINISHING $simpleName")
         }
         return usefulTransformationsList
     }
@@ -87,4 +91,5 @@ class Mutator: AbstractVerticle() {
     private val log = Logger.getLogger("mutatorLogger")
 
     private val TIMEOUT = 30L
+    private val MAX_LINES = 500
 }
