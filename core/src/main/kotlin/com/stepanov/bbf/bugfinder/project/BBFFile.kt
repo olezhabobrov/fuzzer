@@ -1,6 +1,5 @@
 package com.stepanov.bbf.bugfinder.project
 
-import com.intellij.psi.PsiFile
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment

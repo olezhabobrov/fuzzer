@@ -98,11 +98,9 @@ abstract class CommonCompiler(
         val compilerToConfigMap = mapOf(
             VertxAddresses.NativeCompiler to listOf(
                 CompilationConfiguration.ProduceLibrary,
-                CompilationConfiguration.PartialLinkage
+                CompilationConfiguration.PartialLinkage,
+                CompilationConfiguration.Split,
             ),
-            VertxAddresses.JVMCompiler to listOf(
-                CompilationConfiguration.Tmp
-            )
         )
     }
 

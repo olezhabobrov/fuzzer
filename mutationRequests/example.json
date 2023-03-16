@@ -1,13 +1,13 @@
 {
     "compilers": [
-        "NativeCompiler",
-        "JVMCompiler"
+        "NativeCompiler"
     ],
     "allowedTransformations": {
         "type": "All"
     },
     "mutationTarget": {
-        "type": "random"
+        "type": "name",
+        "name": "tmp/arrays/myExperiment.kt"
     },
     "mutationCount": 0
 }

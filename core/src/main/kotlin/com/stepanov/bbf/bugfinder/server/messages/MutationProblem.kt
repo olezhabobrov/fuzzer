@@ -138,12 +138,14 @@ class SourceFileTarget(val code: String): SingleSourceTarget() {
 @SerialName("name")
 class NameFileTarget(val name: String): SingleSourceTarget() {
     private val copiedFileName =
-        "projectTmp/$name"
-    private val code = File("tmp/arrays/$name").readText()
+        "projectTmp/${getSimpleName()}"
+    private val code = File(name).readText()
 
     override fun getLocalName(): String = copiedFileName
 
     override fun getSourceCode(): String = code
+
+    private fun getSimpleName() = name.substringAfterLast("/")
 }
 
 @Serializable

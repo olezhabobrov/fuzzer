@@ -1,12 +1,14 @@
 package com.stepanov.bbf.bugfinder.project
 
 import com.intellij.psi.PsiErrorElement
+import com.stepanov.bbf.bugfinder.filePartition.FilePartition
 import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
 import com.stepanov.bbf.information.CompilationConfiguration
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import java.io.File
 
 class Project(
     fileNameList: List<String>
@@ -31,15 +33,30 @@ class Project(
                 it.psiFile.text
     }
 
-    fun getProjectMessage(logInfo: String, configuration: CompilationConfiguration): ProjectMessage {
-        val result = ProjectMessage(
-            files.map { bbfFile ->
-                bbfFile.name to bbfFile.text
-            },
-            "tmp/build",
-            configuration,
-            logInfo
-        )
+    fun createProjectMessage(logInfo: String, configuration: CompilationConfiguration): ProjectMessage {
+        val result =
+            when (configuration) {
+                CompilationConfiguration.Split -> {
+                    val (first, second) = FilePartition.splitFile(files.first())
+                    val text1 = File(first).readText()
+                    val text2 = File(second).readText()
+                    ProjectMessage(
+                        listOf(first to text1,
+                            second to text2),
+                        "tmp/build",
+                        configuration,
+                        logInfo
+                    )
+                }
+                else -> ProjectMessage(
+                    files.map { bbfFile ->
+                        bbfFile.name to bbfFile.text
+                    },
+                    "tmp/build",
+                    configuration,
+                    logInfo
+                )
+            }
         return result
     }
 
