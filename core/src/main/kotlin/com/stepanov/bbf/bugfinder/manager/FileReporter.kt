@@ -11,7 +11,7 @@ object FileReporter : Reporter {
     private fun currentTime(): String {
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
+        val month = c.get(Calendar.MONTH) + 1
         val day = c.get(Calendar.DAY_OF_MONTH)
         val hour = c.get(Calendar.HOUR_OF_DAY)
         val minute = c.get(Calendar.MINUTE)
@@ -20,7 +20,7 @@ object FileReporter : Reporter {
         return "$year-$month-${day}_$hour-$minute-$second-$ms"
     }
 
-    override fun dump(bug: Bug) {
+    override fun dump(bug: Bug): String {
         val resDir = CompilerArgs.resultsDir
         val name = currentTime() +
                 if (bug.project.files.size == 1) "_FILE" else "_PROJECT"
@@ -43,6 +43,7 @@ object FileReporter : Reporter {
                 "// STACKTRACE:\n${msg.split("\n").joinToString("\n") { "// $it" }}"
 
         File(newPath).writeText("$info\n${bug.project.moveAllCodeInOneFile()}\n$commentedStackTrace")
+        return newPath
     }
 
 }
