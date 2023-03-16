@@ -39,11 +39,11 @@ abstract class CommonCompiler(
             log.debug("Got a project to compile")
             val project = msg.body()
             createLocalTmpProject(project)
-            val compileResult = tryToCompile(project)
+//            val compileResult = tryToCompile(project)
+            val compileResult = KotlincInvokeStatus("error blya", false, true, false)
             deleteLocalTmpProject(project)
             log.debug("Sending back compile result")
-            eb.send(
-                VertxAddresses.compileResult,
+            msg.reply(
                 CompilationResult(
                     this::class.java.simpleName,
                     compileResult,
@@ -97,7 +97,11 @@ abstract class CommonCompiler(
     companion object {
         val compilerToConfigMap = mapOf(
             VertxAddresses.NativeCompiler to listOf(
-                CompilationConfiguration.ProduceLibrary
+                CompilationConfiguration.ProduceLibrary,
+                CompilationConfiguration.PartialLinkage
+            ),
+            VertxAddresses.JVMCompiler to listOf(
+                CompilationConfiguration.Tmp
             )
         )
     }

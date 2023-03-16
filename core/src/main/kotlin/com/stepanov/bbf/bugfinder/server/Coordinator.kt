@@ -22,19 +22,20 @@ import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.DeploymentOptions
+import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.apache.log4j.Logger
-import org.jetbrains.kotlin.backend.common.push
 import java.io.File
 import java.util.concurrent.TimeUnit
 
 class Coordinator: CoroutineVerticle() {
 
-    private val eb = vertx.eventBus()
+    private lateinit var eb: EventBus
 
     override suspend fun start() {
+        eb = vertx.eventBus()
         localPreparations()
         registerCodecs()
         establishConsumers()
@@ -158,6 +159,7 @@ class Coordinator: CoroutineVerticle() {
                 }
             }
         }
+        // сука там async results
         sendToBugManager(compilationsResults)
     }
 
