@@ -96,12 +96,16 @@ abstract class CommonCompiler(
     companion object {
         val compilerToConfigMap: Map<String, List<CompilationConfiguration>> = mapOf(
             VertxAddresses.NativeCompiler to listOf(
-                ProduceLibrary(),
-                PartialLinkage(),
-                Split(),
+//                ProduceLibrary,
+//                PartialLinkage(),
+                CompilationConfiguration.Split
             ),
         )
     }
+
+    fun String.getSimpleFileName() =
+        this.substringAfterLast("/").substringBeforeLast(".kt")
+
 
     protected val log: Logger = LoggerFactory.getLogger("CompilerLogger")
 }
