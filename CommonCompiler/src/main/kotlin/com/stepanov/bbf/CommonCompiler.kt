@@ -2,8 +2,7 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.ProjectCodec
-import com.stepanov.bbf.information.CompilationConfiguration
-import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.information.*
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
@@ -26,7 +25,7 @@ abstract class CommonCompiler(
         log.debug("Compiler deployed")
     }
 
-    abstract fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus
+    abstract fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus
 
     private fun registerCodecs() {
         vertx.eventBus().registerDefaultCodec(ProjectMessage::class.java, ProjectCodec())
@@ -39,7 +38,7 @@ abstract class CommonCompiler(
             log.debug("Got a project to compile")
             val project = msg.body()
             createLocalTmpProject(project)
-            val compileResult = tryToCompile(project)
+            val compileResult = executeCompilationCheck(project)
             deleteLocalTmpProject(project)
             log.debug("Sending back compile result")
             eb.send(
@@ -95,11 +94,11 @@ abstract class CommonCompiler(
     }
 
     companion object {
-        val compilerToConfigMap = mapOf(
+        val compilerToConfigMap: Map<String, List<CompilationConfiguration>> = mapOf(
             VertxAddresses.NativeCompiler to listOf(
-                CompilationConfiguration.ProduceLibrary,
-                CompilationConfiguration.PartialLinkage,
-                CompilationConfiguration.Split,
+                ProduceLibrary(),
+                PartialLinkage(),
+                Split(),
             ),
         )
     }

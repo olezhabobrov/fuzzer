@@ -1,5 +1,3 @@
-import java.io.File
-
 fun box() {
     val variable = 5
     val foo = Foo(3)
