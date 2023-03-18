@@ -1,5 +1,7 @@
 package com.stepanov.bbf.information
 
+import com.stepanov.bbf.util.getSimpleNameFile
+
 class CompilationArgsBuilder {
     private val args = mutableListOf<String>()
 
@@ -14,7 +16,15 @@ class CompilationArgsBuilder {
         }
     }
 
-    fun addOutput(root: String, s: String) = add(listOf("-o", "$root/$s"))
+    fun addFile(root: String, file: String) = add("$root$file")
+
+    fun addFiles(root: String, files: List<String>) = apply {
+        files.forEach { addFile(root, it.getSimpleNameFile()) }
+    }
+
+    fun addOutput(root: String, s: String) = add(listOf("-o", "$root$s"))
+
+    fun addLibrary(root: String, lib: String) = add(listOf("-l", "$root$lib"))
 
     fun build() = args
 }

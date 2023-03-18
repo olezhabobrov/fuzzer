@@ -45,7 +45,7 @@ class ProjectCodec: MessageCodec<ProjectMessage, ProjectMessage> {
             jfile.put("text", it.second)
         }
         )
-        json.put("build", "tmp/build")
+        json.put("build", s.dir)
         json.put("conf", Json.encodeToString(s.configuration))
         json.put("logInfo", s.logInfo)
         encodeString(json.toString(), buffer!!)

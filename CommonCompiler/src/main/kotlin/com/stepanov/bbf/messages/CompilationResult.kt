@@ -13,6 +13,10 @@ class KotlincInvokeStatus(
 
     fun hasCompilationError(): Boolean = !isCompileSuccess
 
+    companion object {
+        val statusWithoutErrors = KotlincInvokeStatus("", true, false, false)
+    }
+
 }
 
 class CompilationResult(

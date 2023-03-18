@@ -3,7 +3,9 @@ package com.stepanov.bbf
 import com.stepanov.bbf.information.*
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.util.getKlibName
 import com.stepanov.bbf.util.getSimpleFileNameWithoutExt
+import com.stepanov.bbf.util.getSimpleNameFile
 import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
@@ -19,37 +21,68 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     }
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
-//        val arguments = createArguments(project)
-        val arguments = CompilationArgsBuilder()
-        arguments.add(project.configuration)
         when (project.configuration) {
             CompilationConfiguration.Split -> {
-                project.files.forEach { (name, _) ->
-                    val klibName = createKlib(project, name)
-                    if (klibName == null) {
-                        log.debug("Couldn't ")
-                    }
+                if (project.files.size != 2) {
+                    error("In Split configuration should be 2 files to compile, but received ${project.files.size}")
                 }
-                log.debug("")
-                project.files.first().first.getSimpleFileNameWithoutExt()
+
+                val result = createKlib(project, project.files.map { it.first })
+                if (result.hasCompilerCrash() || !result.isCompileSuccess)
+                    return result
+
+                val (klibs, dependedFiles) = project.files.partition { (name, _) ->
+                    val result = createKlib(project, name)
+                    if (result.hasCompilerCrash()) {
+                        return result
+                    }
+                    result.isCompileSuccess
+                }
+                if (klibs.size == 2) {
+                    log.debug("Split- : not interesting case: both files compiled independently")
+                    return KotlincInvokeStatus.statusWithoutErrors
+                }
+                if (dependedFiles.size == 2) {
+                    log.debug("Split- : not interesting case: both files depend on each other")
+                    return KotlincInvokeStatus.statusWithoutErrors
+                }
+                log.debug("Split+ : found interesting division ")
+
+                return createKlib(project, dependedFiles.first().first, klibs.first().first.getKlibName(project))
             }
             else -> {}
         }
         TODO()
     }
 
-    private fun createKlib(project: ProjectMessage, name: String): String? {
+    private fun createKlib(project: ProjectMessage, name: String): KotlincInvokeStatus {
         val args = CompilationArgsBuilder()
             .add(CompilationConfiguration.ProduceLibrary)
-            .addOutput(project.dir, name.getSimpleFileNameWithoutExt())
+            .addOutput(project.dir, name.getSimpleFileNameWithoutExt() + ".klib")
+            .addFile(project.dir, name.getSimpleNameFile())
             .build()
-        val result = compile(project, createArguments(args))
-        if (!result.hasCompilerCrash() && result.isCompileSuccess) {
-            return "${project.dir}/${name.getSimpleFileNameWithoutExt()}.klib"
-        } else {
-            return null
-        }
+        return compile(project, createArguments(args))
     }
+
+    private fun createKlib(project: ProjectMessage, names: List<String>): KotlincInvokeStatus {
+        val args = CompilationArgsBuilder()
+            .add(CompilationConfiguration.ProduceLibrary)
+            .addOutput(project.dir, "library.klib")
+            .addFiles(project.dir, names)
+            .build()
+        return compile(project, createArguments(args))
+    }
+
+    private fun createKlib(project: ProjectMessage, name: String, libraryName: String): KotlincInvokeStatus {
+        val args = CompilationArgsBuilder()
+            .add(CompilationConfiguration.ProduceLibrary)
+            .addLibrary(project.dir, libraryName)
+            .addOutput(project.dir, name.getSimpleFileNameWithoutExt() + ".klib")
+            .addFile(project.dir, name.getSimpleNameFile())
+            .build()
+        return compile(project, createArguments(args))
+    }
+
 
     private fun compile(project: ProjectMessage, args: K2NativeCompilerArguments): KotlincInvokeStatus {
         val hasTimeout = !executeCompiler {

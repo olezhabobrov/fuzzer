@@ -44,7 +44,7 @@ class Project(
                     ProjectMessage(
                         listOf(first.getSimpleNameFile() to text1,
                             second.getSimpleNameFile() to text2),
-                        "tmp/build",
+                        "tmp/",
                         configuration,
                         logInfo
                     )
