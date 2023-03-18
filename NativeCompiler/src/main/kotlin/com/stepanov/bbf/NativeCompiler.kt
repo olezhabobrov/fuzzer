@@ -1,8 +1,6 @@
 package com.stepanov.bbf
 
-import com.stepanov.bbf.information.CompilationConfiguration
-import com.stepanov.bbf.information.Split
-import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.information.*
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import org.jetbrains.kotlin.cli.bc.K2Native
@@ -21,9 +19,34 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
 //        val arguments = createArguments(project)
-        val conf = project.configuration
-        if (conf is Split) {
+        val arguments = CompilationArgsBuilder()
+        arguments.add(project.configuration)
+        when (project.configuration) {
+            CompilationConfiguration.Split -> {
+                project.files.forEach { (name, _) ->
+                    val klibName = createKlib(project, name)
+                    if (klibName == null) {
+                        log.debug("Couldn't ")
+                    }
+                }
+                log.debug("")
+                project.files.first().first.getSimpleFileName()
+            }
+            else -> {}
+        }
+        TODO()
+    }
 
+    private fun createKlib(project: ProjectMessage, name: String): String? {
+        val args = CompilationArgsBuilder()
+            .add(CompilationConfiguration.ProduceLibrary)
+            .addOutput(project.outputDir, name.getSimpleFileName())
+            .build()
+        val result = compile(project, createArguments(args))
+        if (!result.hasCompilerCrash() && result.isCompileSuccess) {
+            return "${project.outputDir}/${name.getSimpleFileName()}.klib"
+        } else {
+            return null
         }
     }
 
