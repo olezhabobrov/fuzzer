@@ -59,7 +59,7 @@ abstract class CommonCompiler(
     private fun createLocalTmpProject(project: ProjectMessage) {
         File(project.dir).mkdir()
         project.files.forEach { (name, text) ->
-            File(name).writeText(text)
+            File(project.dir + name).writeText(text)
         }
     }
 
