@@ -39,7 +39,7 @@ abstract class CommonCompiler(
             val project = msg.body()
             createLocalTmpProject(project)
             val compileResult = executeCompilationCheck(project)
-            deleteLocalTmpProject(project)
+//            deleteLocalTmpProject(project)
             log.debug("Sending back compile result")
             eb.send(
                 VertxAddresses.compileResult,
@@ -57,20 +57,19 @@ abstract class CommonCompiler(
     }
 
     private fun createLocalTmpProject(project: ProjectMessage) {
+        File(project.dir).mkdir()
         project.files.forEach { (name, text) ->
-            File(name.substringBeforeLast("/")).mkdir()
             File(name).writeText(text)
         }
-        File(project.outputDir).mkdir()
     }
 
-    private fun deleteLocalTmpProject(project: ProjectMessage) {
-        project.files.forEach { (name, _) ->
-            if (File(name).exists())
-                File(name).deleteRecursively()
-        }
-        File(project.outputDir).deleteRecursively()
-    }
+//    private fun deleteLocalTmpProject(project: ProjectMessage) {
+//        project.files.forEach { (name, _) ->
+//            if (File(name).exists())
+//                File(name).deleteRecursively()
+//        }
+//        File(project.dir).deleteRecursively()
+//    }
 
     protected fun getAllPathsInLine(project: ProjectMessage): String {
         return project.files.map { it.first }.joinToString(" ")
@@ -102,10 +101,6 @@ abstract class CommonCompiler(
             ),
         )
     }
-
-    fun String.getSimpleFileName() =
-        this.substringAfterLast("/").substringBeforeLast(".kt")
-
 
     protected val log: Logger = LoggerFactory.getLogger("CompilerLogger")
 }

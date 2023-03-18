@@ -7,6 +7,7 @@ import com.stepanov.bbf.information.CompilationConfiguration
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import com.stepanov.bbf.util.getSimpleNameFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import java.io.File
 
@@ -41,8 +42,8 @@ class Project(
                     val text1 = File(first).readText()
                     val text2 = File(second).readText()
                     ProjectMessage(
-                        listOf(first to text1,
-                            second to text2),
+                        listOf(first.getSimpleNameFile() to text1,
+                            second.getSimpleNameFile() to text2),
                         "tmp/build",
                         configuration,
                         logInfo
@@ -50,9 +51,9 @@ class Project(
                 }
                 else -> ProjectMessage(
                     files.map { bbfFile ->
-                        bbfFile.name to bbfFile.text
+                        bbfFile.name.getSimpleNameFile() to bbfFile.text
                     },
-                    "tmp/build",
+                    "tmp/",
                     configuration,
                     logInfo
                 )
