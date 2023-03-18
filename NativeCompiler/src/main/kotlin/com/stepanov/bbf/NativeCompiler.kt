@@ -3,6 +3,7 @@ package com.stepanov.bbf
 import com.stepanov.bbf.information.*
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.util.getSimpleFileNameWithoutExt
 import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
@@ -30,7 +31,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
                     }
                 }
                 log.debug("")
-                project.files.first().first.getSimpleFileName()
+                project.files.first().first.getSimpleFileNameWithoutExt()
             }
             else -> {}
         }
@@ -40,11 +41,11 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     private fun createKlib(project: ProjectMessage, name: String): String? {
         val args = CompilationArgsBuilder()
             .add(CompilationConfiguration.ProduceLibrary)
-            .addOutput(project.outputDir, name.getSimpleFileName())
+            .addOutput(project.dir, name.getSimpleFileNameWithoutExt())
             .build()
         val result = compile(project, createArguments(args))
         if (!result.hasCompilerCrash() && result.isCompileSuccess) {
-            return "${project.outputDir}/${name.getSimpleFileName()}.klib"
+            return "${project.dir}/${name.getSimpleFileNameWithoutExt()}.klib"
         } else {
             return null
         }

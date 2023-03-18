@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProjectMessage(
     val files: List<Pair<String, String>>,
-    val outputDir: String,
+    val dir: String,
     val configuration: CompilationConfiguration,
     val logInfo: String
 ) {
