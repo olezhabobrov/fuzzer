@@ -1,5 +1,7 @@
 package com.stepanov.bbf
 
+import com.stepanov.bbf.information.CompilationConfiguration
+import com.stepanov.bbf.information.Split
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
@@ -17,12 +19,19 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         super.start()
     }
 
-    override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
-        val arguments = createArguments(project)
+    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
+//        val arguments = createArguments(project)
+        val conf = project.configuration
+        if (conf is Split) {
+
+        }
+    }
+
+    private fun compile(project: ProjectMessage, args: K2NativeCompilerArguments): KotlincInvokeStatus {
         val hasTimeout = !executeCompiler {
             MsgCollector.clear()
             val services = Services.EMPTY
-            compiler.exec(MsgCollector, services, arguments)
+            compiler.exec(MsgCollector, services, args)
         }
         val status = KotlincInvokeStatus(
             MsgCollector.crashMessages.joinToString("\n") +
@@ -34,14 +43,13 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         return status
     }
 
-    private fun createArguments(project: ProjectMessage): K2NativeCompilerArguments {
+    private fun createArguments(args: List<String>): K2NativeCompilerArguments {
         val compilerArgumentsList = mutableListOf(
             "-kotlin-home", System.getenv("kotlin-home")
                 ?: error("kotlin-home not specified in environment variables (should be in build.gradle)"),
-            "-p", "library",
-            "-o", project.outputDir + "result"
+//            "-o", project.outputDir + "result"
         )
-        project.files.forEach { compilerArgumentsList.add(it.first) }
+        compilerArgumentsList.addAll(args)
         val arguments = K2NativeCompilerArguments()
         K2Native().parseArguments(compilerArgumentsList.toTypedArray() , arguments)
         return arguments

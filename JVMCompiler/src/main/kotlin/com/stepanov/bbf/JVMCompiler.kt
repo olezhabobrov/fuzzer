@@ -19,7 +19,7 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
         super.start()
     }
 
-    override fun tryToCompile(project: ProjectMessage): KotlincInvokeStatus {
+    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
         val args = prepareArgs(project, "tmp/build/")
         val hasTimeout = !executeCompiler {
             val services = Services.EMPTY
