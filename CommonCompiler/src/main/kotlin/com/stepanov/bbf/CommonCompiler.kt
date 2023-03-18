@@ -35,8 +35,8 @@ abstract class CommonCompiler(
     private fun establishConsumers() {
         val eb = vertx.eventBus()
         eb.consumer<ProjectMessage>(compileAddress) { msg ->
-            log.debug("Got a project to compile")
             val project = msg.body()
+            log.debug("Got a project to compile with configuration: ${project.configuration}")
             createLocalTmpProject(project)
             val compileResult = executeCompilationCheck(project)
 //            deleteLocalTmpProject(project)
