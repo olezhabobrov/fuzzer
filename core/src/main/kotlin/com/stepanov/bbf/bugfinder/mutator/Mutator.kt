@@ -90,6 +90,6 @@ class Mutator: AbstractVerticle() {
 
     private val log = Logger.getLogger("mutatorLogger")
 
-    private val TIMEOUT = 30L
+    private val TIMEOUT = 120L
     private val MAX_LINES = 500
 }

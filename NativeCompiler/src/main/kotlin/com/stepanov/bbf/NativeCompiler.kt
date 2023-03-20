@@ -28,8 +28,13 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
                 }
 
                 val result = createKlib(project, project.files.map { it.first })
-                if (result.hasCompilerCrash() || !result.isCompileSuccess)
+                if (result.hasCompilerCrash()) {
                     return result
+                }
+                if (!result.isCompileSuccess) {
+                    log.debug("Split- : bad division; doesn't compile")
+                    return result
+                }
 
                 val (klibs, dependedFiles) = project.files.partition { (name, _) ->
                     val result = createKlib(project, name)

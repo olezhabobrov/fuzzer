@@ -3,11 +3,12 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "All"
+        "type": "Some",
+        "transformationsList": ["AddRandomClass"]
     },
     "mutationTarget": {
-        "type": "random"
+        "type": "name",
+        "name": "tmp/arrays/simpleNative.kt"
     },
-    "mutationCount": 20,
-    "repeatInf": true
+    "mutationCount": 20
 }

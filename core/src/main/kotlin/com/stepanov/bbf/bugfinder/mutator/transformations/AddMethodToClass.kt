@@ -27,5 +27,5 @@ class AddMethodToClass(project: Project, file: BBFFile):
         }
     }
 
-    private val MAGIC_CONST = 10
+    private val MAGIC_CONST = 4
 }
