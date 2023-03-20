@@ -5,6 +5,7 @@ import com.intellij.lang.FileASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.stepanov.bbf.bugfinder.project.LANGUAGE
@@ -43,7 +44,7 @@ import java.util.function.BiPredicate
 import kotlin.reflect.KClass
 
 fun PsiFile.addToTheTop(psiElement: PsiElement): PsiElement {
-    val firstChild = this.allChildren.first!!
+    val firstChild = this.allChildren.first { it !is LeafPsiElement }
     firstChild.add(psiFactory.createWhiteSpace("\n"))
     val res = firstChild.add(psiElement)
     firstChild.add(psiFactory.createWhiteSpace("\n"))
