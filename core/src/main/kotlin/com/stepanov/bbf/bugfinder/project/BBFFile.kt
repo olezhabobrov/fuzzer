@@ -31,7 +31,7 @@ class BBFFile(
 
     fun updateCtx(): BindingContext? {
         File(name).writeText(text)
-        psiFile = KtPsiFactory(env.project).createFile(name, text)
+//        psiFile = KtPsiFactory(env.project).createFile(name, text)
         ctx = PSICreator.updateBindingContext(psiFile, env)
         return ctx
     }

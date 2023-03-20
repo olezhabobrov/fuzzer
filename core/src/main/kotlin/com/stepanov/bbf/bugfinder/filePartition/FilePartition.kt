@@ -6,6 +6,7 @@ import java.io.File
 
 object FilePartition {
     fun splitFile(file: BBFFile): Pair<String, String> {
+        file.updateCtx()
         val children = file.psiFile.children.toList()
         val (children1, children2) = children.chunked(children.size / 2 + 1)
         val oldName = file.name

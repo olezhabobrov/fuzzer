@@ -98,4 +98,6 @@ object PSICreator {
             null
         }
     }
+
+    fun init() {}
 }

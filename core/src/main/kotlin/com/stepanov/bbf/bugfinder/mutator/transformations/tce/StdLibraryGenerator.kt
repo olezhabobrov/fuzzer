@@ -551,6 +551,8 @@ object StdLibraryGenerator {
     private fun handleParams(valParamDesc: List<ValueParameterDescriptor>, typeParamsToArgs: Map<String, String>) =
         valParamDesc.map { "${it.name}: ${it.type.replaceTypeArgsToTypes(typeParamsToArgs)}" }.joinToString()
 
+
+    fun init() {}
 }
 
 data class DeclarationDescr(

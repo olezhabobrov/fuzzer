@@ -4,6 +4,7 @@ import com.stepanov.bbf.CommonCompiler
 import com.stepanov.bbf.bugfinder.manager.Bug
 import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.Mutator
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.project.Project
@@ -20,6 +21,7 @@ import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.reduktor.parser.PSICreator
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
@@ -131,7 +133,7 @@ class Coordinator: CoroutineVerticle() {
             if (mutatedProject.isFinal) {
                 log.debug("Got completed mutation result by strategy#${mutatedProject.strategyNumber}")
                 val strategy = strategiesMap[mutatedProject.strategyNumber]!!
-                FooBarCompiler.tearDownMyEnv(strategy.project.env)
+//                FooBarCompiler.tearDownMyEnv(strategy.project.env)
                 val mutationProblem = strategiesMap.remove(strategy.number)!!.mutationProblem
                 if (mutationProblem.repeatInf)
                     sendMutationProblem(mutationProblem)
@@ -209,6 +211,9 @@ class Coordinator: CoroutineVerticle() {
 
     private fun localPreparations() {
         File(CompilerArgs.pathToMutatedDir).deleteRecursively()
+        // initialize objects. if not initialized now, would take a lot of time later!
+        PSICreator.init()
+        StdLibraryGenerator.init()
     }
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
