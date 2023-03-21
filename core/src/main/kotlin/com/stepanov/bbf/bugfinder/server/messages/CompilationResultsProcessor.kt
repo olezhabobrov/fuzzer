@@ -1,39 +1,39 @@
 package com.stepanov.bbf.bugfinder.server.messages
 
 import com.stepanov.bbf.messages.CompilationResult
-import com.stepanov.bbf.messages.ProjectMessage
 import org.jetbrains.kotlin.backend.common.push
 
 class CompilationResultsProcessor {
-    private val projectToRequestCounter = mutableMapOf<ProjectMessage, Int>()
-    private val projectMessageToCompilationResult = mutableMapOf<ProjectMessage, MutableList<CompilationResult>>()
+    private val mutationToCounter = mutableMapOf<Int, Int>()
+    private val mutationToResult = mutableMapOf<Int, MutableList<CompilationResult>>()
 
-    fun increaseCounter(projectMessage: ProjectMessage) {
-        projectToRequestCounter[projectMessage] = projectToRequestCounter.getOrDefault(projectMessage, 0) + 1
+    fun increaseCounter(mutationNumber: Int) {
+        mutationToCounter[mutationNumber] =
+            mutationToCounter.getOrDefault(mutationNumber, 0) + 1
     }
 
     fun processCompilationResult(compilationResult: CompilationResult) {
-        val results = projectMessageToCompilationResult
-            .getOrDefault(compilationResult.project, mutableListOf())
+        val results = mutationToResult
+            .getOrDefault(compilationResult.request.mutationNumber, mutableListOf())
         results.push(compilationResult)
-        projectMessageToCompilationResult[compilationResult.project] = results
+        mutationToResult[compilationResult.request.mutationNumber] = results
     }
 
-    fun receivedAllResults(projectMessage: ProjectMessage): Boolean =
-        ((projectMessageToCompilationResult[projectMessage]?.size ?: 0) >=
-                (projectToRequestCounter[projectMessage] ?: Int.MAX_VALUE))
+    fun receivedAllResults(mutation: Int): Boolean =
+        ((mutationToResult[mutation]?.size ?: 0) >=
+                (mutationToCounter[mutation] ?: Int.MAX_VALUE))
 
-    fun shouldSendToBugManager(projectMessage: ProjectMessage): Boolean =
-        receivedAllResults(projectMessage) &&
-                projectMessageToCompilationResult[projectMessage]!!.any { result ->
+    fun shouldSendToBugManager(mutationNumber: Int): Boolean =
+        receivedAllResults(mutationNumber) &&
+                mutationToResult[mutationNumber]!!.any { result ->
                     result.invokeStatus.hasCompilerCrash()
                 }
 
-    fun getCompilationResults(projectMessage: ProjectMessage) =
-        projectMessageToCompilationResult[projectMessage]!!
+    fun getCompilationResults(mutationNumber: Int) =
+        mutationToResult[mutationNumber]!!
 
-    fun removeProject(projectMessage: ProjectMessage) {
-        projectMessageToCompilationResult.remove(projectMessage)
-        projectToRequestCounter.remove(projectMessage)
+    fun removeProject(mutation: Int) {
+        mutationToResult.remove(mutation)
+        mutationToCounter.remove(mutation)
     }
 }

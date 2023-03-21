@@ -7,7 +7,6 @@ import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.reducer.ResultsFilter
 import com.stepanov.bbf.bugfinder.server.codecs.*
 import com.stepanov.bbf.bugfinder.server.messages.CompilationResultHolder
@@ -15,10 +14,11 @@ import com.stepanov.bbf.bugfinder.server.messages.CompilationResultsProcessor
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.bugfinder.server.messages.parseMutationProblem
 import com.stepanov.bbf.codecs.CompilationResultCodec
-import com.stepanov.bbf.codecs.ProjectCodec
+import com.stepanov.bbf.codecs.CompilationRequestCodec
+import com.stepanov.bbf.information.CompilationConfiguration
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
-import com.stepanov.bbf.kootstrap.FooBarCompiler
+import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -113,14 +113,14 @@ class Coordinator: CoroutineVerticle() {
             val compileResult = result.body()
             if (compileResult.invokeStatus.hasCompilerCrash()) {
                 log.debug("Found some bug")
-                log.debug("Bug recreated by: ${compileResult.project.logInfo}")
+                log.debug("Bug recreated by: ${compileResult.request.logInfo}")
             }
             compilationResultsProcessor.processCompilationResult(compileResult)
-            if (compilationResultsProcessor.shouldSendToBugManager(compileResult.project)) {
+            if (compilationResultsProcessor.shouldSendToBugManager(compileResult.request.mutationNumber)) {
                 log.debug("Sending results to BugManager")
                 vertx.eventBus().send(VertxAddresses.bugManager, CompilationResultHolder(
-                    compilationResultsProcessor.getCompilationResults(compileResult.project)))
-                compilationResultsProcessor.removeProject(compileResult.project)
+                    compilationResultsProcessor.getCompilationResults(compileResult.request.mutationNumber)))
+                compilationResultsProcessor.removeProject(compileResult.request.mutationNumber)
             }
         }
 
@@ -147,35 +147,36 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
-//        if (mutationResult.project in checkedProjects) {
-//            log.debug("Received project has already been compiled, going back")
-//            return
-//        }
 
-//        checkedProjects.add(mutationResult.project)
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
         val compilers = strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers
-
         compilers.forEach { address ->
-            CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
-                val projectMessage = mutationResult.project.createProjectMessage(
-                    mutationResult.logInfo(),
-                    config
-                )
-                compilationResultsProcessor.increaseCounter(projectMessage)
+            CommonCompiler.compilerToConfigMap[address]?.forEach config@{ config ->
+                val project = getProjectMessageByConfig(mutationResult.projects, config)
+                if (project == null) {
+                    log.warn("Couldn't find projectMessage for configuration $config")
+                    return@config
+                }
+                if (project in checkedProjects) {
+                    log.debug("Received project has already been compiled, going back")
+                    return@config
+                }
+                checkedProjects.add(project)
+
+                compilationResultsProcessor.increaseCounter(mutationResult.mutationNumber)
+                // TODO: achtung, it's incorrect, ask Marat how to do that
+                eb.send(address, CompilationRequest(project, config, mutationResult.logInfo(), mutationResult.mutationNumber))
             }
         }
 
-        compilers.forEach { address ->
-            CommonCompiler.compilerToConfigMap[address]?.forEach { config ->
-                val projectMessage = mutationResult.project.createProjectMessage(
-                    mutationResult.logInfo(),
-                    config
-                )
-                eb.send(address, projectMessage)
-            }
-        }
+    }
 
+    private fun getProjectMessageByConfig(projects: List<ProjectMessage>,
+                                          config: CompilationConfiguration): ProjectMessage? {
+        return when (config) {
+            CompilationConfiguration.Split -> projects.firstOrNull { it.isSplit }
+            else -> projects.firstOrNull { !it.isSplit }
+        }
     }
 
     private fun deployMutators() {
@@ -204,7 +205,7 @@ class Coordinator: CoroutineVerticle() {
         eb.registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
         eb.registerDefaultCodec(MutationResult::class.java, MutationResultCodec())
         eb.registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
-        eb.registerDefaultCodec(ProjectMessage::class.java, ProjectCodec())
+        eb.registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
         eb.registerDefaultCodec(Bug::class.java, BugCodec())
         eb.registerDefaultCodec(CompilationResultHolder::class.java, CompilationResultHolderCodec())
     }
@@ -218,7 +219,7 @@ class Coordinator: CoroutineVerticle() {
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
     private val compilationResultsProcessor = CompilationResultsProcessor()
-    private val checkedProjects = mutableSetOf<Project>()
+    private val checkedProjects = mutableSetOf<ProjectMessage>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }

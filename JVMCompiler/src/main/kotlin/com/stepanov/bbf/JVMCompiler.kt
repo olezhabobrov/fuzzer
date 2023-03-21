@@ -2,6 +2,7 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.commons.io.FileUtils
@@ -19,20 +20,21 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
         super.start()
     }
 
-    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
-        val args = prepareArgs(project, "tmp/build/")
-        val hasTimeout = !executeCompiler {
-            val services = Services.EMPTY
-            compiler.exec(MsgCollector, services, args)
-        }
-        val status = KotlincInvokeStatus(
-            MsgCollector.crashMessages.joinToString("\n") +
-                    MsgCollector.compileErrorMessages.joinToString("\n"),
-            !MsgCollector.hasCompileError,
-            MsgCollector.hasException,
-            hasTimeout
-        )
-        return status
+    override fun executeCompilationCheck(request: CompilationRequest): KotlincInvokeStatus {
+        TODO("")
+//        val args = prepareArgs(project, "tmp/build/")
+//        val hasTimeout = !executeCompiler {
+//            val services = Services.EMPTY
+//            compiler.exec(MsgCollector, services, args)
+//        }
+//        val status = KotlincInvokeStatus(
+//            MsgCollector.crashMessages.joinToString("\n") +
+//                    MsgCollector.compileErrorMessages.joinToString("\n"),
+//            !MsgCollector.hasCompileError,
+//            MsgCollector.hasException,
+//            hasTimeout
+//        )
+//        return status
     }
 
     // TODO: add some additional arguments maybe

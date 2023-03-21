@@ -19,8 +19,9 @@ class KotlincInvokeStatus(
 
 }
 
+@Serializable
 class CompilationResult(
     val compiler: String,
     val invokeStatus: KotlincInvokeStatus,
-    val project: ProjectMessage
+    val request: CompilationRequest
 )

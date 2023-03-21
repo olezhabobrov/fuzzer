@@ -4,11 +4,11 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["AddRandomClass"]
+        "transformationsList": ["AddFunInvocations"]
     },
     "mutationTarget": {
         "type": "name",
         "name": "tmp/arrays/simpleNative.kt"
     },
-    "mutationCount": 20
+    "mutationCount": 15
 }

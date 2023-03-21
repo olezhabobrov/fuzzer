@@ -1,8 +1,9 @@
 package com.stepanov.bbf
 
 import com.stepanov.bbf.codecs.CompilationResultCodec
-import com.stepanov.bbf.codecs.ProjectCodec
+import com.stepanov.bbf.codecs.CompilationRequestCodec
 import com.stepanov.bbf.information.*
+import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
@@ -25,21 +26,20 @@ abstract class CommonCompiler(
         log.debug("Compiler deployed")
     }
 
-    abstract fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus
+    abstract fun executeCompilationCheck(request: CompilationRequest): KotlincInvokeStatus
 
     private fun registerCodecs() {
-        vertx.eventBus().registerDefaultCodec(ProjectMessage::class.java, ProjectCodec())
+        vertx.eventBus().registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
         vertx.eventBus().registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
     }
 
     private fun establishConsumers() {
         val eb = vertx.eventBus()
-        eb.consumer<ProjectMessage>(compileAddress) { msg ->
-            val project = msg.body()
-            log.debug("Got a project to compile with configuration: ${project.configuration}")
-            createLocalTmpProject(project)
-            val compileResult = executeCompilationCheck(project)
-//            deleteLocalTmpProject(project)
+        eb.consumer<CompilationRequest>(compileAddress) { msg ->
+            val request = msg.body()
+            log.debug("Got a project to compile with configuration: ${request.configuration}")
+            createLocalTmpProject(request.projectMessage)
+            val compileResult = executeCompilationCheck(request)
             log.debug("Sending back compile result")
             eb.send(
                 VertxAddresses.compileResult,
@@ -62,14 +62,6 @@ abstract class CommonCompiler(
             File(project.dir + name).writeText(text)
         }
     }
-
-//    private fun deleteLocalTmpProject(project: ProjectMessage) {
-//        project.files.forEach { (name, _) ->
-//            if (File(name).exists())
-//                File(name).deleteRecursively()
-//        }
-//        File(project.dir).deleteRecursively()
-//    }
 
     protected fun getAllPathsInLine(project: ProjectMessage): String {
         return project.files.map { it.first }.joinToString(" ")
