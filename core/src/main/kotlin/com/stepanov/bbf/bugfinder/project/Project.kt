@@ -34,31 +34,23 @@ class Project(
                 it.psiFile.text
     }
 
-    fun createProjectMessage(logInfo: String, configuration: CompilationConfiguration): ProjectMessage {
-        val result =
-            when (configuration) {
-                CompilationConfiguration.Split -> {
-                    val (first, second) = FilePartition.splitFile(files.first())
-                    val text1 = File(first).readText()
-                    val text2 = File(second).readText()
-                    ProjectMessage(
-                        listOf(first.getSimpleNameFile() to text1,
-                            second.getSimpleNameFile() to text2),
-                        "tmp/",
-                        configuration,
-                        logInfo
-                    )
-                }
-                else -> ProjectMessage(
-                    files.map { bbfFile ->
-                        bbfFile.name.getSimpleNameFile() to bbfFile.text
-                    },
-                    "tmp/",
-                    configuration,
-                    logInfo
-                )
+    fun createProjectMessage(): ProjectMessage {
+        return ProjectMessage(
+            files.map { bbfFile ->
+                bbfFile.name.getSimpleNameFile() to bbfFile.text
             }
-        return result
+        )
+    }
+
+    fun splitProject(): ProjectMessage {
+        val (first, second) = FilePartition.splitFile(files.first())
+        val text1 = File(first).readText()
+        val text2 = File(second).readText()
+        return ProjectMessage(
+            listOf(first.getSimpleNameFile() to text1,
+                second.getSimpleNameFile() to text2),
+            isSplit = true
+        )
     }
 
     override fun hashCode(): Int {

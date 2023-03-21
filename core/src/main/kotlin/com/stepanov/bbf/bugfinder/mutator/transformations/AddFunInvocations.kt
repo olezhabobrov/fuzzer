@@ -26,9 +26,7 @@ class AddFunInvocations(project: Project, file: BBFFile):
         1, 100) {
 
     override fun transform() {
-        for (i in 0 until randomConst) {
-            addCalls()
-        }
+        addCalls()
     }
 
     private fun addCalls() {
@@ -182,6 +180,4 @@ class AddFunInvocations(project: Project, file: BBFFile):
                     null
                 }
             }
-
-    private val randomConst = Random.nextInt(50, 100)
 }

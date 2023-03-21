@@ -31,7 +31,7 @@ object FileReporter : Reporter {
             val compiler = result.compiler
             val isFailed = result.invokeStatus.hasCompilerCrash()
             val version = CompilerArgs.compilerVersion(compiler)
-            val configuration = result.project.configuration
+            val configuration = result.request.configuration
             info.appendLine("// On $compiler ver $version " +
                     (if (isFailed) "failed" else "not failed") +
                     " with configuration $configuration"

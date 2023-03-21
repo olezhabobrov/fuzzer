@@ -1,6 +1,7 @@
 package com.stepanov.bbf
 
 import com.stepanov.bbf.information.*
+import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.util.getKlibName
@@ -20,8 +21,9 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         super.start()
     }
 
-    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
-        when (project.configuration) {
+    override fun executeCompilationCheck(request: CompilationRequest): KotlincInvokeStatus {
+        val project = request.projectMessage
+        when (request.configuration) {
             CompilationConfiguration.Split -> {
                 if (project.files.size != 2) {
                     error("In Split configuration should be 2 files to compile, but received ${project.files.size}")

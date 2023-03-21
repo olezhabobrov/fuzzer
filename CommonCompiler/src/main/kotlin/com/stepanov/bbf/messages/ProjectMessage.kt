@@ -1,14 +1,13 @@
 package com.stepanov.bbf.messages
 
-import com.stepanov.bbf.information.CompilationConfiguration
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectMessage(
     val files: List<Pair<String, String>>,
-    val dir: String,
-    val configuration: CompilationConfiguration,
-    val logInfo: String
+    val dir: String = "tmp/",
+    val isSplit: Boolean = false,
+
 ) {
 
     override fun hashCode(): Int {

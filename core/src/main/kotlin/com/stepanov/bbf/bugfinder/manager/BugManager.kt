@@ -28,7 +28,7 @@ internal fun bugType(result: CompilationResult): BugType =
         BugType.BACKEND
 
 data class Bug(val results: List<CompilationResult>) {
-    val project = results.first().project
+    val project = results.first().request.projectMessage
 }
 
 
