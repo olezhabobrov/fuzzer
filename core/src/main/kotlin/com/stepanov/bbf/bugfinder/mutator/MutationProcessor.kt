@@ -60,18 +60,13 @@ object MutationProcessor {
         File(pathToSave).writeText(file.psiFile.text)
     }
 
-    fun addNode(anchor: PsiElement, node: PsiElement, before: Boolean = false): PsiElement? {
-//        log.debug("Trying to add $node to $anchor")
-        if (node.text.isEmpty() || node == anchor) return null
+    fun addNode(anchor: PsiElement, node: PsiElement, before: Boolean = false) {
+        if (node.text.isEmpty() || node == anchor) return
         try {
-            val addedNode =
-                if (before) anchor.parent.addBefore(node, anchor)
-                else anchor.parent.addAfter(node, anchor)
-            addedNode.parent.node.removeChild(addedNode.node)
-            return null
+            if (before) anchor.parent.addBefore(node, anchor)
+            else anchor.parent.addAfter(node, anchor)
         } catch (e: Throwable) {
             log.debug("e = $e")
-            return null
         }
     }
     private val DUMMY_HOLDER_INDEX: Short = 86
