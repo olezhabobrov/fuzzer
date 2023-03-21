@@ -147,12 +147,12 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
-        if (mutationResult.project in checkedProjects) {
-            log.debug("Received project has already been compiled, going back")
-            return
-        }
+//        if (mutationResult.project in checkedProjects) {
+//            log.debug("Received project has already been compiled, going back")
+//            return
+//        }
 
-        checkedProjects.add(mutationResult.project)
+//        checkedProjects.add(mutationResult.project)
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
         val compilers = strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers
 
