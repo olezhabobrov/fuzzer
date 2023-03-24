@@ -12,7 +12,7 @@ object FilePartition {
         val oldName = file.name
         val newName1 = getNewNameForFile(oldName, 1)
         val newName2 = getNewNameForFile(oldName, 2)
-
+        // TODO: add package if there is one
         File(newName1).writeText(getTextForElements(children1))
         File(newName2).writeText(getTextForElements(children2))
         return (newName1 to newName2)
