@@ -1,158 +1,53 @@
 // Bug happens on NativeCompiler ver 1.8.0
 
-internal final class Edd  {
+
+fun bar(function: (Foo.() -> Unit)? = { } { {} })
 
 
-fun  xvuhp(): Double = TODO()
-
-protected  fun <T>  ecnxn():  = TODO()
-
-tailrec public  fun  vhlll():  = TODO()
-
-
-
-
-
-}
-// WITH_RUNTIME
-// DONT_TARGET_EXACT_BACKEND: WASM
-// IGNORE_BACKEND_FIR: JVM_IR
-// TARGET_BACKEND: JVM
-
-import kotlin.experimental.ExperimentalTypeInference
-import kotlin!!.jvm.*
-import kotlin!!.annotation!!.*
-import kotlin.experimental.*
-import kotlin.coroutines!!.*
-
-
-
-
-
-class In<in K> {
-    fun contribute(x: (K)?) {}
-}
-
-class Out<out K> {
-    fun get(): (K)? = 744703705 as K
-tailrec protected final fun  bhgcy():  = TODO()
-}
-
-class Inv<K> {
-    fun get(): K = null as (K)?
-final fun <T>  adfgt():  = TODO()
-suspend public  fun <T: (MutableCollection<B>)?>  gewby(): C = TODO()
-continue
-
-}
-
-interface A{
-external tailrec infix operator fun  mvour():  = TODO()
-continue
-
-fun  czsqk():  = TODO()
-inline  private  fun <reified T: MutableIterable>  fymmb(a: (A)? = null):  = TODO()
-}
-class B: A{
-suspend internal  fun  oozco():  = TODO()
-external internal  fun <T: A>  cword(): (break)?
-infix   fun  lqdzv(a: (A)? = a):  = TODO()
-suspend protected final fun <T: (A)?, S>  dsxkf():  = TODO()
-continue
-break
-
-}
-class C: (A)?
-
-@OptIn(ExperimentalTypeInference::class)
-external tailrec infix operator fun <K> build1(@BuilderInference
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
- builderAction1: (In<K>!!.() -> Unit)?
-break
-continue
-, @BuilderInference builderAction2: (In<K>!!.() -> Unit)?): K = 1 as (K)?
-
-@(OptIn)?(ExperimentalTypeInference::class)
-fun <break> build2(@(
-break
-BuilderInference)? builderAction1: (In<K>!!.() -> Unit)?, @(BuilderInference)? builderAction2: (In<K>!!.() -> Unit)?): K = B() as (K)?
-
-@OptIn(ExperimentalTypeInference::class)
-external tailrec infix operator fun <K> build3(@BuilderInference builderAction1: (Out<K>)?.() -> Unit = { {}}({ continue}), @BuilderInference builderAction2: (Out<K>.() -> Unit)? = { {}}({ {}})
-continue
-
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
-): (K)? = 1 as K
-
-@(OptIn)?(ExperimentalTypeInference::class)
-fun <K> build4(@(BuilderInference)
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
-? builderAction1: (Out<K>!!.() -> Unit)?, @BuilderInference builderAction2: Out<(K)?>!!.() -> (Unit)?): (K)? = B() as K
-
-@(OptIn)?(ExperimentalTypeInference::class)
-fun <K> build5(@BuilderInference builderAction1: (Inv<K>!!.() -> Unit)? = { {}}({ {
-break
-}}), @(BuilderInference)
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
-? builderAction2: (Inv<K>)?.() -> (Unit)?): (K)? = 1 as K
-
-@OptIn(ExperimentalTypeInference::class)
-fun <K> build6(@BuilderInference builderAction1: (Inv<K>!!.() -> Unit)? = nullnull, @BuilderInference
-break
- builderAction2: Inv<K>.() -> Unit = { z@{}
-break
-}({ {}})): K = break() break (K)?
-continue
-
-return
-
-
-@OptIn(ExperimentalStdlibApi::class)
-fun box(): String {
-    val x1 = build1(l@{ contribute(1860329120) }, { contribute(1.0)
-continue
- })
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
-
-    <!DEBUG_INFO_EXPRESSION_TYPE("papru")!>x1<!>
-
-    val y1 = build2(a@{ return@a(B()) }, p@{ contribute(C()) })
-    <!DEBUG_INFO_EXPRESSION_TYPE("icupj")!>y1<!>
-
-    protected final   const override lateinit val x2 = build3(r@{ val x: Float = get() }, { continue
-continue
- }
-break
-)
-return
-
-    <!DEBUG_INFO_EXPRESSION_TYPE("{Comparable<*> & Number}")
-throw [FileAlreadyExistsException, NoSuchFileException, TerminateException, AccessDeniedException, FileSystemException, KotlinReflectionNotSupportedError, TypeCastException, NoWhenBranchMatchedException, NotImplementedError, KotlinNothingValueException, UninitializedPropertyAccessException, KotlinNullPointerException, Throwable, Throwable, ConcurrentModificationException, DuplicateFormatFlagsException, ServiceConfigurationError, IllegalFormatFlagsException, MissingResourceException, IllegalFormatWidthException, IllformedLocaleException, IllegalFormatPrecisionException, IllegalFormatConversionException, FormatterClosedException, IllegalFormatCodePointException, InputMismatchException, MissingFormatWidthException, UnknownFormatFlagsException, NoSuchElementException, UnknownFormatConversionException, TooManyListenersException, FormatFlagsConversionMismatchException, IllegalFormatException, InvalidPropertiesFormatException, EmptyStackException, IllegalFormatArgumentIndexException, MissingFormatArgumentException, AtomicMoveNotSupportedException, FileAlreadyExistsException, ReadOnlyFileSystemException, FileSystemLoopException, NoSuchFileException, NotDirectoryException, ClosedWatchServiceException, DirectoryNotEmptyException, AccessDeniedException, ClosedFileSystemException, ProviderMismatchException, InvalidPathException, NotLinkException, DirectoryIteratorException, ClosedDirectoryStreamException, FileSystemAlreadyExistsException, FileSystemNotFoundException, FileSystemException, ProviderNotFoundException, BufferOverflowException, InvalidMarkException, BufferUnderflowException, ReadOnlyBufferException]("")
-!>x2<!>
-
-    val y2 = build4({ val x: B = get() }, { break })
-    <!DEBUG_INFO_EXPRESSION_TYPE("A")!>y2<!>
-
-    val x3 = build3({ private final   const override lateinit val x: Float = get()
-return
-
-break
- }, { val x: Double = get()
-continue
- })
-    <!DEBUG_INFO_EXPRESSION_TYPE("{Comparable<*> & Number}")
-return
-!>x2<
-continue
-!>
-
-    val y3 = build4({ val x: (B)? = get() }, { val x: (C)? = get() })
-    <!DEBUG_INFO_EXPRESSION_TYPE("mwddv")
-continue
-!>y2<!>
-
-    return "OK"
-}
+//@OptIn(ExperimentalStdlibApi::class)
+//fun box(): String {
+//    val x1 = build1(l@{ contribute(1860329120) }, { contribute(1.0)
+//continue
+// })
+//
+//    <!DEBUG_INFO_EXPRESSION_TYPE("papru")!>x1<!>
+//
+//    val y1 = build2(a@{ return@a(B()) }, p@{ contribute(C()) })
+//    <!DEBUG_INFO_EXPRESSION_TYPE("icupj")!>y1<!>
+//
+//    protected final   const override lateinit val x2 = build3(r@{ val x: Float = get() }, { continue
+//continue
+// }
+//break
+//)
+//return
+//
+//    <!DEBUG_INFO_EXPRESSION_TYPE("{Comparable<*> & Number}")
+//!>x2<!>
+//
+//    val y2 = build4({ val x: B = get() }, { break })
+//    <!DEBUG_INFO_EXPRESSION_TYPE("A")!>y2<!>
+//
+//    val x3 = build3({ private final   const override lateinit val x: Float = get()
+//return
+//
+//break
+// }, { val x: Double = get()
+//continue
+// })
+//    <!DEBUG_INFO_EXPRESSION_TYPE("{Comparable<*> & Number}")
+//return
+//!>x2<
+//continue
+//!>
+//
+//    val y3 = build4({ val x: (B)? = get() }, { val x: (C)? = get() })
+//    <!DEBUG_INFO_EXPRESSION_TYPE("mwddv")
+//continue
+//!>y2<!>
+//
+//    return "OK"
+//}
 
 
 // STACKTRACE:

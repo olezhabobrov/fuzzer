@@ -1,7 +1,6 @@
 package com.stepanov.bbf.bugfinder.server.messages
 
 import com.stepanov.bbf.messages.CompilationResult
-import org.jetbrains.kotlin.backend.common.push
 
 class CompilationResultsProcessor {
     private val mutationToCounter = mutableMapOf<Int, Int>()
@@ -15,7 +14,7 @@ class CompilationResultsProcessor {
     fun processCompilationResult(compilationResult: CompilationResult) {
         val results = mutationToResult
             .getOrDefault(compilationResult.request.mutationNumber, mutableListOf())
-        results.push(compilationResult)
+        results.add(compilationResult)
         mutationToResult[compilationResult.request.mutationNumber] = results
     }
 
