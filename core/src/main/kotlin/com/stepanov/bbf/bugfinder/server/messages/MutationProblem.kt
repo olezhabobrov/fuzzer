@@ -4,6 +4,7 @@ import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.information.VertxAddresses
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -34,19 +35,8 @@ data class MutationProblem(
                 mutationTarget.writeProject()
                 project = Project(mutationTarget.files.map { it.getLocalName() })
             }
-
-            else -> {
-                throw IllegalArgumentException("Shouldn't reach here. Target can't be not SingleSourceTarget or ProjectTarget")
-            }
         }
-        // TODO: probably shouldn't mutate random file
-        // i.e. for a certain mutation we should mutate certain file
-        // and should fix params
-        return MutationStrategy(List(mutationCount) { _ ->
-            val transformation = listOfTransformations.random()
-            transformation.primaryConstructor!!
-                .call(project, project.files.random())
-        }, project, this)
+        return MutationStrategy(listOfTransformations.map { TransformationClass(it) }, project, this)
     }
 
     private val listOfTransformations: List<KClass<out Transformation>>
@@ -89,7 +79,12 @@ object All: AllowedTransformations()
 data class TransformationsList(val transformationsList: List<TransformationClass>): AllowedTransformations()
 
 @Serializable(with = TransformationClassSerializer::class)
-data class TransformationClass(val clazz: KClass<out Transformation>)
+data class TransformationClass(val clazz: KClass<out Transformation>) {
+    fun callConstructorWith(project: Project, file: BBFFile): Transformation {
+        return clazz.primaryConstructor!!
+            .call(project, file)
+    }
+}
 
 @Serializable
 sealed class MutationTarget
