@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder
 
-import com.stepanov.bbf.bugfinder.server.Coordinator
+import com.stepanov.bbf.bugfinder.coordinator.Coordinator
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions

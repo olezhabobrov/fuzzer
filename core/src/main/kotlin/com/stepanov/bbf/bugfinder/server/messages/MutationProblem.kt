@@ -34,6 +34,10 @@ data class MutationProblem(
                 mutationTarget.writeProject()
                 project = Project(mutationTarget.files.map { it.getLocalName() })
             }
+
+            else -> {
+                throw IllegalArgumentException("Shouldn't reach here. Target can't be not SingleSourceTarget or ProjectTarget")
+            }
         }
         // TODO: probably shouldn't mutate random file
         // i.e. for a certain mutation we should mutate certain file
@@ -45,7 +49,7 @@ data class MutationProblem(
         }, project, this)
     }
 
-    val listOfTransformations: List<KClass<out Transformation>>
+    private val listOfTransformations: List<KClass<out Transformation>>
         get() {
             if (allowedTransformations is All)
                 return Constants.allTransformations

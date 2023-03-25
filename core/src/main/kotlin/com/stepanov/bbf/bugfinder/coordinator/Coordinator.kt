@@ -1,4 +1,4 @@
-package com.stepanov.bbf.bugfinder.server
+package com.stepanov.bbf.bugfinder.coordinator
 
 import com.stepanov.bbf.CommonCompiler
 import com.stepanov.bbf.bugfinder.manager.Bug
@@ -13,8 +13,8 @@ import com.stepanov.bbf.bugfinder.server.messages.CompilationResultHolder
 import com.stepanov.bbf.bugfinder.server.messages.CompilationResultsProcessor
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.bugfinder.server.messages.parseMutationProblem
-import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.CompilationRequestCodec
+import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.information.CompilationConfiguration
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
@@ -118,8 +118,11 @@ class Coordinator: CoroutineVerticle() {
             compilationResultsProcessor.processCompilationResult(compileResult)
             if (compilationResultsProcessor.shouldSendToBugManager(compileResult.request.mutationNumber)) {
                 log.debug("Sending results to BugManager")
-                vertx.eventBus().send(VertxAddresses.bugManager, CompilationResultHolder(
-                    compilationResultsProcessor.getCompilationResults(compileResult.request.mutationNumber)))
+                vertx.eventBus().send(
+                    VertxAddresses.bugManager, CompilationResultHolder(
+                        compilationResultsProcessor.getCompilationResults(compileResult.request.mutationNumber)
+                    )
+                )
                 compilationResultsProcessor.removeProject(compileResult.request.mutationNumber)
             }
         }
@@ -165,14 +168,17 @@ class Coordinator: CoroutineVerticle() {
 
                 compilationResultsProcessor.increaseCounter(mutationResult.mutationNumber)
                 // TODO: achtung, it's incorrect, ask Marat how to do that
-                eb.send(address, CompilationRequest(project, config, mutationResult.logInfo(), mutationResult.mutationNumber))
+                eb.send(address,
+                    CompilationRequest(project, config, mutationResult.logInfo(), mutationResult.mutationNumber)
+                )
             }
         }
 
     }
 
     private fun getProjectMessageByConfig(projects: List<ProjectMessage>,
-                                          config: CompilationConfiguration): ProjectMessage? {
+                                          config: CompilationConfiguration
+    ): ProjectMessage? {
         return when (config) {
             CompilationConfiguration.Split -> projects.firstOrNull { it.isSplit }
             else -> projects.firstOrNull { !it.isSplit }
