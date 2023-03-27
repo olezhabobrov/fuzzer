@@ -22,17 +22,16 @@ import kotlin.random.Random
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType as ktGetType
 
 //TODO lib calls
-class AddFunInvocations(project: Project, file: BBFFile):
-    Transformation(project, file,
-        1, 100) {
+class AddFunInvocations:
+    Transformation(50) {
 
-    override fun transform() {
-        addCalls()
+    override fun transform(target: Target) {
+        addCalls(target)
     }
 
-    private fun addCalls() {
-        val psi = file.psiFile
-        val ctx = file.updateCtx() ?: return
+    private fun addCalls(target: Target) {
+        val psi = target.file.psiFile
+        val ctx = target.file.updateCtx() ?: return
         val whitespaces = psi.getAllPSIDFSChildrenOfType<PsiWhiteSpace>().filter { it.text.contains("\n") }
         if (whitespaces.isEmpty()) return
         val randomPlace = whitespaces.random()
