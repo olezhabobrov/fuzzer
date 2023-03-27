@@ -7,5 +7,4 @@ data class MutationRequest(
     val transformation: Transformation,
     val targets: List<FTarget>,
     val strategyNumber: Int,
-    val transformationNumber: Int,
 )

@@ -8,13 +8,14 @@ class KotlincInvokeStatus(
     val isCompileSuccess: Boolean,
     val hasException: Boolean,
     val hasTimeout: Boolean,
+    val projectMessage: ProjectMessage
 ) {
     fun hasCompilerCrash(): Boolean = hasTimeout || hasException
 
     fun hasCompilationError(): Boolean = !isCompileSuccess
 
     companion object {
-        val statusWithoutErrors = KotlincInvokeStatus("", true, false, false)
+//        val statusWithoutErrors = KotlincInvokeStatus("", true, false, false, listOf())
     }
 
 }
@@ -22,6 +23,8 @@ class KotlincInvokeStatus(
 @Serializable
 class CompilationResult(
     val compiler: String,
-    val invokeStatus: KotlincInvokeStatus,
-    val request: CompilationRequest
-)
+    val results: List<KotlincInvokeStatus>,
+    val mutationNumber: Int
+) {
+    fun hasCompilerCrash(): Boolean = results.any { it.hasCompilerCrash() }
+}

@@ -73,4 +73,13 @@ class Project(
         }
     }
 
+    companion object {
+        fun createFromProjectMessage(projectMessage: ProjectMessage): Project {
+            projectMessage.files.forEach { (name, text) ->
+                File(name).writeText(text)
+            }
+            return Project(projectMessage.files.map { it.first })
+        }
+    }
+
 }
