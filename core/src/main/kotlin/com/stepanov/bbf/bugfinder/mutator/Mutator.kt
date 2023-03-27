@@ -35,9 +35,9 @@ class Mutator: AbstractVerticle() {
         }
     }
 
-    private fun executeMutation(t: Transformation, target: FTarget): Set<ProjectMessage> {
+    private fun executeMutation(t: Transformation, projectMessage: ProjectMessage): Set<ProjectMessage> {
         log.debug("Cur transformation ${t::class.simpleName}")
-        return t.execTransformations(target)
+        return t.execTransformations(projectMessage)
     }
 
     private fun mutate(request: MutationRequest): Set<ProjectMessage> {
@@ -46,23 +46,12 @@ class Mutator: AbstractVerticle() {
         val results = mutableSetOf<ProjectMessage>()
         val threadPool = Executors.newCachedThreadPool()
         request.targets.forEach { projectMessage ->
-            val project = Project.createFromProjectMessage(projectMessage)
-            val file = project.files.random()
-            if (file.text.lines().size > MAX_LINES) {
-                log.debug("File is too big, returning back")
-                return@forEach
-            }
-
-            val initialText = file.text
             val futureExitCode = threadPool.submit {
-                val newResults = executeMutation(request.transformation, FTarget(project, file))
+                val newResults = executeMutation(request.transformation, projectMessage)
                 results.addAll(newResults)
             }
             try {
                 futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
-                if (file.text != initialText) {
-                    log.debug("${request.transformation} succesfully mutated")
-                }
             } catch (e: TimeoutException) {
                 futureExitCode.cancel(true)
                 log.debug("Timeout of $TIMEOUT seconds in $simpleName")
@@ -77,5 +66,4 @@ class Mutator: AbstractVerticle() {
     private val log = Logger.getLogger("mutatorLogger")
 
     private val TIMEOUT = 120L
-    private val MAX_LINES = 500
 }
