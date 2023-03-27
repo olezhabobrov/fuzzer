@@ -1,12 +1,12 @@
 package com.stepanov.bbf.bugfinder.mutator.vertxMessages
 
+import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
-import com.stepanov.bbf.bugfinder.server.messages.TransformationClass
 import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationStrategy(
-    val transformations: List<TransformationClass>,
+    val transformations: List<Transformation>,
     val project: Project,
     val mutationProblem: MutationProblem
 ) {
@@ -19,7 +19,7 @@ data class MutationStrategy(
     override fun toString() = """MutationStrategy {
             number=${number}
             transformations:
-            ${transformations.take(5).map { it.clazz.simpleName }.joinToString("\n")}
+            ${transformations.take(5).joinToString("\n")}
             .......
         }
     """.trimIndent()

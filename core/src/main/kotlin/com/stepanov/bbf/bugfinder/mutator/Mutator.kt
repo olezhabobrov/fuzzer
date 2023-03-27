@@ -3,17 +3,13 @@ package com.stepanov.bbf.bugfinder.mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
-import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
-import org.jetbrains.kotlin.backend.common.push
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.random.Random
 
 class Mutator: AbstractVerticle() {
 
