@@ -4,10 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectMessage(
-    val files: List<Pair<String, String>>,
+    val files: List<Pair<String, String>>, // name to code
     val dir: String = "tmp/",
     val isSplit: Boolean = false,
-
 ) {
 
     override fun hashCode(): Int {

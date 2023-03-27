@@ -1,13 +1,13 @@
 package com.stepanov.bbf.bugfinder.mutator.vertxMessages
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
+import com.stepanov.bbf.messages.ProjectMessage
 import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationStrategy(
     val transformations: List<Transformation>,
-    val project: Project,
+    val project: ProjectMessage,
     val mutationProblem: MutationProblem
 ) {
     val number: Int = counter.incrementAndGet()
