@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.manager.Bug
 import com.stepanov.bbf.bugfinder.manager.BugManager
 import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
+import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.project.Project
@@ -132,7 +133,7 @@ class Server: CoroutineVerticle() {
 
     private fun registerCodecs() {
         eb.registerDefaultCodec(MutationProblem::class.java, MutationProblemCodec())
-        eb.registerDefaultCodec(MutationStrategy::class.java, MutationStrategyCodec())
+        eb.registerDefaultCodec(MutationRequest::class.java, MutationRequestCodec())
         eb.registerDefaultCodec(MutationResult::class.java, MutationResultCodec())
         eb.registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
         eb.registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
