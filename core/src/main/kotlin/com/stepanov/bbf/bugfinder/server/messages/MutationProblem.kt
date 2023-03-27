@@ -1,10 +1,11 @@
 package com.stepanov.bbf.bugfinder.server.messages
 
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.messages.ProjectMessage
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -22,17 +23,17 @@ data class MutationProblem(
     val repeatInf: Boolean = false
 ) {
     fun createMutationStrategy(): MutationStrategy {
-        val project: Project
+        val project: ProjectMessage
         when (mutationTarget) {
             is SingleSourceTarget -> {
                 if (mutationTarget is RandomFileTarget)
                     mutationTarget.updateRandomFile()
                 mutationTarget.writeFile()
-                project = Project(listOf(mutationTarget.getLocalName()))
+                project = ProjectMessage(listOf(mutationTarget.getLocalName() to mutationTarget.getSourceCode()))
             }
             is ProjectTarget -> {
                 mutationTarget.writeProject()
-                project = Project(mutationTarget.files.map { it.getLocalName() })
+                project = ProjectMessage(mutationTarget.files.map { it.getLocalName() to it.getSourceCode()})
             }
         }
         return MutationStrategy(List(mutationCount) { listOfTransformations.random() }, project, this)

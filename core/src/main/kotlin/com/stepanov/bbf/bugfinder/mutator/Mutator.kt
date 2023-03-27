@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
@@ -44,20 +45,22 @@ class Mutator: AbstractVerticle() {
         println("STARTING $simpleName")
         val results = mutableSetOf<ProjectMessage>()
         val threadPool = Executors.newCachedThreadPool()
-        request.targets.forEach { target ->
-            if (target.file.text.lines().size > MAX_LINES) {
+        request.targets.forEach { projectMessage ->
+            val project = Project.createFromProjectMessage(projectMessage)
+            val file = project.files.random()
+            if (file.text.lines().size > MAX_LINES) {
                 log.debug("File is too big, returning back")
                 return@forEach
             }
 
-            val initialText = target.file.text
+            val initialText = file.text
             val futureExitCode = threadPool.submit {
-                val newResults = executeMutation(request.transformation, target)
+                val newResults = executeMutation(request.transformation, FTarget(project, file))
                 results.addAll(newResults)
             }
             try {
                 futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
-                if (target.file.text != initialText) {
+                if (file.text != initialText) {
                     log.debug("${request.transformation} succesfully mutated")
                 }
             } catch (e: TimeoutException) {

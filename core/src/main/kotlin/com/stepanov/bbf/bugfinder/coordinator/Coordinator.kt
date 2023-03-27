@@ -40,10 +40,10 @@ class Coordinator: CoroutineVerticle() {
         eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
             log.debug("Got compilation result")
             val compileResult = result.body()
-            val projectsToSend = mutableListOf<Project>()
+            val projectsToSend = mutableListOf<ProjectMessage>()
             compileResult.results.forEach { status ->
                 if (status.isCompileSuccess) {
-                    projectsToSend.add(Project.createFromProjectMessage(status.projectMessage))
+                    projectsToSend.add(status.projectMessage)
                 }
                 if (status.hasCompilerCrash()) {
                     log.debug("Found some bug")
@@ -80,12 +80,12 @@ class Coordinator: CoroutineVerticle() {
         sendNextTransformation(listOf(strategy.project), strategy.number)
     }
 
-    private fun sendNextTransformation(projects: List<Project>, strategyNumber: Int) {
+    private fun sendNextTransformation(projects: List<ProjectMessage>, strategyNumber: Int) {
         if (transformationIterator.hasNext()) {
             val transformation = transformationIterator.next()
             eb.send(VertxAddresses.mutate,
                 MutationRequest(transformation,
-                    projects.map { FTarget(it, it.files.random()) },
+                    projects,
                     strategyNumber)
             )
         }
