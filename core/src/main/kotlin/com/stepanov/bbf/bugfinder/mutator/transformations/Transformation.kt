@@ -6,18 +6,15 @@ import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.log4j.Logger
 
 abstract class Transformation(
-    val project: Project,
-    val file: BBFFile,
-    val amountOfTransformations: Int,
-    val probPercentage: Int
+    private val amountOfTransformations: Int
 ) {
-    protected abstract fun transform()
+    protected abstract fun transform(target: FTarget)
 
-    fun execTransformations(): Set<ProjectMessage> {
+    fun execTransformations(target: FTarget): Set<ProjectMessage> {
         val result = mutableSetOf<ProjectMessage>()
         repeat(amountOfTransformations) {
-            transform()
-            result.add(project.createProjectMessage())
+            transform(target)
+            result.add(target.project.createProjectMessage())
         }
         return result
     }
@@ -26,10 +23,10 @@ abstract class Transformation(
         val log = Logger.getLogger("mutatorLogger")
     }
 
-    override fun toString() = """Transformation {
-            file=${file.name}
-            transformation=${this::class.java.simpleName}
-        }
-    """.trimIndent()
-
+    override fun toString() = "transformation=${this::class.java.simpleName}"
 }
+
+data class FTarget(
+    val project: Project,
+    val file: BBFFile
+)

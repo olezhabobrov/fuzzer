@@ -38,31 +38,31 @@ class Mutator: AbstractVerticle() {
         }
     }
 
-    private fun executeMutation(t: Transformation): Set<ProjectMessage> {
+    private fun executeMutation(t: Transformation, target: FTarget): Set<ProjectMessage> {
         log.debug("Cur transformation ${t::class.simpleName}")
-        return t.execTransformations()
+        return t.execTransformations(target)
     }
 
     private fun mutate(request: MutationRequest): Set<ProjectMessage> {
+        val simpleName = request.transformation.javaClass.simpleName
+        println("STARTING $simpleName")
         val results = mutableSetOf<ProjectMessage>()
         val threadPool = Executors.newCachedThreadPool()
-        request.transformations.forEach { transformation ->
-            val simpleName = transformation.javaClass.simpleName
-            println("STARTING $simpleName")
-            if (transformation.file.text.lines().size > MAX_LINES) {
+        request.targets.forEach { target ->
+            if (target.file.text.lines().size > MAX_LINES) {
                 log.debug("File is too big, returning back")
                 return@forEach
             }
 
-            val initialText = transformation.file.text
+            val initialText = target.file.text
             val futureExitCode = threadPool.submit {
-                val newResults = executeMutation(transformation)
+                val newResults = executeMutation(request.transformation, target)
                 results.addAll(newResults)
             }
             try {
                 futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
-                if (transformation.file.text != initialText) {
-                    log.debug("$transformation succesfully mutated")
+                if (target.file.text != initialText) {
+                    log.debug("${request.transformation} succesfully mutated")
                 }
             } catch (e: TimeoutException) {
                 futureExitCode.cancel(true)
@@ -70,8 +70,8 @@ class Mutator: AbstractVerticle() {
             } catch (e: Throwable) {
                 log.debug("Caught exception in ${simpleName}: ${e.stackTraceToString()}")
             }
-            println("FINISHING $simpleName")
         }
+        println("FINISHING $simpleName")
         return results
     }
 
