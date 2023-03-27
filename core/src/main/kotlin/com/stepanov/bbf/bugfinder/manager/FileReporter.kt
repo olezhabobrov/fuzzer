@@ -27,17 +27,18 @@ object FileReporter : Reporter {
         val newPath = "$resDir/$name.kt"
         File(newPath.substringBeforeLast('/')).mkdirs()
         val info = StringBuilder()
-        bug.results.forEach { result ->
-            val compiler = result.compiler
-            val isFailed = result.invokeStatus.hasCompilerCrash()
-            val version = CompilerArgs.compilerVersion(compiler)
-            val configuration = result.request.configuration
-            info.appendLine("// On $compiler ver $version " +
-                    (if (isFailed) "failed" else "not failed") +
-                    " with configuration $configuration"
-            )
-        }
-        val msg = bug.results.first().invokeStatus.combinedOutput
+        val result = bug.result
+        val compiler = result.compiler
+        val status = result.results.first()
+        val isFailed = status.hasCompilerCrash()
+        val version = CompilerArgs.compilerVersion(compiler)
+//        val configuration = result.request.configuration
+        info.appendLine("// On $compiler ver $version " +
+                (if (isFailed) "failed" else "not failed")
+//                " with configuration $configuration"
+        )
+
+        val msg = status.combinedOutput
 
         val commentedStackTrace =
                 "// STACKTRACE:\n${msg.split("\n").joinToString("\n") { "// $it" }}"

@@ -25,11 +25,11 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType as ktGetType
 class AddFunInvocations:
     Transformation(50) {
 
-    override fun transform(target: Target) {
+    override fun transform(target: FTarget) {
         addCalls(target)
     }
 
-    private fun addCalls(target: Target) {
+    private fun addCalls(target: FTarget) {
         val psi = target.file.psiFile
         val ctx = target.file.updateCtx() ?: return
         val whitespaces = psi.getAllPSIDFSChildrenOfType<PsiWhiteSpace>().filter { it.text.contains("\n") }

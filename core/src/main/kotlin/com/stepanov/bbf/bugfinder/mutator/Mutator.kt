@@ -23,7 +23,7 @@ class Mutator: AbstractVerticle() {
                 val request = msg.body()
                 log.debug("Got mutation request for strategy#${request!!.strategyNumber}")
                 val results = mutate(request)
-                log.debug("Completed mutation for transformation#${request.transformationNumber}")
+//                log.debug("Completed mutation for transformation#${request.transformationNumber}")
                 vertx.eventBus().send(VertxAddresses.mutationResult,
                     MutationResult(results, request.strategyNumber)
                 )

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CompilationRequest(
-    val projectMessage: List<ProjectMessage>,
-    val mutationNumber: Int
+    val projects: List<ProjectMessage>,
+    val strategyNumber: Int
 )
