@@ -62,14 +62,14 @@ class Coordinator: CoroutineVerticle() {
             val projectsToSend = mutableListOf<Project>()
             compileResult.results.forEach { status ->
                 if (status.isCompileSuccess) {
-                    projectsToSend.add(status.projectMessage)
+                    projectsToSend.add(Project.createFromProjectMessage(status.projectMessage))
                 }
                 if (status.hasCompilerCrash()) {
                     log.debug("Found some bug")
                     TODO()
                 }
             }
-            sendNextTransformation(projectsToSend, compileResult.)
+            sendNextTransformation(projectsToSend, compileResult.strategyNumber)
 
 
 //                vertx.eventBus().send(
@@ -115,7 +115,7 @@ class Coordinator: CoroutineVerticle() {
         val compilers = strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers
         compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(mutationResult.projects.toList(), mutationResult.mutationNumber)
+                CompilationRequest(mutationResult.projects.toList(), mutationResult.strategyNumber)
             )
         }
     }

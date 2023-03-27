@@ -24,7 +24,7 @@ class KotlincInvokeStatus(
 class CompilationResult(
     val compiler: String,
     val results: List<KotlincInvokeStatus>,
-    val mutationNumber: Int
+    val strategyNumber: Int
 ) {
     fun hasCompilerCrash(): Boolean = results.any { it.hasCompilerCrash() }
 }

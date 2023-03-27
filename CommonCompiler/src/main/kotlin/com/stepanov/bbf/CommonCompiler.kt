@@ -26,7 +26,7 @@ abstract class CommonCompiler(
         log.debug("Compiler deployed")
     }
 
-    abstract fun executeCompilationCheck(request: CompilationRequest): KotlincInvokeStatus
+    abstract fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus
 
     private fun registerCodecs() {
         vertx.eventBus().registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
@@ -37,16 +37,20 @@ abstract class CommonCompiler(
         val eb = vertx.eventBus()
         eb.consumer<CompilationRequest>(compileAddress) { msg ->
             val request = msg.body()
-            log.debug("Got a project to compile with configuration: ${request.configuration}")
-            createLocalTmpProject(request.projectMessage)
-            val compileResult = executeCompilationCheck(request)
-            log.debug("Sending back compile result")
+            log.debug("Got a project to compile")
+            val compileResults = mutableListOf<KotlincInvokeStatus>()
+            request.projects.forEach { projectMessage ->
+                createLocalTmpProject(projectMessage)
+                val compileResult = executeCompilationCheck(projectMessage)
+                compileResults.add(compileResult)
+            }
+            log.debug("Sending back compile results")
             eb.send(
                 VertxAddresses.compileResult,
                 CompilationResult(
                     this::class.java.simpleName,
-                    compileResult,
-                    msg.body()
+                    compileResults,
+                    msg.body().strategyNumber
                 )
             )
         }.exceptionHandler { throwable ->

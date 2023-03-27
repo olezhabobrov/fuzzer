@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationResult
+import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
@@ -21,14 +22,14 @@ enum class BugType {
 }
 
 
-internal fun bugType(result: CompilationResult): BugType =
-    if (result.invokeStatus.combinedOutput.contains("Exception while analyzing expression"))
+internal fun bugType(result: KotlincInvokeStatus): BugType =
+    if (result.combinedOutput.contains("Exception while analyzing expression"))
         BugType.FRONTEND
     else
         BugType.BACKEND
 
-data class Bug(val results: List<CompilationResult>) {
-    val project = results.first().request.projectMessage
+data class Bug(val result: CompilationResult) {
+    val project = result.results.first().projectMessage
 }
 
 
@@ -64,26 +65,26 @@ class BugManager: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<CompilationResultHolder>(VertxAddresses.bugManager) { msg ->
-            processCompilationResults(msg.body().results)
+        vertx.eventBus().consumer<CompilationResult>(VertxAddresses.bugManager) { msg ->
+            processCompilationResults(msg.body())
         }
     }
 
-    private fun processCompilationResults(results: List<CompilationResult>) {
-        if (isUnusualResult(results)) {
-            log.debug("FOUND SOME INTERESTING RESULT")
-        }
-        val resultPath = saveBug(Bug(results))
+    private fun processCompilationResults(result: CompilationResult) {
+//        if (isUnusualResult(results)) {
+//            log.debug("FOUND SOME INTERESTING RESULT")
+//        }
+        val resultPath = saveBug(Bug(result))
         log.debug("Write result to $resultPath")
     }
 
-    private fun isUnusualResult(results: List<CompilationResult>): Boolean {
-        if (results.distinctBy { it.invokeStatus.hasCompilerCrash() }.size > 1)
-            return true
-        if (results.distinctBy { it.invokeStatus.combinedOutput.substringBefore("\n") }.size > 1)
-            return true
-        return false
-    }
+//    private fun isUnusualResult(results: List<KotlincInvokeStatus>): Boolean {
+//        if (results.distinctBy { it.invokeStatus.hasCompilerCrash() }.size > 1)
+//            return true
+//        if (results.distinctBy { it.invokeStatus.combinedOutput.substringBefore("\n") }.size > 1)
+//            return true
+//        return false
+//    }
 
     private val log = Logger.getLogger("bugManagerLogger")
 }

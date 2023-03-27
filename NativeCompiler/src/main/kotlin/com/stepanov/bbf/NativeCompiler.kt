@@ -21,44 +21,43 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         super.start()
     }
 
-    override fun executeCompilationCheck(request: CompilationRequest): KotlincInvokeStatus {
-        val project = request.projectMessage
-        when (request.configuration) {
-            CompilationConfiguration.Split -> {
-                if (project.files.size != 2) {
-                    error("In Split configuration should be 2 files to compile, but received ${project.files.size}")
-                }
-
-                val result = createKlib(project, project.files.map { it.first })
-                if (result.hasCompilerCrash()) {
-                    return result
-                }
-                if (!result.isCompileSuccess) {
-                    log.debug("Split- : bad division; doesn't compile")
-                    return result
-                }
-
-                val (klibs, dependedFiles) = project.files.partition { (name, _) ->
-                    val result = createKlib(project, name)
-                    if (result.hasCompilerCrash()) {
-                        return result
-                    }
-                    result.isCompileSuccess
-                }
-                if (klibs.size == 2) {
-                    log.debug("Split- : not interesting case: both files compiled independently")
-                    return KotlincInvokeStatus.statusWithoutErrors
-                }
-                if (dependedFiles.size == 2) {
-                    log.debug("Split- : not interesting case: both files depend on each other")
-                    return KotlincInvokeStatus.statusWithoutErrors
-                }
-                log.debug("Split+ : found interesting division ")
-
-                return createKlib(project, dependedFiles.first().first, klibs.first().first.getKlibName(project))
-            }
-            else -> {}
-        }
+    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
+//        when (request.configuration) {
+//            CompilationConfiguration.Split -> {
+//                if (project.files.size != 2) {
+//                    error("In Split configuration should be 2 files to compile, but received ${project.files.size}")
+//                }
+//
+//                val result = createKlib(project, project.files.map { it.first })
+//                if (result.hasCompilerCrash()) {
+//                    return result
+//                }
+//                if (!result.isCompileSuccess) {
+//                    log.debug("Split- : bad division; doesn't compile")
+//                    return result
+//                }
+//
+//                val (klibs, dependedFiles) = project.files.partition { (name, _) ->
+//                    val result = createKlib(project, name)
+//                    if (result.hasCompilerCrash()) {
+//                        return result
+//                    }
+//                    result.isCompileSuccess
+//                }
+//                if (klibs.size == 2) {
+//                    log.debug("Split- : not interesting case: both files compiled independently")
+//                    return KotlincInvokeStatus.statusWithoutErrors
+//                }
+//                if (dependedFiles.size == 2) {
+//                    log.debug("Split- : not interesting case: both files depend on each other")
+//                    return KotlincInvokeStatus.statusWithoutErrors
+//                }
+//                log.debug("Split+ : found interesting division ")
+//
+//                return createKlib(project, dependedFiles.first().first, klibs.first().first.getKlibName(project))
+//            }
+//            else -> {}
+//        }
         TODO()
     }
 
@@ -102,7 +101,8 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
                     MsgCollector.compileErrorMessages.joinToString("\n"),
             !MsgCollector.hasCompileError,
             MsgCollector.hasException,
-            hasTimeout
+            hasTimeout,
+            project
         )
         return status
     }
