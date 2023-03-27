@@ -35,7 +35,7 @@ data class MutationProblem(
                 project = Project(mutationTarget.files.map { it.getLocalName() })
             }
         }
-        return MutationStrategy(listOfTransformations, project, this)
+        return MutationStrategy(List(mutationCount) { listOfTransformations.random() }, project, this)
     }
 
     private val listOfTransformations: List<Transformation>
