@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.*
+import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.project.Project
@@ -21,16 +22,15 @@ class Mutator: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<MutationStrategy>(VertxAddresses.mutate) { msg ->
+        vertx.eventBus().consumer<MutationRequest>(VertxAddresses.mutate) { msg ->
             try {
-                val strategy = msg.body()
-                log.debug("Got mutation strategy#${strategy!!.number}")
-                val usefulTransformations = startMutate(strategy)
-                log.debug("""Completed mutation for strategy#${strategy.number}: 
-                    successfully mutated ${usefulTransformations.size} times
-                """.trimIndent())
-                sendMutationResult(strategy.project, strategy.number,
-                    usefulTransformations, true)
+                val request = msg.body()
+                log.debug("Got mutation request for strategy#${request!!.strategyNumber}")
+                val results = mutate(request)
+                log.debug("Completed mutation for transformation#${request.transformationNumber}")
+                vertx.eventBus().send(VertxAddresses.mutationResult,
+                    MutationResult(results, request.strategyNumber)
+                )
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
                 msg.fail(1, e.message)
@@ -38,40 +38,30 @@ class Mutator: AbstractVerticle() {
         }
     }
 
-    private fun executeMutation(t: Transformation) {
-        if (Random.nextInt(0, 100) < t.probPercentage) {
-            //Update ctx
-            t.file.updateCtx()
-            log.debug("Cur transformation ${t::class.simpleName}")
-            t.execTransformations()
-        }
+    private fun executeMutation(t: Transformation): Set<ProjectMessage> {
+        log.debug("Cur transformation ${t::class.simpleName}")
+        return t.execTransformations()
     }
 
-    private fun startMutate(strategy: MutationStrategy): List<String> {
-        log.debug("Starting mutating for strategy #${strategy.number}")
+    private fun mutate(request: MutationRequest): Set<ProjectMessage> {
+        val results = mutableSetOf<ProjectMessage>()
         val threadPool = Executors.newCachedThreadPool()
-        val usefulTransformationsList: MutableList<String> = mutableListOf()
-        strategy.transformations.forEach { transformation ->
+        request.transformations.forEach { transformation ->
             val simpleName = transformation.javaClass.simpleName
             println("STARTING $simpleName")
             if (transformation.file.text.lines().size > MAX_LINES) {
                 log.debug("File is too big, returning back")
-                return usefulTransformationsList
-            }
-
-            if (Random.nextInt(0, 100) < 30) {
-                sendMutationResult(strategy.project, strategy.number,
-                    usefulTransformationsList.toMutableList())
+                return@forEach
             }
 
             val initialText = transformation.file.text
             val futureExitCode = threadPool.submit {
-                executeMutation(transformation)
+                val newResults = executeMutation(transformation)
+                results.addAll(newResults)
             }
             try {
                 futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
                 if (transformation.file.text != initialText) {
-                    usefulTransformationsList.push(transformation.toString())
                     log.debug("$transformation succesfully mutated")
                 }
             } catch (e: TimeoutException) {
@@ -82,19 +72,7 @@ class Mutator: AbstractVerticle() {
             }
             println("FINISHING $simpleName")
         }
-        return usefulTransformationsList
-    }
-
-    private fun sendMutationResult(project: Project, strategyNumber: Int,
-                                   transformations: List<String>, isFinal: Boolean = false) {
-        log.debug("Sending back project, mutated by mutation strategy #$strategyNumber")
-        val mutationResult = MutationResult(
-            MutationResult.createProjects(project),
-            strategyNumber,
-            transformations,
-            isFinal
-        )
-        vertx.eventBus().send(VertxAddresses.mutationResult, mutationResult)
+        return results
     }
 
     private val log = Logger.getLogger("mutatorLogger")

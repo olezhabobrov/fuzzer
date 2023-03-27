@@ -31,7 +31,9 @@ import org.apache.log4j.Logger
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class Coordinator: CoroutineVerticle() {
+class Coordinator(
+    val mutationProblem: MutationProblem
+): CoroutineVerticle() {
 
     private lateinit var eb: EventBus
 
@@ -40,62 +42,9 @@ class Coordinator: CoroutineVerticle() {
         localPreparations()
         registerCodecs()
         establishConsumers()
-        createServer()
         deployMutators()
         deployBugManager()
         log.debug("Coordinator deployed")
-    }
-
-    private fun createServer() {
-        // TODO: should make it suspend. Takes a lot of time
-        val router = Router.router(vertx)
-        router.route("/mutation-problem")
-            .consumes("application/json")
-            .handler(BodyHandler.create())
-            .handler { context ->
-                try {
-                    val input = context.body().asString()
-                    log.debug("Got mutation request: $input")
-                    val mutationProblem = parseMutationProblem(input)
-                    sendMutationProblem(mutationProblem)
-                    context.request().response()
-                        .setStatusCode(200)
-                        .send()
-                } catch (e: Exception) {
-                    log.debug(e.message)
-                    context.request().response()
-                        .setStatusCode(400)
-                        .setStatusMessage("An error occurred: ${e.message}")
-                        .send()
-                }
-            }
-        router.route("/filter-results")
-            .handler(BodyHandler.create())
-            .handler { context ->
-                try {
-                    ResultsFilter.filter()
-                    context.request().response()
-                        .setStatusCode(200)
-                        .send()
-                } catch (e: Exception) {
-                    log.debug(e.message)
-                    context.request().response()
-                        .setStatusCode(400)
-                        .setStatusMessage("An error occurred: ${e.message}")
-                        .send()
-                }
-            }
-
-        vertx.createHttpServer()
-            .requestHandler(router)
-            .listen(8888)
-            .onSuccess { server ->
-                println("HTTP server started on port " + server.actualPort())
-            }
-    }
-
-    private fun sendMutationProblem(mutationProblem: MutationProblem) {
-        vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
     }
 
     private fun establishConsumers() {
@@ -115,7 +64,6 @@ class Coordinator: CoroutineVerticle() {
                 log.debug("Found some bug")
                 log.debug("Bug recreated by: ${compileResult.request.logInfo}")
             }
-            compilationResultsProcessor.processCompilationResult(compileResult)
             if (compilationResultsProcessor.shouldSendToBugManager(compileResult.request.mutationNumber)) {
                 log.debug("Sending results to BugManager")
                 vertx.eventBus().send(
@@ -128,10 +76,8 @@ class Coordinator: CoroutineVerticle() {
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
-            val mutatedProject = result.body()
-            log.debug("Got mutationResult, " +
-                    "mutated by strategy#${mutatedProject.strategyNumber} " +
-                    "${mutatedProject.usefulTransformations.size} times")
+            val mutationResult = result.body()
+            log.debug("Got mutationResult with ${mutationResult.projects.size} results")
             sendProjectToCompilers(mutatedProject)
             if (mutatedProject.isFinal) {
                 log.debug("Got completed mutation result by strategy#${mutatedProject.strategyNumber}")
@@ -224,7 +170,6 @@ class Coordinator: CoroutineVerticle() {
     }
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
-    private val compilationResultsProcessor = CompilationResultsProcessor()
     private val checkedProjects = mutableSetOf<ProjectMessage>()
 
     private val log = Logger.getLogger("coordinatorLogger")
