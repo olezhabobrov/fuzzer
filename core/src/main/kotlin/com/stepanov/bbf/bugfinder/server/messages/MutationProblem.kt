@@ -4,7 +4,6 @@ import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
-import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.information.VertxAddresses
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -36,15 +35,15 @@ data class MutationProblem(
                 project = Project(mutationTarget.files.map { it.getLocalName() })
             }
         }
-        return MutationStrategy(listOfTransformations.map { TransformationClass(it) }, project, this)
+        return MutationStrategy(listOfTransformations, project, this)
     }
 
-    private val listOfTransformations: List<KClass<out Transformation>>
+    private val listOfTransformations: List<Transformation>
         get() {
             if (allowedTransformations is All)
                 return Constants.allTransformations
             if (allowedTransformations is TransformationsList)
-                return allowedTransformations.transformationsList.map { it.clazz }
+                return allowedTransformations.transformationsList.map { it.callConstructor() }
             error("wtf")
         }
 
@@ -80,9 +79,8 @@ data class TransformationsList(val transformationsList: List<TransformationClass
 
 @Serializable(with = TransformationClassSerializer::class)
 data class TransformationClass(val clazz: KClass<out Transformation>) {
-    fun callConstructorWith(project: Project, file: BBFFile): Transformation {
-        return clazz.primaryConstructor!!
-            .call(project, file)
+    fun callConstructor(): Transformation {
+        return clazz.primaryConstructor!!.call()
     }
 }
 
