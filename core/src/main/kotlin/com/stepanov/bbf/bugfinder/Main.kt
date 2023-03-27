@@ -1,6 +1,6 @@
 package com.stepanov.bbf.bugfinder
 
-import com.stepanov.bbf.bugfinder.coordinator.Coordinator
+import com.stepanov.bbf.bugfinder.server.Server
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
@@ -14,8 +14,8 @@ fun main() {
         if (res.succeeded()) {
             val vertx = res.result()
             vertx.exceptionHandler(GlobalExceptionHandler)
-            val coordinator = Coordinator()
-            vertx.deployVerticle(coordinator).onFailure(GlobalExceptionHandler)
+            val server = Server()
+            vertx.deployVerticle(server).onFailure(GlobalExceptionHandler)
         } else {
 
             println("Failed: " + res.cause())
