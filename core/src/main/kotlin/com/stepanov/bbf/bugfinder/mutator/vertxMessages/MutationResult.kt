@@ -6,22 +6,9 @@ import org.jetbrains.kotlin.backend.common.push
 import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationResult(
-    val projects: List<ProjectMessage>,
-    val strategyNumber: Int,
-    val usefulTransformations: List<String>,
-    val isFinal: Boolean = false
+    val projects: Set<ProjectMessage>,
+    val strategyNumber: Int
 ) {
-
-    fun logInfo(): String {
-        val transformations = usefulTransformations.size
-        return usefulTransformations.takeLast(10).joinToString(
-            separator="\n",
-            prefix="strategy#$strategyNumber.\n" +
-                    "isFinal=$isFinal\n" +
-                    "Transformed $transformations times by:\n" +
-                    "...\n"
-        )
-    }
 
     val mutationNumber = mutationCounter.incrementAndGet()
 
