@@ -10,11 +10,17 @@ abstract class Transformation(
 ) {
     protected abstract fun transform(target: FTarget)
 
-    fun execTransformations(target: FTarget): Set<ProjectMessage> {
+    fun execTransformations(projectMessage: ProjectMessage): Set<ProjectMessage> {
         val result = mutableSetOf<ProjectMessage>()
         repeat(amountOfTransformations) {
-            transform(target)
-            result.add(target.project.createProjectMessage())
+            val project = Project.createFromProjectMessage(projectMessage)
+            val file = project.files.random()
+            if (file.text.lines().size > MAX_LINES) {
+                log.debug("File is too big, returning back")
+                return@repeat
+            }
+            transform(FTarget(project, file))
+            result.add(project.createProjectMessage())
         }
         return result
     }
@@ -24,6 +30,8 @@ abstract class Transformation(
     }
 
     override fun toString() = "transformation=${this::class.java.simpleName}"
+
+    private val MAX_LINES = 500
 }
 
 data class FTarget(
