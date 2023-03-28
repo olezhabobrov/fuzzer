@@ -2,6 +2,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
+import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.log4j.Logger
 
@@ -21,6 +22,8 @@ abstract class Transformation(
             }
             transform(FTarget(project, file))
             result.add(project.createProjectMessage())
+            FooBarCompiler.tearDownMyEnv(project.env)
+
         }
         return result
     }

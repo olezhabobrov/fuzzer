@@ -58,7 +58,6 @@ class Coordinator: CoroutineVerticle() {
             if (!transformationIterator.hasNext()) {
                 log.debug("Got completed mutation result by strategy#${mutationResult.strategyNumber}")
                 val strategy = strategiesMap[mutationResult.strategyNumber]!!
-//                FooBarCompiler.tearDownMyEnv(strategy.project.env)
                 val mutationProblem = strategiesMap.remove(strategy.number)!!.mutationProblem
                 if (mutationProblem.repeatInf)
                     eb.send(VertxAddresses.mutationProblemExec, mutationProblem)
@@ -85,9 +84,11 @@ class Coordinator: CoroutineVerticle() {
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
         val compilers = strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers
+        val projects = mutationResult.projects.filter { it !in checkedProjects }
+        checkedProjects.addAll(projects)
         compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(mutationResult.projects.toList(), mutationResult.strategyNumber)
+                CompilationRequest(projects, mutationResult.strategyNumber)
             )
         }
     }
