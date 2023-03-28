@@ -10,6 +10,7 @@ import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.CompilationResult
+import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.eventbus.EventBus
 import io.vertx.kotlin.coroutines.CoroutineVerticle
@@ -47,17 +48,10 @@ class Coordinator: CoroutineVerticle() {
                 }
                 if (status.hasCompilerCrash()) {
                     log.debug("Found some bug")
-                    TODO()
+                    sendResultToBugManager(compileResult, status)
                 }
             }
             sendNextTransformation(projectsToSend, compileResult.strategyNumber)
-
-
-//                vertx.eventBus().send(
-//                    VertxAddresses.bugManager, CompilationResultHolder(
-//                        compilationResultsProcessor.getCompilationResults(compileResult.request.mutationNumber)
-//                    )
-//                )
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
@@ -99,6 +93,16 @@ class Coordinator: CoroutineVerticle() {
                 CompilationRequest(mutationResult.projects.toList(), mutationResult.strategyNumber)
             )
         }
+    }
+
+    private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeStatus) {
+        vertx.eventBus().send(
+            VertxAddresses.bugManager, CompilationResult(
+                result.compiler,
+                listOf(status),
+                result.strategyNumber
+            )
+        )
     }
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
