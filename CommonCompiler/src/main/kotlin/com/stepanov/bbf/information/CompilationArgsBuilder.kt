@@ -12,6 +12,7 @@ class CompilationArgsBuilder {
     fun add(conf: CompilationConfiguration) = apply {
         when (conf) {
             CompilationConfiguration.ProduceLibrary -> add(listOf("-p", "library"))
+            CompilationConfiguration.PartialLinkage -> add("-Xpartial-linkage")
             else -> {}
         }
     }

@@ -35,8 +35,6 @@ data class Bug(val result: CompilationResult) {
 
 class BugManager: AbstractVerticle() {
 
-    private val bugs = mutableListOf<Bug>()
-
     override fun start() {
         establishConsumers()
         log.debug("Bug manager deployed")
