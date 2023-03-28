@@ -3,10 +3,7 @@ package com.stepanov.bbf
 import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.CompilationRequestCodec
 import com.stepanov.bbf.information.*
-import com.stepanov.bbf.messages.CompilationRequest
-import com.stepanov.bbf.messages.ProjectMessage
-import com.stepanov.bbf.messages.CompilationResult
-import com.stepanov.bbf.messages.KotlincInvokeStatus
+import com.stepanov.bbf.messages.*
 import io.vertx.core.AbstractVerticle
 import org.slf4j.Logger
 import java.io.File
@@ -26,7 +23,7 @@ abstract class CommonCompiler(
         log.debug("Compiler deployed")
     }
 
-    abstract fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus
+    abstract fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult
 
     private fun registerCodecs() {
         vertx.eventBus().registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
@@ -38,7 +35,7 @@ abstract class CommonCompiler(
         eb.consumer<CompilationRequest>(compileAddress) { msg ->
             val request = msg.body()
             log.debug("Got a project to compile")
-            val compileResults = mutableListOf<KotlincInvokeStatus>()
+            val compileResults = mutableListOf<KotlincInvokeResult>()
             request.projects.forEach { projectMessage ->
                 createLocalTmpProject(projectMessage)
                 val compileResult = executeCompilationCheck(projectMessage)

@@ -8,10 +8,7 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.information.VertxAddresses
-import com.stepanov.bbf.messages.CompilationRequest
-import com.stepanov.bbf.messages.CompilationResult
-import com.stepanov.bbf.messages.KotlincInvokeStatus
-import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.messages.*
 import io.vertx.core.eventbus.EventBus
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.apache.log4j.Logger
@@ -38,17 +35,17 @@ class Coordinator: CoroutineVerticle() {
             startStrategyAndMutate(strategy)
         }
 
-        eb.consumer<CompilationResult>(VertxAddresses.compileResult) { result ->
+        eb.consumer<CompilationResult>(VertxAddresses.compileResult) { msg ->
             log.debug("Got compilation result")
-            val compileResult = result.body()
+            val compileResult = msg.body()
             val projectsToSend = mutableListOf<ProjectMessage>()
-            compileResult.results.forEach { status ->
-                if (status.isCompileSuccess) {
-                    projectsToSend.add(status.projectMessage)
+            compileResult.results.forEach { result ->
+                if (result.isCompileSuccess) {
+                    projectsToSend.add(result.projectMessage)
                 }
-                if (status.hasCompilerCrash()) {
+                if (result.hasCompilerCrash) {
                     log.debug("Found some bug")
-                    sendResultToBugManager(compileResult, status)
+                    sendResultToBugManager(compileResult, result)
                 }
             }
             sendNextTransformation(projectsToSend, compileResult.strategyNumber)
@@ -95,7 +92,7 @@ class Coordinator: CoroutineVerticle() {
         }
     }
 
-    private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeStatus) {
+    private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeResult) {
         vertx.eventBus().send(
             VertxAddresses.bugManager, CompilationResult(
                 result.compiler,

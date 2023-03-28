@@ -3,6 +3,7 @@ package com.stepanov.bbf
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationRequest
+import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.commons.io.FileUtils
@@ -20,7 +21,7 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
         super.start()
     }
 
-    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
+    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
         TODO("")
 //        val args = prepareArgs(project, "tmp/build/")
 //        val hasTimeout = !executeCompiler {

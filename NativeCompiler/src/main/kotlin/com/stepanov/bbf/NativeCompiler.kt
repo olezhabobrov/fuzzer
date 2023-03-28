@@ -2,6 +2,7 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.information.*
 import com.stepanov.bbf.messages.CompilationRequest
+import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.util.getKlibName
@@ -21,7 +22,25 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         super.start()
     }
 
-    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeStatus {
+    private fun executeCompilationCheckForFile(project: ProjectMessage): KotlincInvokeResult {
+        val results = mutableListOf<KotlincInvokeStatus>()
+        val name = project.files.first().first
+        results.add(
+            createKlib(project, name)
+        )
+        results.add(
+            createKlibWithPartialLinkage(project, name)
+        )
+        return KotlincInvokeResult(project, results)
+    }
+
+    override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
+        if (project.files.size == 1) {
+            return executeCompilationCheckForFile(project)
+        }
+        else {
+            TODO("Project with several files")
+        }
 //        when (request.configuration) {
 //            CompilationConfiguration.Split -> {
 //                if (project.files.size != 2) {
@@ -58,7 +77,6 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 //            }
 //            else -> {}
 //        }
-        return KotlincInvokeStatus("some error", false, true, false, project)
     }
 
     private fun createKlib(project: ProjectMessage, name: String): KotlincInvokeStatus {
@@ -67,30 +85,39 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
             .addOutput(project.dir, name.getSimpleFileNameWithoutExt() + ".klib")
             .addFile(project.dir, name.getSimpleNameFile())
             .build()
-        return compile(project, createArguments(args))
+        return compile(project, createArguments(args), CompilationConfiguration.ProduceLibrary)
     }
 
-    private fun createKlib(project: ProjectMessage, names: List<String>): KotlincInvokeStatus {
+    private fun createKlibWithPartialLinkage(project: ProjectMessage, name: String): KotlincInvokeStatus {
         val args = CompilationArgsBuilder()
             .add(CompilationConfiguration.ProduceLibrary)
-            .addOutput(project.dir, "library.klib")
-            .addFiles(project.dir, names)
-            .build()
-        return compile(project, createArguments(args))
-    }
-
-    private fun createKlib(project: ProjectMessage, name: String, libraryName: String): KotlincInvokeStatus {
-        val args = CompilationArgsBuilder()
-            .add(CompilationConfiguration.ProduceLibrary)
-            .addLibrary(project.dir, libraryName)
+            .add(CompilationConfiguration.PartialLinkage)
             .addOutput(project.dir, name.getSimpleFileNameWithoutExt() + ".klib")
             .addFile(project.dir, name.getSimpleNameFile())
             .build()
-        return compile(project, createArguments(args))
+        return compile(project, createArguments(args), CompilationConfiguration.PartialLinkage)
     }
 
+//    private fun createKlib(project: ProjectMessage, names: List<String>): KotlincInvokeStatus {
+//        val args = CompilationArgsBuilder()
+//            .add(CompilationConfiguration.ProduceLibrary)
+//            .addOutput(project.dir, "library.klib")
+//            .addFiles(project.dir, names)
+//            .build()
+//        return compile(project, createArguments(args))
+//    }
+//
+//    private fun createKlib(project: ProjectMessage, name: String, libraryName: String): KotlincInvokeStatus {
+//        val args = CompilationArgsBuilder()
+//            .add(CompilationConfiguration.ProduceLibrary)
+//            .addLibrary(project.dir, libraryName)
+//            .addOutput(project.dir, name.getSimpleFileNameWithoutExt() + ".klib")
+//            .addFile(project.dir, name.getSimpleNameFile())
+//            .build()
+//        return compile(project, createArguments(args))
+//    }
 
-    private fun compile(project: ProjectMessage, args: K2NativeCompilerArguments): KotlincInvokeStatus {
+    private fun compile(project: ProjectMessage, args: K2NativeCompilerArguments, configuration: CompilationConfiguration): KotlincInvokeStatus {
         val hasTimeout = !executeCompiler {
             MsgCollector.clear()
             val services = Services.EMPTY
@@ -102,7 +129,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
             !MsgCollector.hasCompileError,
             MsgCollector.hasException,
             hasTimeout,
-            project
+            configuration
         )
         return status
     }
