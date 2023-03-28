@@ -42,17 +42,6 @@ class Project(
         )
     }
 
-    fun splitProject(): ProjectMessage {
-        val (first, second) = FilePartition.splitFile(files.first())
-        val text1 = File(first).readText()
-        val text2 = File(second).readText()
-        return ProjectMessage(
-            listOf(first.getSimpleNameFile() to text1,
-                second.getSimpleNameFile() to text2),
-            isSplit = true
-        )
-    }
-
     override fun hashCode(): Int {
         return files.map { bbfFile ->
             bbfFile.name to bbfFile.text
