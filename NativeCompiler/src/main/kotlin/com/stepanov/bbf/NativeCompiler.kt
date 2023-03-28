@@ -58,7 +58,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 //            }
 //            else -> {}
 //        }
-        TODO()
+        return KotlincInvokeStatus("some error", false, true, false, project)
     }
 
     private fun createKlib(project: ProjectMessage, name: String): KotlincInvokeStatus {
