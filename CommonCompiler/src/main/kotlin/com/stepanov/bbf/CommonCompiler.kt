@@ -47,7 +47,8 @@ abstract class CommonCompiler(
                 CompilationResult(
                     this::class.java.simpleName,
                     compileResults,
-                    msg.body().strategyNumber
+                    msg.body().strategyNumber,
+                    request.transformation
                 )
             )
         }.exceptionHandler { throwable ->

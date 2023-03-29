@@ -15,6 +15,7 @@ import com.stepanov.bbf.bugfinder.server.messages.CompilationResultHolder
 import com.stepanov.bbf.bugfinder.server.messages.CompilationResultsProcessor
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.bugfinder.server.messages.parseMutationProblem
+import com.stepanov.bbf.bugfinder.statistics.TransformationStatistics
 import com.stepanov.bbf.codecs.CompilationRequestCodec
 import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.information.CompilerArgs
@@ -43,10 +44,9 @@ class Server: CoroutineVerticle() {
         deployMutators()
         deployCoordinator()
         deployBugManager()
+        deployStatistics()
         log.debug("Server deployed")
     }
-
-
 
     private fun createServer() {
         // TODO: should make it suspend. Takes a lot of time
@@ -96,6 +96,7 @@ class Server: CoroutineVerticle() {
             }
     }
 
+
     private fun sendMutationProblem(mutationProblem: MutationProblem) {
         vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
     }
@@ -129,6 +130,10 @@ class Server: CoroutineVerticle() {
 
     private fun deployBugManager() {
         vertx.deployVerticle(BugManager(), DeploymentOptions().setWorker(true))
+    }
+
+    private fun deployStatistics() {
+        vertx.deployVerticle(TransformationStatistics(), DeploymentOptions().setWorker(true) )
     }
 
     private fun registerCodecs() {

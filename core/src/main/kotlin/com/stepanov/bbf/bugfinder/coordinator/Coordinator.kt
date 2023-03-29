@@ -49,6 +49,7 @@ class Coordinator: CoroutineVerticle() {
                     sendResultToBugManager(compileResult, result)
                 }
             }
+            sendResultToStatistics(compileResult)
             sendNextTransformation(projectsToSend, compileResult.strategyNumber)
         }
 
@@ -89,19 +90,24 @@ class Coordinator: CoroutineVerticle() {
         checkedProjects.addAll(projects)
         compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(projects, mutationResult.strategyNumber)
+                CompilationRequest(projects, mutationResult.strategyNumber, mutationResult.transformation)
             )
         }
     }
 
     private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeResult) {
-        vertx.eventBus().send(
+        eb.send(
             VertxAddresses.bugManager, CompilationResult(
                 result.compiler,
                 listOf(status),
-                result.strategyNumber
+                result.strategyNumber,
+                result.transformation
             )
         )
+    }
+
+    private fun sendResultToStatistics(result: CompilationResult) {
+        eb.send(VertxAddresses.transformationStatistics, result)
     }
 
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()

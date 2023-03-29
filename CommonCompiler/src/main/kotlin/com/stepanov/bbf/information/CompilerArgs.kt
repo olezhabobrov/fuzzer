@@ -67,6 +67,10 @@ object CompilerArgs {
     //RESULT
     val resultsDir = getPropValueWithoutQuotes("RESULTS")
 
+    //STATISTICS
+    val statDir = getPropValueWithoutQuotes("STATS")
+    val transformationsStatFile = statDir + "transformations.json"
+
     //MODE
     var isMiscompilationMode = getPropAsBoolean("MISCOMPILATION_MODE")
     val isStrictMode = getPropAsBoolean("STRICT_MODE")

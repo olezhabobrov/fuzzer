@@ -14,7 +14,7 @@ abstract class Transformation(
 
     fun execTransformations(projectMessage: ProjectMessage): Set<ProjectMessage> {
         val result = mutableSetOf<ProjectMessage>()
-        result.add(tryToSplit(projectMessage))
+//        result.add(tryToSplit(projectMessage))
         repeat(amountOfTransformations) {
             val project = Project.createFromProjectMessage(projectMessage)
             val file = project.files.random()
