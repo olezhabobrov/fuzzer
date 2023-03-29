@@ -26,7 +26,7 @@ class Mutator: AbstractVerticle() {
                 val results = mutate(request)
 //                log.debug("Completed mutation for transformation#${request.transformationNumber}")
                 vertx.eventBus().send(VertxAddresses.mutationResult,
-                    MutationResult(results, request.strategyNumber)
+                    MutationResult(results, request.strategyNumber, request.transformation.javaClass.simpleName)
                 )
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")

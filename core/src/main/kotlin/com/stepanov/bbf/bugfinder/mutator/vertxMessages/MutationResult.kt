@@ -5,7 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationResult(
     val projects: Set<ProjectMessage>,
-    val strategyNumber: Int
+    val strategyNumber: Int,
+    val transformation: String,
 ) {
 
     val mutationNumber = mutationCounter.incrementAndGet()

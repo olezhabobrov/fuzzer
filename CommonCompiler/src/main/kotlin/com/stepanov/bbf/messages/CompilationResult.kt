@@ -34,6 +34,6 @@ class KotlincInvokeResult(
 class CompilationResult(
     val compiler: String,
     val results: List<KotlincInvokeResult>,
-    val strategyNumber: Int
-) {
-}
+    val strategyNumber: Int,
+    val transformation: String,
+)
