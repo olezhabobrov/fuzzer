@@ -11,9 +11,11 @@ internal data class TransformationFullStat(
     var failedCompilations: ExtendedStat,
     var reasonForBug: ExtendedStat,
     var compilationTimeouts: ExtendedStat,
+    var totalMutationCount: Int,
     var successfulMutations: Int,
-    var unSuccessfulMutations: Int,
-    var newProjectsProduced: Int,
+    var uselessMutations: Int, // no new projects produced
+    var unSuccessfulMutations: Int, // failed with exception
+    var newProjectsProducedDelta: Double,
     var avgTimeInMS: Long,
     var mutationTimeouts: Int,
 ) {
@@ -25,13 +27,17 @@ internal data class TransformationFullStat(
         reasonForBug.add(result) { it.hasCompilerCrash() }
         compilationTimeouts.add(result) { it.hasTimeout }
 
-        avgTimeInMS = (avgTimeInMS * successfulMutations +
-                mutationStat.avgTimeInMS * mutationStat.successfulMutations) /
-                (successfulMutations + mutationStat.successfulMutations)
+        avgTimeInMS = (avgTimeInMS * totalMutationCount +
+                mutationStat.avgTimeInMS * mutationStat.totalMutationCount) /
+                (totalMutationCount + mutationStat.totalMutationCount)
+        newProjectsProducedDelta = (newProjectsProducedDelta * totalMutationCount +
+                mutationStat.newProjectsProducedDelta * mutationStat.totalMutationCount) /
+                (totalMutationCount + mutationStat.totalMutationCount)
         successfulMutations += mutationStat.successfulMutations
+        uselessMutations += mutationStat.uselessMutations
         unSuccessfulMutations += mutationStat.unsuccessfulMutations
-        newProjectsProduced += mutationStat.newProjectsProduced
         mutationTimeouts += mutationStat.timeouts
+        totalMutationCount += mutationStat.totalMutationCount
     }
 
     @Serializable
@@ -66,6 +72,8 @@ internal data class TransformationFullStat(
             0,
             0,
             0,
+            0,
+            0.0,
             0L,
             0
         )
