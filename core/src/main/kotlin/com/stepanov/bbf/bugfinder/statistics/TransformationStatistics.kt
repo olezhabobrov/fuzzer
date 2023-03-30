@@ -19,15 +19,16 @@ class TransformationStatistics: AbstractVerticle() {
     private fun establishConsumers() {
         vertx.eventBus().consumer<CompilationResult>(VertxAddresses.transformationStatistics) { msg ->
             val compilationResult = msg.body()
-            val transformation = compilationResult.transformation
+            val mutationStat = compilationResult.mutationStat
+            val transformation = mutationStat.transformation
             val fileName = CompilerArgs.statDir + transformation + ".json"
             val file = File(fileName)
-            val currentStatistics: TransformationStat = if (file.exists()) {
+            val currentStatistics: TransformationFullStat = if (file.exists()) {
                 val statisticsText = file.readText()
                 Json.decodeFromString(statisticsText)
 
             } else {
-                TransformationStat.initialStat(transformation)
+                TransformationFullStat.initialStat(transformation)
             }
             currentStatistics.add(compilationResult)
             file.writeText(format.encodeToString(currentStatistics))

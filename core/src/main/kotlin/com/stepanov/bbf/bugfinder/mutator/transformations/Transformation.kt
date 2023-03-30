@@ -25,8 +25,8 @@ abstract class Transformation(
             transform(FTarget(project, file))
             result.add(project.createProjectMessage())
             FooBarCompiler.tearDownMyEnv(project.env)
-
         }
+        result.remove(projectMessage)
         return result
     }
 

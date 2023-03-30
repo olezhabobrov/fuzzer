@@ -90,7 +90,7 @@ class Coordinator: CoroutineVerticle() {
         checkedProjects.addAll(projects)
         compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(projects, mutationResult.strategyNumber, mutationResult.transformation)
+                CompilationRequest(projects, mutationResult.strategyNumber, mutationResult.mutationStat)
             )
         }
     }
@@ -101,7 +101,7 @@ class Coordinator: CoroutineVerticle() {
                 result.compiler,
                 listOf(status),
                 result.strategyNumber,
-                result.transformation
+                result.mutationStat
             )
         )
     }

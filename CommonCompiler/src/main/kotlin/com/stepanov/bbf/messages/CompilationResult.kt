@@ -1,6 +1,7 @@
 package com.stepanov.bbf.messages
 
 import com.stepanov.bbf.information.CompilationConfiguration
+import com.stepanov.bbf.information.MutationStat
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -35,5 +36,5 @@ class CompilationResult(
     val compiler: String,
     val results: List<KotlincInvokeResult>,
     val strategyNumber: Int,
-    val transformation: String,
+    val mutationStat: MutationStat,
 )

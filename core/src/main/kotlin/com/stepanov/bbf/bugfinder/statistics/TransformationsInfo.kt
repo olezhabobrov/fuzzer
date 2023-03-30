@@ -5,19 +5,33 @@ import com.stepanov.bbf.messages.KotlincInvokeStatus
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class TransformationStat(
+internal data class TransformationFullStat(
     val transformation: String,
     var successfulCompilations: ExtendedStat,
     var failedCompilations: ExtendedStat,
     var reasonForBug: ExtendedStat,
-    var timeouts: ExtendedStat,
+    var compilationTimeouts: ExtendedStat,
+    var successfulMutations: Int,
+    var unSuccessfulMutations: Int,
+    var newProjectsProduced: Int,
+    var avgTimeInMS: Long,
+    var mutationTimeouts: Int,
 ) {
     fun add(result: CompilationResult) {
-        require(transformation == result.transformation)
+        val mutationStat = result.mutationStat
+        require(transformation == mutationStat.transformation)
         successfulCompilations.add(result) { it.isCompileSuccess }
         failedCompilations.add(result) { !it.isCompileSuccess }
         reasonForBug.add(result) { it.hasCompilerCrash() }
-        timeouts.add(result) { it.hasTimeout }
+        compilationTimeouts.add(result) { it.hasTimeout }
+
+        avgTimeInMS = (avgTimeInMS * successfulMutations +
+                mutationStat.avgTimeInMS * mutationStat.successfulMutations) /
+                (successfulMutations + mutationStat.successfulMutations)
+        successfulMutations += mutationStat.successfulMutations
+        unSuccessfulMutations += mutationStat.unsuccessfulMutations
+        newProjectsProduced += mutationStat.newProjectsProduced
+        mutationTimeouts += mutationStat.timeouts
     }
 
     @Serializable
@@ -43,13 +57,17 @@ internal data class TransformationStat(
     }
 
     companion object {
-        fun initialStat(transformation: String): TransformationStat = TransformationStat(
+        fun initialStat(transformation: String): TransformationFullStat = TransformationFullStat(
             transformation,
             ExtendedStat(0, mutableMapOf()),
             ExtendedStat(0, mutableMapOf()),
             ExtendedStat(0, mutableMapOf()),
             ExtendedStat(0, mutableMapOf()),
+            0,
+            0,
+            0,
+            0L,
+            0
         )
     }
 }
-
