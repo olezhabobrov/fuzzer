@@ -5,9 +5,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MutationStat(
     val transformation: String,
+    val totalMutationCount: Int,
     val successfulMutations: Int,
+    val uselessMutations: Int,
     val unsuccessfulMutations: Int,
-    val newProjectsProduced: Int,
+    val newProjectsProducedDelta: Double,
     val avgTimeInMS: Long,
     val timeouts: Int,
 )

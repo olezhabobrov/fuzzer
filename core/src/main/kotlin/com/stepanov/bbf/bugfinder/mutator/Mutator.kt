@@ -44,39 +44,48 @@ class Mutator: AbstractVerticle() {
         println("STARTING $simpleName")
         val results = mutableSetOf<ProjectMessage>()
         val threadPool = Executors.newCachedThreadPool()
+
         val timeList = mutableListOf<Long>()
         var timeouts = 0
         var successfulMutations =  0
         var unSuccessfulMutations =  0
         var newProjectsProduced =  0
+        var totalMutations = 0
+        var uselessMutations = 0
+
         request.targets.forEach { projectMessage ->
-            val futureExitCode = threadPool.submit {
-                val timeInMillis = measureTimeMillis {
+            totalMutations++
+            val timeInMillis = measureTimeMillis {
+                val futureExitCode = threadPool.submit {
                     val newResults = executeMutation(request.transformation, projectMessage)
                     if (newResults.isNotEmpty())
                         successfulMutations++
+                    else
+                        uselessMutations++
                     newProjectsProduced += newResults.size
                     results.addAll(newResults)
                 }
-                timeList.add(timeInMillis)
+                try {
+                    futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
+                } catch (e: TimeoutException) {
+                    timeouts++
+                    futureExitCode.cancel(true)
+                    log.debug("Timeout of $TIMEOUT seconds in $simpleName")
+                } catch (e: Throwable) {
+                    unSuccessfulMutations++
+                    log.debug("Caught exception in ${simpleName}: ${e.stackTraceToString()}")
+                }
             }
-            try {
-                futureExitCode.get(TIMEOUT, TimeUnit.SECONDS)
-            } catch (e: TimeoutException) {
-                timeouts++
-                futureExitCode.cancel(true)
-                log.debug("Timeout of $TIMEOUT seconds in $simpleName")
-            } catch (e: Throwable) {
-                unSuccessfulMutations++
-                log.debug("Caught exception in ${simpleName}: ${e.stackTraceToString()}")
-            }
+            timeList.add(timeInMillis)
         }
         println("FINISHING $simpleName")
         return MutationResult(results, request.strategyNumber, MutationStat(
             request.transformation.javaClass.simpleName,
+            totalMutations,
             successfulMutations,
+            uselessMutations,
             unSuccessfulMutations,
-            newProjectsProduced,
+            results.size.toDouble() / request.targets.size,
             timeList.average().toLong(),
             timeouts
         )
