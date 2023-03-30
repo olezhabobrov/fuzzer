@@ -4,16 +4,7 @@ fun box() {
     val variable = 5
 }
 
-class Foo(
-    val x: Int
-) {
-    companion object {
-        fun foo() {
-            println("ahahs")
-        }
-
-        val a = 5
-    }
+class Foo {
 
     private val b = "satingkfd"
 
@@ -23,7 +14,6 @@ class Foo(
 }
 
 fun main() {
-    box()
 
 }
 

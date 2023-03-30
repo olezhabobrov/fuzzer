@@ -2,13 +2,10 @@ package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import com.stepanov.bbf.bugfinder.project.BBFFile
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.util.generateDefValuesAsString
 import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getType
-import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.*
@@ -23,7 +20,7 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType as ktGetType
 
 //TODO lib calls
 class AddFunInvocations:
-    Transformation(50) {
+    Transformation(10) {
 
     override fun transform(target: FTarget) {
         addCalls(target)
@@ -32,7 +29,9 @@ class AddFunInvocations:
     private fun addCalls(target: FTarget) {
         val psi = target.file.psiFile
         val ctx = target.file.updateCtx() ?: return
-        val whitespaces = psi.getAllPSIDFSChildrenOfType<PsiWhiteSpace>().filter { it.text.contains("\n") }
+        val whitespaces = psi.getAllPSIDFSChildrenOfType<PsiWhiteSpace>().filter {
+             it.text.contains("\n") && it.getParentOfType<KtBlockExpression>(true) != null
+        }
         if (whitespaces.isEmpty()) return
         val randomPlace = whitespaces.random()
         val funcs =
@@ -60,7 +59,7 @@ class AddFunInvocations:
                 }
             }
             .filter { it.second != null && it.first != null }
-            .filterDuplicates(Comparator { t, t2 -> t.first!!.compareTo(t2.first!!) })
+            .filterDuplicates { t, t2 -> t.first!!.compareTo(t2.first!!) }
             .map { Triple(it.first, it.second!!.constructor, it.third?.typeElement?.typeArgumentsAsTypes) }
         val objects = availableVars.filter { it.second.toString() == randomFunc.second }
         val neededObj = if (randomFunc.second == null || objects.isEmpty()) null else objects.random()
