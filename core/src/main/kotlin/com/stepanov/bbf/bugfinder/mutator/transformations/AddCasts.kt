@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 
 class AddCasts:
-    Transformation(1) {
+    Transformation() {
     override fun transform(target: FTarget) {
         val file = target.file
         val project = target.project

@@ -12,4 +12,9 @@ data class MutationStat(
     val newProjectsProducedDelta: Double,
     val avgTimeInMS: Long,
     val timeouts: Int,
-)
+) {
+    companion object {
+        val emptyStat = MutationStat("", 0, 0,
+            0, 0,0.0,0,0)
+    }
+}
