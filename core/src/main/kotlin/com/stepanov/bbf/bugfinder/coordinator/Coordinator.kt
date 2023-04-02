@@ -49,6 +49,7 @@ class Coordinator: CoroutineVerticle() {
                     sendResultToBugManager(compileResult, result)
                 }
             }
+            log.debug("Got ${projectsToSend.size} projects, successfully compiled")
             sendResultToStatistics(compileResult)
             sendNextTransformation(projectsToSend, compileResult.strategyNumber)
         }
