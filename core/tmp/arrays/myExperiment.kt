@@ -11,6 +11,12 @@ class Foo {
     fun foo2() {
         val q = 1243
     }
+
+    companion object {
+        val x = 123
+
+        fun foo3(x: Int) = "Some String with $x"
+    }
 }
 
 fun main() {

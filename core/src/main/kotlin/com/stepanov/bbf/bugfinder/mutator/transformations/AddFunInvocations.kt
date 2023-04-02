@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType as ktGetType
 
 //TODO lib calls
 class AddFunInvocations:
-    Transformation(10) {
+    Transformation(1) {
 
     override fun transform(target: FTarget) {
         addCalls(target)

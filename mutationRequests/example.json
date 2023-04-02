@@ -3,12 +3,11 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": ["AddArgumentToFunction"]
+        "type": "All"
     },
     "mutationTarget": {
         "type": "name",
         "name": "tmp/arrays/myExperiment.kt"
     },
-    "mutationCount": 1
+    "mutationCount": 20
 }

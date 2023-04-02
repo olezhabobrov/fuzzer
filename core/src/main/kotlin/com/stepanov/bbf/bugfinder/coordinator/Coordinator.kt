@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
+import com.stepanov.bbf.information.MutationStat
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.CompilationResult
@@ -32,8 +33,14 @@ class Coordinator: CoroutineVerticle() {
             val strategy = mutationProblem.createMutationStrategy()
             transformationIterator = strategy.transformations.iterator()
             log.debug("Created mutation strategy: $strategy")
+            log.debug("Sending to compilers first")
             strategiesMap[strategy.number] = strategy
-            startStrategyAndMutate(strategy)
+            sendProjectToCompilers(
+                MutationResult(
+                setOf(strategy.project),
+                strategy.number,
+                MutationStat.emptyStat
+            ))
         }
 
         eb.consumer<CompilationResult>(VertxAddresses.compileResult) { msg ->
@@ -41,6 +48,8 @@ class Coordinator: CoroutineVerticle() {
             val compileResult = msg.body()
             val projectsToSend = mutableListOf<ProjectMessage>()
             compileResult.results.forEach { result ->
+                checkedProjects.add(result.projectMessage)
+
                 if (result.isCompileSuccess) {
                     projectsToSend.add(result.projectMessage)
                 }
@@ -68,12 +77,11 @@ class Coordinator: CoroutineVerticle() {
         }
     }
 
-    private fun startStrategyAndMutate(strategy: MutationStrategy) {
-        log.debug("Starting strategy#${strategy.number}")
-        sendNextTransformation(listOf(strategy.project), strategy.number)
-    }
-
     private fun sendNextTransformation(projects: List<ProjectMessage>, strategyNumber: Int) {
+//        if (projects.isEmpty()) {
+//            log.debug("Can't mutate further, no compiling projects, returning back")
+//            return
+//        }
         if (transformationIterator.hasNext()) {
             val transformation = transformationIterator.next()
             eb.send(VertxAddresses.mutate,
@@ -87,8 +95,8 @@ class Coordinator: CoroutineVerticle() {
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
         log.debug("Sending project to compiler after/while mutating by strategy#${mutationResult.strategyNumber}")
         val compilers = strategiesMap[mutationResult.strategyNumber]!!.mutationProblem.compilers
-        val projects = mutationResult.projects.filter { it !in checkedProjects }
-        checkedProjects.addAll(projects)
+        val projects = getProjectsToSend(mutationResult.projects.toList())
+//        checkedProjects.addAll(projects)
         compilers.forEach { address ->
             eb.send(address,
                 CompilationRequest(projects, mutationResult.strategyNumber, mutationResult.mutationStat)
@@ -111,6 +119,14 @@ class Coordinator: CoroutineVerticle() {
         eb.send(VertxAddresses.transformationStatistics, result)
     }
 
+    private fun getProjectsToSend(latestProjects: List<ProjectMessage>): List<ProjectMessage> {
+        val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS).toMutableList()
+        projects.addAll(checkedProjects.shuffled().take(MAX_PROJECTS - projects.size))
+        return projects
+    }
+
+
+    private val MAX_PROJECTS = 25
     private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
     private val checkedProjects = mutableSetOf<ProjectMessage>()
 

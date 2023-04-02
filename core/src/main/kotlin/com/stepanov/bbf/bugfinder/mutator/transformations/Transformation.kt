@@ -8,7 +8,7 @@ import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.log4j.Logger
 
 abstract class Transformation(
-    private val amountOfTransformations: Int
+    private val amountOfTransformations: Int = 1
 ) {
     protected abstract fun transform(target: FTarget)
 
