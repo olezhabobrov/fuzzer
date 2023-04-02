@@ -5,11 +5,11 @@ import kotlin.reflect.KClass
 object Constants {
     // TODO: all transformation classes should be here
     val allTransformations: List<Transformation> = listOf(
-//        AddArgumentToFunction::class,
-//        AddBlockToExpression::class,
-//        AddBracketsToExpression::class,
-//        AddCallableReference::class,
-//        AddCasts::class,
+        AddArgumentToFunction(),
+        AddBlockToExpression(),
+        AddBracketsToExpression(),
+        AddCallableReference(),
+        AddCasts(),
 //        AddDefaultValueToArg::class,
 //        AddExpressionToLoop::class,
         AddFunInvocations(),
