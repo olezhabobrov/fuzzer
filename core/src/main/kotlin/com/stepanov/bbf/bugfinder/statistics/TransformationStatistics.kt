@@ -21,6 +21,8 @@ class TransformationStatistics: AbstractVerticle() {
             val compilationResult = msg.body()
             val mutationStat = compilationResult.mutationStat
             val transformation = mutationStat.transformation
+            if (transformation.isEmpty())
+                return@consumer
             val fileName = CompilerArgs.statDir + transformation + ".json"
             val file = File(fileName)
             val currentStatistics: TransformationFullStat = if (file.exists()) {

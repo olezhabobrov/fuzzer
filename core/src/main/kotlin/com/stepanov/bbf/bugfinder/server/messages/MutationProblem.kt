@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.util.getSimpleNameFile
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -28,7 +29,7 @@ data class MutationProblem(
                 if (mutationTarget is RandomFileTarget)
                     mutationTarget.updateRandomFile()
                 mutationTarget.writeFile()
-                project = ProjectMessage(listOf(mutationTarget.getLocalName() to mutationTarget.getSourceCode()))
+                project = ProjectMessage(listOf(mutationTarget.simpleFileName() to mutationTarget.getSourceCode()))
             }
             is ProjectTarget -> {
                 mutationTarget.writeProject()
@@ -90,6 +91,8 @@ sealed class MutationTarget
 @Serializable
 sealed class SingleSourceTarget: MutationTarget() {
 
+    fun simpleFileName(): String = getLocalName().getSimpleNameFile()
+
     abstract fun getSourceCode(): String
 
     abstract fun getLocalName(): String
@@ -115,6 +118,7 @@ class RandomFileTarget: SingleSourceTarget() {
 
     override fun getSourceCode(): String = code
 
+
     private fun randomTmpFileName() =
         File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
 
@@ -128,6 +132,7 @@ class RandomFileTarget: SingleSourceTarget() {
 @SerialName("code")
 class SourceFileTarget(val code: String): SingleSourceTarget() {
     override fun getLocalName(): String = "projectTmp/tmp.kt"
+
     override fun getSourceCode(): String = code
 }
 
@@ -135,14 +140,13 @@ class SourceFileTarget(val code: String): SingleSourceTarget() {
 @SerialName("name")
 class NameFileTarget(val name: String): SingleSourceTarget() {
     private val copiedFileName =
-        "projectTmp/${getSimpleName()}"
+        "projectTmp/${name.getSimpleNameFile()}"
     private val code = File(name).readText()
 
     override fun getLocalName(): String = copiedFileName
 
     override fun getSourceCode(): String = code
 
-    private fun getSimpleName() = name.substringAfterLast("/")
 }
 
 @Serializable

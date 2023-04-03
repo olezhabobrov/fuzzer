@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProjectMessage(
     val files: List<Pair<String, String>>, // name to code
-    val dir: String = "tmp/",
+    val dir: String = "projectTmp/",
     val isSplit: Boolean = false,
 ) {
 
