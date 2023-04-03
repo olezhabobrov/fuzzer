@@ -1,9 +1,7 @@
 package com.stepanov.bbf.bugfinder.project
 
 import com.intellij.psi.PsiErrorElement
-import com.stepanov.bbf.bugfinder.filePartition.FilePartition
 import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
-import com.stepanov.bbf.information.CompilationConfiguration
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
@@ -65,9 +63,9 @@ class Project(
     companion object {
         fun createFromProjectMessage(projectMessage: ProjectMessage): Project {
             projectMessage.files.forEach { (name, text) ->
-                File(name).writeText(text)
+                File(projectMessage.dir + name).writeText(text)
             }
-            return Project(projectMessage.files.map { it.first })
+            return Project(projectMessage.files.map { projectMessage.dir + it.first })
         }
     }
 
