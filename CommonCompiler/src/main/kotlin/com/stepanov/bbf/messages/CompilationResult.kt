@@ -35,6 +35,5 @@ class KotlincInvokeResult(
 class CompilationResult(
     val compiler: String,
     val results: List<KotlincInvokeResult>,
-    val strategyNumber: Int,
     val mutationStat: MutationStat,
 )

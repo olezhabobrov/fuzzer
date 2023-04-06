@@ -47,7 +47,6 @@ abstract class CommonCompiler(
                 CompilationResult(
                     this::class.java.simpleName,
                     compileResults,
-                    msg.body().strategyNumber,
                     request.mutationStat
                 )
             )

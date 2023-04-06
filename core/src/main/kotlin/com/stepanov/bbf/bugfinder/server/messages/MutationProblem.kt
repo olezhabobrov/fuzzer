@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.server.messages
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
-import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.util.getSimpleNameFile
@@ -19,32 +18,35 @@ data class MutationProblem(
     val compilers: List<String>,
     val allowedTransformations: AllowedTransformations,
     val mutationTarget: MutationTarget,
-    val mutationCount: Int,
-    val repeatInf: Boolean = false
+    val mutationCount: Int = 0,
+    val repeatInf: Boolean = false,
+    val mutateInOrder: Boolean = false,
 ) {
-    fun createMutationStrategy(): MutationStrategy {
-        val project: ProjectMessage
-        when (mutationTarget) {
-            is SingleSourceTarget -> {
-                if (mutationTarget is RandomFileTarget)
-                    mutationTarget.updateRandomFile()
-                mutationTarget.writeFile()
-                project = ProjectMessage(listOf(mutationTarget.simpleFileName() to mutationTarget.getSourceCode()))
-            }
-            is ProjectTarget -> {
-                mutationTarget.writeProject()
-                project = ProjectMessage(mutationTarget.files.map { it.getLocalName() to it.getSourceCode()})
-            }
-        }
-        return MutationStrategy(List(mutationCount) { listOfTransformations.random() }, project, this)
+    var completedMutations = 0
+
+    fun isFinished(): Boolean {
+        if (repeatInf)
+            return false
+        return completedMutations >= mutationCount
     }
 
-    private val listOfTransformations: List<Transformation>
+    fun isNotFinished() = !isFinished()
+
+    fun getNextTransformation(): Transformation =
+        if (mutateInOrder) {
+            listOfTransformations[completedMutations % listOfTransformations.size]
+        } else {
+            listOfTransformations.random()
+        }.callConstructor()
+
+    fun getProjectMessage() = mutationTarget.createProjectMessage()
+
+    private val listOfTransformations: List<TransformationClass>
         get() {
             if (allowedTransformations is All)
                 return Constants.allTransformations
             if (allowedTransformations is TransformationsList)
-                return allowedTransformations.transformationsList.map { it.callConstructor() }
+                return allowedTransformations.transformationsList
             error("wtf")
         }
 
@@ -65,6 +67,7 @@ data class MutationProblem(
             throw IllegalArgumentException("List of allowed transformations is empty")
         }
     }
+
 }
 
 @Serializable
@@ -86,10 +89,19 @@ data class TransformationClass(val clazz: KClass<out Transformation>) {
 }
 
 @Serializable
-sealed class MutationTarget
+sealed class MutationTarget {
+    abstract fun createProjectMessage(): ProjectMessage
+}
 
 @Serializable
 sealed class SingleSourceTarget: MutationTarget() {
+
+    override fun createProjectMessage(): ProjectMessage {
+        if (this is RandomFileTarget)
+            this.updateRandomFile()
+        writeFile()
+        return ProjectMessage(listOf(simpleFileName() to getSourceCode()))
+    }
 
     fun simpleFileName(): String = getLocalName().getSimpleNameFile()
 
@@ -156,6 +168,11 @@ data class ProjectTarget(
     val files: List<NameFileTarget>,
     val args: String = ""
 ): MutationTarget() {
+
+    override fun createProjectMessage(): ProjectMessage {
+        writeProject()
+        return ProjectMessage(files.map { it.getLocalName() to it.getSourceCode()})
+    }
 
     fun writeProject() {
         files.forEach { it.writeFile() }

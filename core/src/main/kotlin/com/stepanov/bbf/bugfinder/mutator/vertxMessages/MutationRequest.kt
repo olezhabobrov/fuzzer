@@ -6,5 +6,4 @@ import com.stepanov.bbf.messages.ProjectMessage
 data class MutationRequest(
     val transformation: Transformation,
     val targets: List<ProjectMessage>,
-    val strategyNumber: Int,
 )
