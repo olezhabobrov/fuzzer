@@ -20,14 +20,15 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
 
     private lateinit var eb: EventBus
     private val json = Json { prettyPrint = true }
-    private var lastTransformation: Transformation? = null
 
     override suspend fun start() {
         eb = vertx.eventBus()
         establishConsumers()
         log.debug("Coordinator deployed with mutation problem:")
         log.debug(json.encodeToString(mutationProblem))
-        sendProjectToCompilers(MutationResult(setOf(), MutationStat.emptyStat))
+        sendProjectToCompilers(MutationResult(
+            setOf(mutationProblem.getProjectMessage()),
+            MutationStat.emptyStat))
     }
 
     private fun establishConsumers() {
@@ -64,18 +65,20 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
 
     private fun sendNextTransformation(projects: List<ProjectMessage>) {
         if (mutationProblem.isNotFinished()) {
-            lastTransformation = mutationProblem.getNextTransformation()
+            val transformation = mutationProblem.getNextTransformationAndIncreaseCounter()
+            val projectToSend = getProjectsToSend(projects)
+            log.debug("Sending ${projectToSend.size} projects to mutator to transform with $transformation")
             eb.send(VertxAddresses.mutate,
                 MutationRequest(
-                    lastTransformation!!,
-                    getProjectsToSend(projects)
+                    transformation,
+                    projectToSend
                 )
             )
         }
     }
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
-        log.debug("Sending project to compiler")
+        log.debug("Sending ${mutationResult.projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->
             eb.send(address,
                 CompilationRequest(mutationResult.projects.toList(), mutationResult.mutationStat)

@@ -32,12 +32,12 @@ data class MutationProblem(
 
     fun isNotFinished() = !isFinished()
 
-    fun getNextTransformation(): Transformation =
+    fun getNextTransformationAndIncreaseCounter(): Transformation =
         if (mutateInOrder) {
             listOfTransformations[completedMutations % listOfTransformations.size]
         } else {
             listOfTransformations.random()
-        }.callConstructor()
+        }.callConstructor().also { completedMutations++ }
 
     fun getProjectMessage() = mutationTarget.createProjectMessage()
 
