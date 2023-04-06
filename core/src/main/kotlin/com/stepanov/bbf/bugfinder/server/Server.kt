@@ -7,12 +7,9 @@ import com.stepanov.bbf.bugfinder.mutator.Mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
-import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationStrategy
-import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.reducer.ResultsFilter
 import com.stepanov.bbf.bugfinder.server.codecs.*
 import com.stepanov.bbf.bugfinder.server.messages.CompilationResultHolder
-import com.stepanov.bbf.bugfinder.server.messages.CompilationResultsProcessor
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
 import com.stepanov.bbf.bugfinder.server.messages.parseMutationProblem
 import com.stepanov.bbf.bugfinder.statistics.TransformationStatistics
@@ -42,14 +39,12 @@ class Server: CoroutineVerticle() {
         registerCodecs()
         createServer()
         deployMutators()
-        deployCoordinator()
         deployBugManager()
         deployStatistics()
         log.debug("Server deployed")
     }
 
     private fun createServer() {
-        // TODO: should make it suspend. Takes a lot of time
         val router = Router.router(vertx)
         router.route("/mutation-problem")
             .consumes("application/json")
@@ -59,7 +54,7 @@ class Server: CoroutineVerticle() {
                     val input = context.body().asString()
                     log.debug("Got mutation request: $input")
                     val mutationProblem = parseMutationProblem(input)
-                    sendMutationProblem(mutationProblem)
+                    deployCoordinator(mutationProblem)
                     context.request().response()
                         .setStatusCode(200)
                         .send()
@@ -101,8 +96,8 @@ class Server: CoroutineVerticle() {
         vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
     }
 
-    private fun deployCoordinator() {
-        val coordinator = Coordinator()
+    private fun deployCoordinator(mutationProblem: MutationProblem) {
+        val coordinator = Coordinator(mutationProblem)
         vertx.deployVerticle(coordinator) { res ->
             if (res.failed()) {
                 log.debug("Deployment of coordinator failed with exception: ${res.cause().stackTraceToString()}")
@@ -153,9 +148,6 @@ class Server: CoroutineVerticle() {
         StdLibraryGenerator.init()
     }
 
-    private val strategiesMap = mutableMapOf<Int, MutationStrategy>()
-    private val compilationResultsProcessor = CompilationResultsProcessor()
-    private val checkedProjects = mutableSetOf<Project>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }

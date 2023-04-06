@@ -23,7 +23,7 @@ class Mutator: AbstractVerticle() {
         vertx.eventBus().consumer<MutationRequest>(VertxAddresses.mutate) { msg ->
             try {
                 val request = msg.body()
-                log.debug("Got mutation request for strategy#${request!!.strategyNumber}")
+                log.debug("Got mutation request")
                 val result = mutate(request)
 //                log.debug("Completed mutation for transformation#${request.transformationNumber}")
                 vertx.eventBus().send(VertxAddresses.mutationResult, result)
@@ -79,7 +79,7 @@ class Mutator: AbstractVerticle() {
             timeList.add(timeInMillis)
         }
         println("FINISHING $simpleName")
-        return MutationResult(results, request.strategyNumber, MutationStat(
+        return MutationResult(results, MutationStat(
             request.transformation.javaClass.simpleName,
             totalMutations,
             successfulMutations,

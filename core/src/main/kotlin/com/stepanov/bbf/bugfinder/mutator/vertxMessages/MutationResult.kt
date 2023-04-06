@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 data class MutationResult(
     val projects: Set<ProjectMessage>,
-    val strategyNumber: Int,
     val mutationStat: MutationStat,
 ) {
 

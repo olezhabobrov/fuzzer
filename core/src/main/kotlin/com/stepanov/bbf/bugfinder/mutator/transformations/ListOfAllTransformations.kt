@@ -1,18 +1,19 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.server.messages.TransformationClass
 import kotlin.reflect.KClass
 
 object Constants {
     // TODO: all transformation classes should be here
-    val allTransformations: List<Transformation> = listOf(
-        AddArgumentToFunction(),
-        AddBlockToExpression(),
-        AddBracketsToExpression(),
-        AddCallableReference(),
-        AddCasts(),
+    val allTransformations: List<TransformationClass> = listOf(
+        AddArgumentToFunction::class,
+//        AddBlockToExpression(),
+//        AddBracketsToExpression(),
+//        AddCallableReference(),
+//        AddCasts(),
 //        AddDefaultValueToArg::class,
 //        AddExpressionToLoop::class,
-        AddFunInvocations(),
+//        AddFunInvocations(),
 //        AddInheritance::class,
 //        AddLabels::class,
 //        AddLoop::class,
@@ -22,7 +23,7 @@ object Constants {
 //        AddPossibleModifiers::class,
 //        AddPropertiesToClass::class,
 //        AddRandomAnnotation::class,
-//        AddRandomClass::class,
+//        AddRandomClass(),
 //        AddRandomComponent::class,
 //        AddRandomControlStatements::class,
 //        AddRandomDS::class,
@@ -51,5 +52,5 @@ object Constants {
 //        ShuffleFunctionArguments::class,
 //        SkeletonEnumeration::class,
 //        TCETransformation::class
-    )
+    ).map { TransformationClass(it) }
 }
