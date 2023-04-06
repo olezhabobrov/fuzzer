@@ -11,6 +11,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import org.slf4j.LoggerFactory
+import java.lang.Exception
 
 
 abstract class CommonCompiler(
@@ -33,6 +34,7 @@ abstract class CommonCompiler(
     private fun establishConsumers() {
         val eb = vertx.eventBus()
         eb.consumer<CompilationRequest>(compileAddress) { msg ->
+
             val request = msg.body()
             log.debug("Got a project to compile")
             val compileResults = mutableListOf<KotlincInvokeResult>()

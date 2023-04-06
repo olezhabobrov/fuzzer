@@ -6,13 +6,13 @@ fun getString(position: Int, buffer: Buffer): Pair<String, Int> {
     var pos = position
     val length = buffer.getInt(pos)
     pos += Int.SIZE_BYTES
-    val res = buffer.getString(pos, pos + length)
+    val res = buffer.getBytes(pos, pos + length)
     pos += length
-    return Pair(res, pos)
+    return Pair(String(res), pos)
 }
 
-fun encodeString(o: Any, buffer: Buffer) {
-    val res = o.toString()
-    buffer.appendInt(res.length)
-    buffer.appendString(res)
+fun encodeString(str: String, buffer: Buffer) {
+    val res = str.toByteArray()
+    buffer.appendInt(res.size)
+    buffer.appendBytes(res)
 }

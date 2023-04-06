@@ -3,12 +3,12 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": ["AddInheritance"]
+        "type": "All"
     },
     "mutationTarget": {
         "type": "name",
         "name": "tmp/arrays/myExperiment.kt"
     },
-    "mutationCount": 10
+    "repeatInf": true,
+    "mutateInOrder": true
 }

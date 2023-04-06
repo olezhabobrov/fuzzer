@@ -16,3 +16,4 @@ client
 NativeCompiler/tmp/
 /core/projectTmp/
 /NativeCompiler/projectTmp/
+/core/tmp/stats/
