@@ -42,6 +42,7 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
 
                 if (result.isCompileSuccess) {
                     projectsToSend.add(result.projectMessage)
+                    successfullyCompiledProjects.add(result.projectMessage)
                 }
                 if (result.hasCompilerCrash) {
                     log.debug("Found some bug")
@@ -49,6 +50,11 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
                 }
             }
             log.debug("Got ${projectsToSend.size} projects, successfully compiled")
+            log.debug("Checked unique projects: ${checkedProjects.size}")
+            log.debug("Successfully compiled projects: ${successfullyCompiledProjects.size}")
+            if (mutationProblem.isFinished()) {
+                log.debug("MUTATION PROBLEM IS COMPLETED")
+            }
             sendResultToStatistics(compileResult)
             sendNextTransformation(projectsToSend)
         }
@@ -57,9 +63,6 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
             val mutationResult = result.body()
             log.debug("Got mutationResult with ${mutationResult.projects.size} results")
             sendProjectToCompilers(mutationResult)
-            if (mutationProblem.isFinished()) {
-                log.debug("Got completed mutation problem")
-            }
         }
     }
 
@@ -102,13 +105,14 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
 
     private fun getProjectsToSend(latestProjects: List<ProjectMessage>): List<ProjectMessage> {
         val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS).toMutableList()
-        projects.addAll(checkedProjects.shuffled().take(MAX_PROJECTS - projects.size))
+        projects.addAll(successfullyCompiledProjects.shuffled().take(MAX_PROJECTS - projects.size))
         return projects
     }
 
 
     private val MAX_PROJECTS = 25
     private val checkedProjects = mutableSetOf<ProjectMessage>()
+    private val successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }

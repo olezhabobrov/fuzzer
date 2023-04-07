@@ -3,12 +3,13 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "All"
+        "type": "Some",
+        "transformationsList": ["AddBlockToExpression"]
     },
     "mutationTarget": {
         "type": "name",
         "name": "tmp/arrays/myExperiment.kt"
     },
-    "repeatInf": true,
+    "mutationCount": 5,
     "mutateInOrder": true
 }
