@@ -17,21 +17,20 @@ class AddExpressionToLoop: Transformation() {
         val expressions = file.psiFile.getAllPSIChildrenOfType<KtExpression>().filter { it.getType(ctx) != null }
         file.psiFile.getAllPSIChildrenOfType<KtLoopExpression>()
             .reversed()
-            .filter { Random.getTrue(20) }
+//            .filter { Random.getTrue(20) }
             .filter { it.body is KtBlockExpression }
-            .forEach { loop ->
-                repeat(5) {
-                    tryToAddExpressions(loop, expressions)
-                }
+            .random()
+            .let {  loop ->
+                tryToAddExpressions(loop, expressions)
             }
     }
 
     private fun tryToAddExpressions(loopExp: KtLoopExpression, expressionsToInsert: List<KtExpression>) {
         val blockBody = loopExp.body!! as KtBlockExpression
-        val blockCopy = blockBody.copy()
-        val blockTextLines = (blockBody.copy() as KtBlockExpression).let { blockCopy ->
+        val blockCopy = blockBody.copy() as KtBlockExpression
+        val blockTextLines = blockCopy.let {
             blockCopy.rBrace?.delete()
-            blockBody.lBrace?.delete()
+            blockCopy.lBrace?.delete()
             blockCopy.text.split("\n").filter { it.trim().isNotEmpty() }
         }
         val randomLineNumber = Random.nextInt(0, blockTextLines.size)
