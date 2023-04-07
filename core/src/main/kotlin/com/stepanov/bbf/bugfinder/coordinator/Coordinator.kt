@@ -71,13 +71,14 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
         if (mutationProblem.isNotFinished()) {
             val transformation = mutationProblem.getNextTransformationAndIncreaseCounter()
             val projectToSend = getProjectsToSend(projects)
-            log.debug("Sending ${projectToSend.size} projects to mutator to transform with $transformation")
             eb.send(VertxAddresses.mutate,
                 MutationRequest(
                     transformation,
                     projectToSend
                 )
             )
+            log.debug("Transformation#${mutationProblem.completedMutations}: " +
+                    "Sending ${projectToSend.size} projects to mutator to transform with $transformation")
         }
     }
 
