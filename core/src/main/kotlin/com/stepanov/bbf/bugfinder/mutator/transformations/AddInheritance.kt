@@ -31,13 +31,9 @@ import kotlin.random.Random
 //Don't forget to add import for projects
 //Deal with TypeParameters
 
-class AddInheritance: Transformation() {
+class AddInheritance: Transformation(5) {
 
-    private val RANDOM_CONST = 2
-
-    override fun transform(target: FTarget) = repeat(RANDOM_CONST) { transform1(target) }
-
-    private fun transform1(target: FTarget) {
+    override fun transform(target: FTarget) {
         val file = target.file
         val project = target.project
         val rtg = RandomTypeGenerator(file)
