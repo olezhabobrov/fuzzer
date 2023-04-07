@@ -36,7 +36,7 @@ abstract class CommonCompiler(
         eb.consumer<CompilationRequest>(compileAddress) { msg ->
 
             val request = msg.body()
-            log.debug("Got a project to compile")
+            log.debug("Got ${request.projects.size} projects to compile")
             val compileResults = mutableListOf<KotlincInvokeResult>()
             request.projects.forEach { projectMessage ->
                 createLocalTmpProject(projectMessage)

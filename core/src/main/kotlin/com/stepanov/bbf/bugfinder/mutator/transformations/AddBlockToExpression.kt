@@ -8,12 +8,12 @@ import org.jetbrains.kotlin.psi.*
 import java.util.*
 
 class AddBlockToExpression:
-    Transformation(1) {
+    Transformation(10) {
 
     override fun transform(target: FTarget) {
         val file = target.file
         val expr = file.psiFile.getAllPSIChildrenOfType<KtExpression>()
-        expr.forEach {
+        expr.random().let {
             generateRandomBooleanExpression(it)?.let { blockExpr ->
                 MutationProcessor.replaceNodeReturnNode(it, blockExpr, file)
             }
