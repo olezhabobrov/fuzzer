@@ -1,6 +1,5 @@
 package com.stepanov.bbf.bugfinder.coordinator
 
-import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
@@ -15,6 +14,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.log4j.Logger
+import java.util.concurrent.atomic.AtomicInteger
 
 class Coordinator(private val mutationProblem: MutationProblem): CoroutineVerticle() {
 
@@ -52,10 +52,11 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
             log.debug("Got ${projectsToSend.size} projects, successfully compiled")
             log.debug("Checked unique projects: ${checkedProjects.size}")
             log.debug("Successfully compiled projects: ${successfullyCompiledProjects.size}")
+            sendResultToStatistics(compileResult)
             if (mutationProblem.isFinished()) {
                 log.debug("MUTATION PROBLEM IS COMPLETED")
+                eb.send(VertxAddresses.mutationProblemCompleted, coordinatorNumber)
             }
-            sendResultToStatistics(compileResult)
             sendNextTransformation(projectsToSend)
         }
 
@@ -107,6 +108,12 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
         val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS).toMutableList()
         projects.addAll(successfullyCompiledProjects.shuffled().take(MAX_PROJECTS - projects.size))
         return projects
+    }
+
+    val coordinatorNumber = counter.getAndIncrement()
+
+    companion object {
+        private val counter = AtomicInteger(0)
     }
 
 

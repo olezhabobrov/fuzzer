@@ -38,6 +38,7 @@ class Server: CoroutineVerticle() {
         localPreparations()
         registerCodecs()
         createServer()
+        establishConsumers()
         deployMutators()
         deployBugManager()
         deployStatistics()
@@ -91,9 +92,17 @@ class Server: CoroutineVerticle() {
             }
     }
 
-
-    private fun sendMutationProblem(mutationProblem: MutationProblem) {
-        vertx.eventBus().send(VertxAddresses.mutationProblemExec, mutationProblem)
+    private fun establishConsumers() {
+        eb.consumer<Int>(VertxAddresses.mutationProblemCompleted) { msg ->
+            val coordinatorNumber = msg.body()
+            vertx.undeploy(coordinatorIdToDeploymentId[coordinatorNumber]) { result ->
+                if (result.succeeded()) {
+                    log.debug("Successfully undeployed coordinator with id=$coordinatorNumber")
+                } else {
+                    log.debug("Couldn't undeploy coordinator with id=$coordinatorNumber")
+                }
+            }
+        }
     }
 
     private fun deployCoordinator(mutationProblem: MutationProblem) {
@@ -103,6 +112,7 @@ class Server: CoroutineVerticle() {
                 log.debug("Deployment of coordinator failed with exception: ${res.cause().stackTraceToString()}")
                 error("Coordinator wasn't deployed")
             }
+            coordinatorIdToDeploymentId[coordinator.coordinatorNumber] = res.result()
         }
         log.debug("Coordinator deployed")
     }
@@ -147,6 +157,8 @@ class Server: CoroutineVerticle() {
         PSICreator.init()
         StdLibraryGenerator.init()
     }
+
+    private val coordinatorIdToDeploymentId = mutableMapOf<Int, String>()
 
 
     private val log = Logger.getLogger("coordinatorLogger")

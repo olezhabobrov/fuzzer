@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.psi.*
 import java.util.*
 
 class AddBlockToExpression:
-    Transformation(10) {
+    Transformation(5) {
 
     override fun transform(target: FTarget) {
         val file = target.file
