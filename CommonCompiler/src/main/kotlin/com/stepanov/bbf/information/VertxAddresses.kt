@@ -19,4 +19,6 @@ object VertxAddresses {
     const val mutationResult = "MutationResult"
 
     const val transformationStatistics = "transformationStatistics"
+
+    const val mutationProblemCompleted = "mutationProblemCompleted"
 }
