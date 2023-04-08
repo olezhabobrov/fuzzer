@@ -4,15 +4,13 @@ import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
-import com.stepanov.bbf.bugfinder.util.getRandomBoolean
 import org.jetbrains.kotlin.psi.KtExpression
 
-class AddNotNullAssertions: Transformation() {
+class AddNotNullAssertions: Transformation(2) {
 
     override fun transform(target: FTarget) {
         target.file.psiFile.getAllPSIChildrenOfType<KtExpression>()
-            .filter { getRandomBoolean(3) }
-            .map { tryToAddNotNullAssertion(target.file, it) }
+            .random().let { tryToAddNotNullAssertion(target.file, it) }
     }
 
     private fun tryToAddNotNullAssertion(file: BBFFile, exp: KtExpression) {
