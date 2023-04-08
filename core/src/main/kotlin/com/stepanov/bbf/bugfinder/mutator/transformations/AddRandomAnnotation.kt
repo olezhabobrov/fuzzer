@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.types.KotlinType
 import kotlin.random.Random
 
-class AddRandomAnnotation: Transformation() {
+class AddRandomAnnotation: Transformation(20) {
 
 
     private val annClassesFromLib =
