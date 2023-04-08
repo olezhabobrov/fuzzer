@@ -5,17 +5,15 @@ import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.KtTypeReference
-import kotlin.random.Random
 
-class AddNullabilityTransformer: Transformation() {
+class AddNullabilityTransformer: Transformation(2) {
 
     override fun transform(target: FTarget) {
         val file = target.file
         file.psiFile.getAllPSIChildrenOfType<KtTypeReference>()
-            .asSequence()
             .filterNot { it.textContains('?') }
-            .filter { Random.nextBoolean() }
-            .forEach { addNullability(file, it) }
+            .random()
+            .let { addNullability(file, it) }
     }
 
     fun addNullability(file: BBFFile, ref: KtTypeReference) {
