@@ -1,9 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ScopeCalculator
 import com.stepanov.bbf.bugfinder.project.BBFFile
@@ -11,6 +11,7 @@ import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.replace
@@ -18,43 +19,35 @@ import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.isBoolean
 import kotlin.random.Random
 
-class AddLoop: Transformation() {
+class AddLoop: Transformation(3) {
 
     override fun transform(target: FTarget) {
-        repeat(RANDOM_CONST) {
-            try {
-                addRandomLoops(target.file, target.project)
-            } catch (e: Exception) {
-                log.debug("Caught exception: ${e.stackTraceToString()}")
-            }
-        }
+        addRandomLoops(target.file, target.project)
     }
 
     private fun addRandomLoops(file: BBFFile, project: Project) {
-        val beginOfLoop = Random.nextInt(file.text.split("\n").size - 2)
-        val endOfLoop = Random.nextInt(beginOfLoop + 1, file.text.split("\n").size - 1)
-        val nodesBetweenWhS = file.psiFile.getNodesBetweenWhitespaces(beginOfLoop, endOfLoop)
-        if (nodesBetweenWhS.isEmpty() || nodesBetweenWhS.all { it is PsiWhiteSpace }) return
-        val randomLoop = generateRandomLoop(file, project, beginOfLoop to endOfLoop) ?: return
-        nodesBetweenWhS.first { it !is PsiWhiteSpace }.replaceThis(randomLoop)
-        val whiteSpaces = nodesBetweenWhS.takeWhile { it is PsiWhiteSpace }
-        nodesBetweenWhS
-            .filter { it.parent !in nodesBetweenWhS && it !in whiteSpaces }
-            .map { it.delete() }
+        val randomBlock = file.psiFile.getAllPSIDFSChildrenOfType<KtBlockExpression>().random()
+        val randomBlockChildren = randomBlock.children
+        val beginInd = Random.nextInt(randomBlockChildren.size + 1)
+        val beginningNode = if (beginInd == 0) randomBlock else randomBlockChildren[beginInd - 1]
+        val childrenToTakeSize = Random.nextInt(randomBlockChildren.size + 1 - beginInd)
+        val childrenToTake = randomBlockChildren.drop(beginInd).take(childrenToTakeSize)
+        val generatedLoop = generateRandomLoop(file, project, childrenToTake, beginningNode) ?: return
+        if (beginInd != 0)
+            MutationProcessor.addNode(beginningNode, generatedLoop)
+        else
+            MutationProcessor.addNode(randomBlock.firstChild, generatedLoop)
+        childrenToTake.forEach { it.delete() }
+        file.updateCtx()
     }
 
-    private fun generateRandomLoop(file: BBFFile, project: Project, placeToInsert: Pair<Int, Int>): KtExpression? {
-        val beginningNode =
-            file.psiFile.getNodesBetweenWhitespaces(placeToInsert.first, placeToInsert.first)
-                .firstOrNull { it is KtExpression } ?: return null
-        file.updateCtx() ?: return null
+    private fun generateRandomLoop(file: BBFFile, project: Project, nodes: List<PsiElement>, beginningNode: PsiElement): KtExpression? {
         val rig = RandomInstancesGenerator(file)
         val scope =
             ScopeCalculator(file, project)
                 .calcScope(beginningNode)
                 .map { it.psiElement to it.type }
-        val nodesBetweenWhS = file.psiFile.getNodesBetweenWhitespaces(placeToInsert.first, placeToInsert.second)
-        val body = nodesBetweenWhS.filter { it.parent !in nodesBetweenWhS }.joinToString("") { it.text }
+        val body = nodes.joinToString("\n") { it.text }
         return if (Random.getTrue(75)) {
             generateForExpression(file, scope, rig, body)
         } else {
@@ -101,7 +94,7 @@ class AddLoop: Transformation() {
             if (Random.getTrue(25)) "${Random.getRandomVariableName(1)}@"
             else ""
         val loopParameter = Random.getRandomVariableName(1)
-        val forExpression = "$label for ($loopParameter in ${loopRange.text}) { $body\n}"
+        val forExpression = "${label}for ($loopParameter in ${loopRange.text}) { \n $body\n}"
         return try {
             psiFactory.createExpression(forExpression)
         } catch (e: Exception) {
@@ -164,5 +157,4 @@ class AddLoop: Transformation() {
             .filterDuplicatesBy { it.name }
 
     private val typesToIterate = listOf("Byte", "UByte", "Char", "Int", "UInt", "Long", "ULong", "Short", "UShort")
-    private val RANDOM_CONST = Random.nextInt(25, 50)
 }
