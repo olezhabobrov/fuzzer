@@ -8,7 +8,7 @@ import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import kotlin.random.Random
 
-class AddRandomClass: Transformation() {
+class AddRandomClass: Transformation(5) {
 
     override fun transform(target: FTarget) {
         val file = target.file
