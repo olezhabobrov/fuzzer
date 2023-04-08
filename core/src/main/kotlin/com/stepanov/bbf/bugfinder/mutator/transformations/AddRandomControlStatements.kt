@@ -1,6 +1,5 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
-import com.intellij.psi.PsiFile
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
@@ -13,13 +12,12 @@ import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
 
-class AddRandomControlStatements: Transformation() {
+class AddRandomControlStatements: Transformation(50) {
     override fun transform(target: FTarget) {
         insertRandomStatement(target.file)
     }
 
     private fun insertRandomStatement(file: BBFFile) {
-        val fileBackup = file.psiFile.copy() as PsiFile
         val randomExp = file.psiFile.getAllPSIChildrenOfType<KtExpression>().randomOrNull() ?: return
         val randomLabel =
             randomExp.parents.filter { it is KtLabeledExpression }.toList().randomOrNull() as? KtLabeledExpression
@@ -47,6 +45,5 @@ class AddRandomControlStatements: Transformation() {
         }
     }
 
-    private val RANDOM_CONST = Random.nextInt(50, 51)
     private val listOfRandomExceptions = StdLibraryGenerator.getListOfExceptionsFromStdLibrary()
 }
