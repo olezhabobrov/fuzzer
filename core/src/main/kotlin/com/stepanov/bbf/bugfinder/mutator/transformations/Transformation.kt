@@ -25,6 +25,8 @@ abstract class Transformation(
             transform(FTarget(project, file))
             result.add(project.createProjectMessage())
             FooBarCompiler.tearDownMyEnv(project.env)
+            if (it % 10 == 0 && it != 0)
+                log.debug("$it transformations completed")
         }
         result.remove(projectMessage)
         return result
