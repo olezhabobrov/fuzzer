@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.tce
 
+import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
@@ -8,6 +9,7 @@ import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.bugfinder.util.findFunByName
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getBoxFuncs
+import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -153,13 +155,15 @@ object UsagesSamplesGenerator {
 
     private fun generateTypes(file: BBFFile, resToStr: String): List<Triple<KtExpression, String, KotlinType?>> {
         val func = psiFactory.createFunction("fun usageExamples(){\n$resToStr\n}")
-        val newFile = psiFactory.createFile(file.text + "\n\n" + func.text)
-        val ctx = file.updateCtx() ?: return listOf()
-        val myFunc = newFile.findFunByName("usageExamples")!!
+        val newFile = Project(file.text + "\n\n" + func.text).files.first()
+        val myFunc = newFile.psiFile.findFunByName("usageExamples")!!
         return myFunc.getAllPSIChildrenOfType<KtExpression>()
             .filter { it.parent == myFunc.bodyBlockExpression }
-            .map { Triple(it, it.text, it.getType(ctx)) }
+            .map { Triple(it, it.text, it.getType(newFile.ctx!!)) }
             .filter { it.third != null }
+            .also {
+                Disposer.dispose(newFile.env.project)
+            }
     }
 
     private fun List<Triple<KtExpression, String, KotlinType?>>.getValueOfType(type: String): KtExpression? =
