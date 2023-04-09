@@ -32,7 +32,7 @@ class LocalTCE: Transformation() {
     }
 
     private fun addRandomUnitCalls(file: BBFFile) {
-        val unitCalls = usageExamples.filter { it.third?.isUnit() ?: false }.filter { Random.getTrue(80) }
+        val unitCalls = usageExamples.filter { it.third?.isUnit() ?: false }
         for (call in unitCalls) {
             val randomPlaceToInsert =
                 file.psiFile.getAllPSIChildrenOfType<PsiElement>()
