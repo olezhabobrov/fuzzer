@@ -39,4 +39,13 @@ class BBFFile(
     init {
         updateCtx()
     }
+
+    override fun hashCode(): Int = text.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is BBFFile) {
+            return false
+        }
+        return other.text == text
+    }
 }

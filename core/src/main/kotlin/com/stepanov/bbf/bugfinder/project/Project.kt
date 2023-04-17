@@ -4,6 +4,7 @@ import com.intellij.psi.PsiErrorElement
 import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.util.getSimpleNameFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -17,10 +18,18 @@ class Project(
     ))
 
     val env = PSICreator.createEnv(fileNameList)
-    val files: List<BBFFile> = env.getSourceFiles().map {
+    var files: List<BBFFile> = env.getSourceFiles().map {
         val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
         f.originalFile = it
         BBFFile(f, env)
+    }
+        private set
+
+    fun createFilesFromProjectMessage(projectMessage: ProjectMessage) {
+        files = projectMessage.files.map {
+            val f = psiFactory.createFile(it.first, it.second)
+            BBFFile(f, env).also { it.updateCtx() }
+        }
     }
 
     fun isSyntaxCorrect(): Boolean =
