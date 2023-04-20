@@ -87,15 +87,5 @@ abstract class CommonCompiler(
         }
     }
 
-    companion object {
-        val compilerToConfigMap: Map<String, List<CompilationConfiguration>> = mapOf(
-            VertxAddresses.NativeCompiler to listOf(
-//                ProduceLibrary,
-//                PartialLinkage(),
-                CompilationConfiguration.Split
-            ),
-        )
-    }
-
     protected val log: Logger = LoggerFactory.getLogger("CompilerLogger")
 }

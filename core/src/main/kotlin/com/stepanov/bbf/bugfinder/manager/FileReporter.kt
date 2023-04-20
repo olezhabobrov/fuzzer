@@ -33,8 +33,8 @@ object FileReporter : Reporter {
         info.appendLine("//$compiler ver $version")
         result.results.forEach { status ->
             val isFailed = status.hasCompilerCrash()
-            val config = status.configuration
-            info.appendLine("//" + (if (isFailed) "failed" else "not failed") + " with configuration $config")
+            val arguments = status.arguments
+            info.appendLine("//" + (if (isFailed) "failed" else "not failed") + " with arguments:\n $arguments")
         }
 
         val msg = result.results.first { it.hasCompilerCrash() }.combinedOutput

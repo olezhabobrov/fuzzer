@@ -1,6 +1,6 @@
 package com.stepanov.bbf.messages
 
-import com.stepanov.bbf.information.CompilationConfiguration
+import com.stepanov.bbf.information.CompilationArgs
 import com.stepanov.bbf.information.MutationStat
 import kotlinx.serialization.Serializable
 
@@ -10,7 +10,9 @@ class KotlincInvokeStatus(
     val isCompileSuccess: Boolean,
     val hasException: Boolean,
     val hasTimeout: Boolean,
-    val configuration: CompilationConfiguration
+    val arguments: CompilationArgs,
+    val output: String,
+    val additionalInfo: String = "",
 ) {
     fun hasCompilerCrash(): Boolean = hasTimeout || hasException
 
