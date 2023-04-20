@@ -43,18 +43,10 @@ internal data class TransformationFullStat(
     @Serializable
     internal data class ExtendedStat(
         var total: Int,
-        val configToAmount: MutableMap<String, Int>
     ) {
         fun add(result: CompilationResult, predicate: (KotlincInvokeStatus) -> Boolean) {
             val statuses = getAllWithCondition(result, predicate)
             total += statuses.size
-            statuses.forEach { status ->
-                addInfo(status.configuration.toString())
-            }
-        }
-
-        private fun addInfo(config: String, amount: Int = 1) {
-            configToAmount[config] = configToAmount.getOrDefault(config, 0) + amount
         }
 
         private fun getAllWithCondition(compilationResult: CompilationResult,
@@ -65,10 +57,10 @@ internal data class TransformationFullStat(
     companion object {
         fun initialStat(transformation: String): TransformationFullStat = TransformationFullStat(
             transformation,
-            ExtendedStat(0, mutableMapOf()),
-            ExtendedStat(0, mutableMapOf()),
-            ExtendedStat(0, mutableMapOf()),
-            ExtendedStat(0, mutableMapOf()),
+            ExtendedStat(0),
+            ExtendedStat(0),
+            ExtendedStat(0),
+            ExtendedStat(0),
             0,
             0,
             0,
