@@ -1,6 +1,5 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
-import com.stepanov.bbf.bugfinder.filePartition.FilePartition
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.kootstrap.FooBarCompiler
@@ -16,7 +15,7 @@ abstract class Transformation(
         val result = mutableSetOf<ProjectMessage>()
 //        result.add(tryToSplit(projectMessage))
         repeat(amountOfTransformations) {
-            val project = Project.createFromProjectMessage(projectMessage)
+            val project = Project(projectMessage)
             val file = project.files.random()
             if (file.text.lines().size > MAX_LINES) {
                 log.debug("File is too big, returning back")
@@ -30,13 +29,6 @@ abstract class Transformation(
         }
         result.remove(projectMessage)
         return result
-    }
-
-    private fun tryToSplit(projectMessage: ProjectMessage): ProjectMessage {
-        val project = Project.createFromProjectMessage(projectMessage)
-        return FilePartition.splitFile(project.files.random()).also {
-            FooBarCompiler.tearDownMyEnv(project.env)
-        }
     }
 
     companion object {

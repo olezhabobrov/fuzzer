@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.server.messages
 import com.stepanov.bbf.bugfinder.mutator.transformations.Constants
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.util.getSimpleNameFile
 import kotlinx.serialization.*
@@ -101,7 +102,7 @@ sealed class SingleSourceTarget: MutationTarget() {
         if (this is RandomFileTarget)
             this.updateRandomFile()
         writeFile()
-        return ProjectMessage(listOf(simpleFileName() to getSourceCode()))
+        return ProjectMessage(listOf(FileData(simpleFileName(), getSourceCode())))
     }
 
     fun simpleFileName(): String = getLocalName().getSimpleNameFile()
@@ -172,7 +173,7 @@ data class ProjectTarget(
 
     override fun createProjectMessage(): ProjectMessage {
         writeProject()
-        return ProjectMessage(files.map { it.getLocalName() to it.getSourceCode()})
+        return ProjectMessage(files.map { FileData(it.getLocalName(), it.getSourceCode())})
     }
 
     fun writeProject() {

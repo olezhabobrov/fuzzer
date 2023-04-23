@@ -2,17 +2,17 @@ package com.stepanov.bbf.information
 
 import com.stepanov.bbf.util.getSimpleFileNameWithoutExt
 import kotlinx.serialization.Serializable
+import java.util.Random
 
 @Serializable
-class CompilationArgs(
-    private val root: String
+data class CompilationArgs(
+    private var outputName: String = "",
+    var klib: CompilationArgs? = null,
+    private val files: MutableList<String> = mutableListOf(),
+    private var isXPartialLinkage: Boolean = false,
+    private var artifactType: String = "program",
+    private var isK2: Boolean = false,
 ) {
-    private var outputName = ""
-    private var klib: CompilationArgs? = null
-    private val files = mutableListOf<String>()
-    private var isXPartialLinkage = false
-    private var artifactType = "program"
-    private var isK2 = false
 
     override fun toString(): String = """
     //    Compilation arguments
@@ -25,7 +25,6 @@ class CompilationArgs(
 
     fun build(): List<String> {
         val result = mutableListOf<String>()
-
 
         when(artifactType) {
             "library" -> result.addAll(listOf("-p", "library"))
@@ -40,32 +39,34 @@ class CompilationArgs(
             error("Kotlin/Native doesn't support K2")
         if (outputName.isNotBlank())
             result.addAll(listOf("-o", outputName))
-        result.addAll(files.map { root + it })
+        result.addAll(files)
         return result
     }
 
-    fun addPartialLinkage() {
+    fun addPartialLinkage(): CompilationArgs = also {
         isXPartialLinkage = true
     }
 
-    fun addKlib(addedKlib: CompilationArgs) {
+
+    fun addKlib(addedKlib: CompilationArgs) = also {
         klib = addedKlib
     }
 
-    fun makeKlib() {
+    fun makeKlib() = also {
         artifactType = "library"
     }
 
-    fun addFile(file: String) {
+    fun addFile(file: String) = also {
         files.add(file)
     }
 
-    fun addFiles(files: List<String>) {
+    fun addFiles(files: List<String>) = also {
         files.forEach { addFile(it) }
     }
 
     private fun createOutputName() {
         outputName = files.first().getSimpleFileNameWithoutExt() +
+                Random().nextInt() +
                 when(artifactType) {
                     "program" -> ".kexe"
                     "library" -> ".klib"
