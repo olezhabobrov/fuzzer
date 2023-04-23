@@ -6,12 +6,11 @@ import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
-import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.KtImportList
 import org.jetbrains.kotlin.psi.KtPackageDirective
 import kotlin.random.Random
 
-class FilePartitionRandomDivision: Transformation(3) {
+class FilePartitionRandomDivision: Transformation(10) {
     override fun transform(target: FTarget) {
         val projectMessage = splitFile(target.file, target.project)
         if (projectMessage != null)
@@ -28,7 +27,7 @@ class FilePartitionRandomDivision: Transformation(3) {
         return ProjectMessage(
             mutableListOf(
             FileData(newName1, getTextForElements(children1)),
-            FileData(newName2, getTextForElements(children2))).also { it.addAll(
+            FileData(newName2, getTextForElements(children2), isKlib = true)).also { it.addAll(
                 project.files.filter { it != file }.map {
                     FileData(it.name, it.text)
                 }

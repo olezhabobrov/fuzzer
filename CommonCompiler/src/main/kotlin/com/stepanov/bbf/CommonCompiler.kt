@@ -79,7 +79,7 @@ abstract class CommonCompiler(
         val threadPool = Executors.newCachedThreadPool()
         val futureExitCode = threadPool.submit(task)
         return try {
-            futureExitCode.get(10L, TimeUnit.SECONDS)
+            futureExitCode.get(30L, TimeUnit.SECONDS)
             true
         } catch (ex: TimeoutException) {
             futureExitCode.cancel(true)

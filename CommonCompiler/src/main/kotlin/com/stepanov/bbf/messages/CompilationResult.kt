@@ -27,7 +27,7 @@ class KotlincInvokeResult(
     val projectMessage: ProjectMessage,
     val results: List<KotlincInvokeStatus>
 ) {
-    val isCompileSuccess = results.any { it.isCompileSuccess }
+    val isCompileSuccess = results.all { it.isCompileSuccess }
     val hasCompilerCrash = results.any { it.hasCompilerCrash() }
 }
 

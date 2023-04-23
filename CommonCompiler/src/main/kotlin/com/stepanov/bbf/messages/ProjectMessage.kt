@@ -31,6 +31,10 @@ data class ProjectMessage(
                 appendLine(it.text)
             }
         }.toString()
+
+    fun findByName(name: String): FileData? {
+        return files.find { it.name == name }
+    }
 }
 
 @Serializable

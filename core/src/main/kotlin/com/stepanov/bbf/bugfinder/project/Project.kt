@@ -22,16 +22,21 @@ class Project(
 
     constructor(code: String): this(
         SourceFileTarget(code).also { it.writeFile() }.let {
-            ProjectMessage(listOf(FileData(it.getLocalName(), it.getSourceCode())))
+            ProjectMessage(listOf(FileData(it.getLocalName().getSimpleNameFile(), it.getSourceCode())))
         }
     )
 
-    val env = PSICreator.createEnv(projectMessage.files.map { it.name })
+    val env = PSICreator.createEnv(projectMessage.files.map { projectMessage.dir + it.name })
 
-    var files: List<BBFFile> = projectMessage.files.map {
-        val f = psiFactory.createFile(it.name, it.text)
-        // f.originalFile = it ???
-        BBFFile(f, env, it.isKlib).also { it.updateCtx() }
+    var files: List<BBFFile> = env.getSourceFiles().map {
+        val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
+        f.originalFile = it
+        val fileData = projectMessage.findByName(it.virtualFile.path.getSimpleNameFile())
+        if (fileData != null) {
+            BBFFile(f, env, fileData.isKlib)
+        } else {
+            BBFFile(f, env)
+        }
     }
 
     fun createFilesFromProjectMessage(projectMessage: ProjectMessage) {
