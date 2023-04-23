@@ -29,8 +29,7 @@ object PSICreator {
     val psiFactory: KtPsiFactory
 
     init {
-        val tmpFile = SourceFileTarget("").also { it.writeFile() }
-        val project = Project(listOf(tmpFile.getLocalName()))
+        val project = Project("")
         psiFactory = KtPsiFactory(project.files.first().psiFile.project)
     }
 

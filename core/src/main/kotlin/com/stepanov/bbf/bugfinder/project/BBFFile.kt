@@ -10,7 +10,8 @@ import java.io.File
 
 class BBFFile(
     var psiFile: KtFile,
-    val env: KotlinCoreEnvironment
+    val env: KotlinCoreEnvironment,
+    var isKlib: Boolean = false
 ) {
     var ctx: BindingContext? = null
     val name = psiFile.name

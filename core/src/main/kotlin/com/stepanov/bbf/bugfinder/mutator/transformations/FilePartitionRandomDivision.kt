@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
+import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.KtImportList
@@ -26,10 +27,10 @@ class FilePartitionRandomDivision: Transformation(3) {
         val newName2 = getNewNameForFile(oldName, 2)
         return ProjectMessage(
             mutableListOf(
-            newName1 to getTextForElements(children1),
-            newName2 to getTextForElements(children2)).also { it.addAll(
+            FileData(newName1, getTextForElements(children1)),
+            FileData(newName2, getTextForElements(children2))).also { it.addAll(
                 project.files.filter { it != file }.map {
-                    it.name to it.text
+                    FileData(it.name, it.text)
                 }
             )}
         )

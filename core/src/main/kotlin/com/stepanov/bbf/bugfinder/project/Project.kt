@@ -2,6 +2,7 @@ package com.stepanov.bbf.bugfinder.project
 
 import com.intellij.psi.PsiErrorElement
 import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
+import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
@@ -11,24 +12,33 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import java.io.File
 
 class Project(
-    fileNameList: List<String>
+    projectMessage: ProjectMessage
 ) {
-    constructor(code: String): this(listOf(
-        SourceFileTarget(code).also { it.writeFile() }.getLocalName()
-    ))
-
-    val env = PSICreator.createEnv(fileNameList)
-    var files: List<BBFFile> = env.getSourceFiles().map {
-        val f = KtPsiFactory(it).createFile(it.virtualFile.path, it.text)
-        f.originalFile = it
-        BBFFile(f, env)
+    init {
+        projectMessage.files.forEach { (name, text) ->
+            File(projectMessage.dir + name).writeText(text)
+        }
     }
-        private set
+
+    constructor(code: String): this(
+        SourceFileTarget(code).also { it.writeFile() }.let {
+            ProjectMessage(listOf(FileData(it.getLocalName(), it.getSourceCode())))
+        }
+    )
+
+    val env = PSICreator.createEnv(projectMessage.files.map { it.name })
+
+    var files: List<BBFFile> = projectMessage.files.map {
+        val f = psiFactory.createFile(it.name, it.text)
+        // f.originalFile = it ???
+        BBFFile(f, env, it.isKlib).also { it.updateCtx() }
+    }
 
     fun createFilesFromProjectMessage(projectMessage: ProjectMessage) {
         files = projectMessage.files.map {
-            val f = psiFactory.createFile(it.first, it.second)
-            BBFFile(f, env).also { it.updateCtx() }
+            val f = psiFactory.createFile(it.name, it.text)
+            // f.originalFile = it ???
+            BBFFile(f, env, it.isKlib).also { it.updateCtx() }
         }
     }
 
@@ -44,7 +54,7 @@ class Project(
     fun createProjectMessage(): ProjectMessage {
         return ProjectMessage(
             files.map { bbfFile ->
-                bbfFile.name.getSimpleNameFile() to bbfFile.text
+                FileData(bbfFile.name.getSimpleNameFile(), bbfFile.text, bbfFile.isKlib)
             }
         )
     }
@@ -66,15 +76,6 @@ class Project(
         }
         return files.sortedBy { it.first }.zip(otherFiles.sortedBy { it.first }).all { (first, second) ->
             first.second == second.second
-        }
-    }
-
-    companion object {
-        fun createFromProjectMessage(projectMessage: ProjectMessage): Project {
-            projectMessage.files.forEach { (name, text) ->
-                File(projectMessage.dir + name).writeText(text)
-            }
-            return Project(projectMessage.files.map { projectMessage.dir + it.first })
         }
     }
 

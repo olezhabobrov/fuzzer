@@ -4,25 +4,34 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectMessage(
-    val files: List<Pair<String, String>>, // name to code
+    val files: List<FileData>,
     val dir: String = "projectTmp/",
 ) {
 
     override fun hashCode(): Int {
-        return files.sumOf { (name, text) -> name.hashCode() * text.hashCode() }
+        return files.sumOf { (_, text) ->
+            text.hashCode()
+        }
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is ProjectMessage)
             return false
-        return files.sortedBy { it.first }.zip(other.files.sortedBy { it.first }).all { (first, second) ->
-            first.second == second.second
+        return files.sortedBy { it.text }.zip(other.files.sortedBy { it.text }).all { (first, second) ->
+            first.text == second.text && first.isKlib == second.isKlib
         }
     }
 
     fun moveAllCodeInOneFile() =
         StringBuilder().apply {
-//            append(configuration.toString());
-            files.forEach { appendLine(it.second) }
+            appendLine("// files")
+            files.forEach {
+                appendLine("// ${it.name}")
+                appendLine("// isKlib=${it.isKlib}")
+                appendLine(it.text)
+            }
         }.toString()
 }
+
+@Serializable
+data class FileData(val name: String, val text: String, val isKlib: Boolean = false)

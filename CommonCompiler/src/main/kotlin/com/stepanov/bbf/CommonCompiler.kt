@@ -67,7 +67,7 @@ abstract class CommonCompiler(
     }
 
     protected fun getAllPathsInLine(project: ProjectMessage): String {
-        return project.files.map { it.first }.joinToString(" ")
+        return project.files.map { it.name }.joinToString(" ")
     }
 
     /**
