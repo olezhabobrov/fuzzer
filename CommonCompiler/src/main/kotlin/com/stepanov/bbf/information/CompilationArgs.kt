@@ -1,11 +1,12 @@
 package com.stepanov.bbf.information
 
-import com.stepanov.bbf.util.getSimpleFileNameWithoutExt
+import com.stepanov.bbf.util.getWithoutExt
 import kotlinx.serialization.Serializable
 import java.util.Random
 
 @Serializable
 data class CompilationArgs(
+    val dir: String = "projectTmp/",
     private var outputName: String = "",
     var klib: CompilationArgs? = null,
     private val files: MutableList<String> = mutableListOf(),
@@ -56,22 +57,18 @@ data class CompilationArgs(
         artifactType = "library"
     }
 
-    fun addFile(file: String) = also {
-        files.add(file)
+    private fun addFile(file: String) = also {
+        files.add(dir + file)
     }
 
     fun addFiles(files: List<String>) = also {
         files.forEach { addFile(it) }
+        createOutputName()
     }
 
     private fun createOutputName() {
-        outputName = files.first().getSimpleFileNameWithoutExt() +
-                Random().nextInt() +
-                when(artifactType) {
-                    "program" -> ".kexe"
-                    "library" -> ".klib"
-                    else -> error("unkown artifact type $artifactType")
-                }
+        outputName = files.first().getWithoutExt() +
+                Random().nextInt()
     }
 
 }

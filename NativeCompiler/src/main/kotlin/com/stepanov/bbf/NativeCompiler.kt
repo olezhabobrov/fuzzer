@@ -2,12 +2,9 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.information.CompilationArgs
 import com.stepanov.bbf.information.VertxAddresses
-import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
-import com.stepanov.bbf.util.getSimpleFileNameWithoutExt
-import com.stepanov.bbf.util.getSimpleNameFile
 import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
@@ -15,7 +12,6 @@ import org.jetbrains.kotlin.config.Services
 
 class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
-    private val compiler = K2Native()
 
     override fun start() {
         log.debug("Started Native Compiler")
@@ -26,25 +22,30 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
         val argsList = CompilationArgsGenerator.getAllCombinations(project)
-        TODO()
+        val statuses = argsList.map { compile(it) }
+        return KotlincInvokeResult(project, statuses)
     }
 
     private fun compile(args: CompilationArgs): KotlincInvokeStatus {
-        log.debug("Trying to compile with args:\n $args")
+//        log.debug("Trying to compile with args:\n $args")
 
         if (args.klib != null) {
-            log.debug("Trying to compile klib first")
+//            log.debug("Trying to compile klib first")
             val result = compile(args.klib!!)
             if (result.hasCompilerCrash() || !result.isCompileSuccess) {
-                log.debug("klib was not compiled successfully")
+//                log.debug("klib was not compiled successfully")
                 return result
             }
         }
 
         val hasTimeout = !executeCompiler {
+            log.debug("Before")
             MsgCollector.clear()
             val services = Services.EMPTY
-            compiler.exec(MsgCollector, services, createArguments(args.build()))
+            val compiler = K2Native()
+            val args = createArguments(args.build())
+            compiler.exec(MsgCollector, services, args)
+            log.debug("After")
         }
         val status = KotlincInvokeStatus(
             MsgCollector.crashMessages.joinToString("\n") +
