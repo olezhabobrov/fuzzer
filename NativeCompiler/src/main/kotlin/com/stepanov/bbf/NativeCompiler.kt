@@ -47,6 +47,9 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
             hasTimeout,
             args
         )
+        if (!status.isCompileSuccess) {
+            log.debug(status.combinedOutput)
+        }
         return status
     }
 

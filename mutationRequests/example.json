@@ -3,13 +3,11 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": ["AddBracketsToExpression"]
+        "type": "All"
     },
     "mutationTarget": {
-        "type": "name",
-        "name": "tmp/arrays/myExperiment.kt"
+        "type": "random"
     },
-    "mutationCount": 5,
+    "repeatInf": true,
     "mutateInOrder": true
 }

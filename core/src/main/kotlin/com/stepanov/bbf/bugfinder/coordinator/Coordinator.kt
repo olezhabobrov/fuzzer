@@ -9,26 +9,29 @@ import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.ProjectMessage
+import io.vertx.core.AbstractVerticle
 import io.vertx.core.eventbus.EventBus
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.log4j.Logger
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
-class Coordinator(private val mutationProblem: MutationProblem): CoroutineVerticle() {
+class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticle() {
 
     private lateinit var eb: EventBus
     private val json = Json { prettyPrint = true }
 
-    override suspend fun start() {
+    override fun start() {
         eb = vertx.eventBus()
         establishConsumers()
         log.debug("Coordinator deployed with mutation problem:")
+        val projectToCompile = mutationProblem.getProjectMessage()
         log.debug(json.encodeToString(mutationProblem))
 //        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
         sendProjectToCompilers(MutationResult(
-            setOf(mutationProblem.getProjectMessage()),
+            setOf(projectToCompile),
             MutationStat.emptyStat))
     }
 
@@ -84,10 +87,11 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
     }
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
-        log.debug("Sending ${mutationResult.projects.size} projects to compiler")
+        val projects = mutationResult.projects.shuffled().take(MAX_PROJECTS_TO_COMPILERS)
+        log.debug("Sending ${projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(mutationResult.projects.toList(), mutationResult.mutationStat)
+                CompilationRequest(projects, mutationResult.mutationStat)
             )
         }
     }
@@ -107,8 +111,21 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
     }
 
     private fun getProjectsToSend(latestProjects: List<ProjectMessage>): List<ProjectMessage> {
-        val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS).toMutableList()
-        projects.addAll(successfullyCompiledProjects.shuffled().take(MAX_PROJECTS - projects.size))
+        if (successfullyCompiledProjects.isEmpty() || checkedProjects.size > LIMIT_OF_CHECKED_PROJECTS) {
+            val newProject = mutationProblem.getProjectMessage()
+            log.debug("Created new starting project ${newProject.files.firstOrNull()?.name}")
+            successfullyCompiledProjects =
+                successfullyCompiledProjects.shuffled()
+                    .take(LIMIT_OF_CHECKED_PROJECTS / 100 + 1)
+                    .toMutableSet()
+            return listOf(newProject)
+        }
+        val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS_TO_MUTATE).toMutableList()
+        projects.addAll(
+            successfullyCompiledProjects.shuffled()
+                .take(MAX_PROJECTS_TO_MUTATE - projects.size)
+//                .filter { Random.nextInt(100) < 75 }
+        )
         return projects
     }
 
@@ -118,9 +135,11 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
         private val counter = AtomicInteger(0)
     }
 
-    private val MAX_PROJECTS = 10
+    private val MAX_PROJECTS_TO_MUTATE = 3 // 20
+    private val MAX_PROJECTS_TO_COMPILERS = 10 // 500
+    private val LIMIT_OF_CHECKED_PROJECTS = 10 //2500
     private val checkedProjects = mutableSetOf<ProjectMessage>()
-    private val successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
+    private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
 
     private val log = Logger.getLogger("coordinatorLogger")
 }

@@ -35,6 +35,8 @@ data class ProjectMessage(
     fun findByName(name: String): FileData? {
         return files.find { it.name == name }
     }
+
+    fun hasMain() = moveAllCodeInOneFile().contains("fun main")
 }
 
 @Serializable

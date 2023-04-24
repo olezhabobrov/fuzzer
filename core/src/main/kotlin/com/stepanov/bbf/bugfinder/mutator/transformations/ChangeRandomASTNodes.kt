@@ -7,7 +7,7 @@ import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
 
-class ChangeRandomASTNodes: Transformation(1000) {
+class ChangeRandomASTNodes: Transformation(100) {
 
     override fun transform(target: FTarget) {
         val children = target.file.psiFile.node.getAllChildrenNodes()
