@@ -15,14 +15,7 @@ data class CompilationArgs(
     private var isK2: Boolean = false,
 ) {
 
-    override fun toString(): String = """
-    //    Compilation arguments
-    //    outputName=$outputName
-    //    isLinkedWithKlib=${klib != null}
-    //    klib=$klib
-    //    -Xpartial-linkage=$isXPartialLinkage
-    //    -p=$artifactType
-    """.trimIndent()
+    override fun toString(): String = "result:${build()}" + if (klib != null) " klib:$klib" else ""
 
     fun build(): List<String> {
         val result = mutableListOf<String>()

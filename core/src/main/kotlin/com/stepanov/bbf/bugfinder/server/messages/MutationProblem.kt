@@ -43,6 +43,21 @@ data class MutationProblem(
 
     fun getProjectMessage() = mutationTarget.createProjectMessage()
 
+//    fun getProjectMessage() = ProjectMessage(
+//        listOf(
+//            FileData("myKlib.kt", """
+//                fun box() {
+//                    val x = 5
+//                }
+//            """.trimIndent(), isKlib = true),
+//            FileData("myFile.kt", """
+//                fun main() {
+//                    box()
+//                }
+//            """.trimIndent())
+//        )
+//    )
+
     private val listOfTransformations: List<TransformationClass>
         get() {
             if (allowedTransformations is All)

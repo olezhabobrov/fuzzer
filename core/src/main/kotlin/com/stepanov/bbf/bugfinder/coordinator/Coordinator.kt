@@ -26,6 +26,7 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
         establishConsumers()
         log.debug("Coordinator deployed with mutation problem:")
         log.debug(json.encodeToString(mutationProblem))
+//        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
         sendProjectToCompilers(MutationResult(
             setOf(mutationProblem.getProjectMessage()),
             MutationStat.emptyStat))
@@ -117,8 +118,7 @@ class Coordinator(private val mutationProblem: MutationProblem): CoroutineVertic
         private val counter = AtomicInteger(0)
     }
 
-
-    private val MAX_PROJECTS = 25
+    private val MAX_PROJECTS = 10
     private val checkedProjects = mutableSetOf<ProjectMessage>()
     private val successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
 
