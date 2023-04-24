@@ -9,23 +9,25 @@ object CompilationArgsGenerator {
         val klibFiles = project.files.filter { it.isKlib }
         val files = project.files.filter { !it.isKlib }
         val argsList =
-            generateArgsCombinations(files.map { it.name })
+            generateArgsCombinations(files.map { it.name }, !project.hasMain())
         if (klibFiles.isNotEmpty()) {
             val argsListKlib =
-                generateArgsCombinations(klibFiles.map { it.name })
+                generateArgsCombinations(klibFiles.map { it.name }, true)
             return addKlib(argsList, argsListKlib)
         } else {
             return argsList
         }
     }
 
-    private fun generateArgsCombinations(files: List<String>): List<CompilationArgs> {
+    private fun generateArgsCombinations(files: List<String>, createKlib: Boolean): List<CompilationArgs> {
         val results = mutableListOf<CompilationArgs>()
         val args = CompilationArgs()
         args.addFiles(files)
+        if (createKlib) {
+            args.makeKlib()
+        }
         results.add(args)
         results.addAll(partialLinkage(results))
-        results.addAll(klib(results))
         return results
     }
 

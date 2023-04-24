@@ -107,7 +107,10 @@ class Server: CoroutineVerticle() {
 
     private fun deployCoordinator(mutationProblem: MutationProblem) {
         val coordinator = Coordinator(mutationProblem)
-        vertx.deployVerticle(coordinator) { res ->
+        vertx.deployVerticle(coordinator, DeploymentOptions().setWorker(true)
+            .setWorkerPoolName("coordinators-pool")
+            .setMaxWorkerExecuteTimeUnit(TimeUnit.DAYS)
+            .setMaxWorkerExecuteTime(1L)) { res ->
             if (res.failed()) {
                 log.debug("Deployment of coordinator failed with exception: ${res.cause().stackTraceToString()}")
                 error("Coordinator wasn't deployed")

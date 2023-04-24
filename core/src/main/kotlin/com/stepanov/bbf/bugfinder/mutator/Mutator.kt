@@ -42,6 +42,9 @@ class Mutator: AbstractVerticle() {
     private fun mutate(request: MutationRequest): MutationResult {
         val simpleName = request.transformation.javaClass.simpleName
         println("STARTING $simpleName")
+        require(request.targets.isNotEmpty()) {
+            log.debug("Got mutation request with empty targets")
+        }
         val results = mutableSetOf<ProjectMessage>()
         val threadPool = Executors.newCachedThreadPool()
 

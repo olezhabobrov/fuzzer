@@ -2,6 +2,10 @@
 // WITH_RUNTIME
 
 import kotlin.collections.AbstractIterator
+import kotlin.properties.*
+import kotlin.reflect.*
+import kotlin.math.*
+
 
 class MyIterator : AbstractIterator<String>() {
     var i = 0
