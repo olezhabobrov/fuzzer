@@ -8,16 +8,6 @@ object CompilationArgsGenerator {
     fun getAllCombinations(project: ProjectMessage): List<CompilationArgs> {
         val klibFiles = project.files.filter { it.isKlib }
         val files = project.files.filter { !it.isKlib }
-//
-//        val args = CompilationArgs()
-//        val klibArgs = CompilationArgs()
-//        klibArgs.addFiles(klibFiles.map {it.name})
-//        klibArgs.makeKlib()
-//        klibArgs.addPartialLinkage()
-//        args.addFiles(files.map {it.name})
-//        args.addPartialLinkage()
-//        args.addKlib(klibArgs)
-//        return listOf(args)
         val argsList =
             generateArgsCombinations(files.map { it.name })
         if (klibFiles.isNotEmpty()) {
@@ -55,7 +45,4 @@ object CompilationArgsGenerator {
     private fun klib(argsList: List<CompilationArgs>): List<CompilationArgs> {
         return argsList.map { it.copy().makeKlib() }
     }
-
-
-
 }

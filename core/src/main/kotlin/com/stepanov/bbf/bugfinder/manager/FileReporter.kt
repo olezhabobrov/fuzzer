@@ -4,8 +4,6 @@ import com.stepanov.bbf.information.CompilerArgs
 import java.io.File
 import java.util.*
 
-
-//TODO Maybe add crashing message in comments
 object FileReporter : Reporter {
 
     private fun currentTime(): String {
@@ -34,7 +32,7 @@ object FileReporter : Reporter {
         result.results.forEach { status ->
             val isFailed = status.hasCompilerCrash()
             val arguments = status.arguments
-            info.appendLine("//" + (if (isFailed) "failed" else "not failed") + " with arguments:\n $arguments")
+            info.appendLine("//" + (if (isFailed) "failed" else "not failed") + " with arguments: $arguments")
         }
 
         val msg = result.results.first { it.hasCompilerCrash() }.combinedOutput

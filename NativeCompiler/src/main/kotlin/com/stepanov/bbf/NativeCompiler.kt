@@ -9,16 +9,12 @@ import org.jetbrains.kotlin.cli.bc.K2Native
 import org.jetbrains.kotlin.cli.common.arguments.K2NativeCompilerArguments
 import org.jetbrains.kotlin.config.Services
 
-
 class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
-
 
     override fun start() {
         log.debug("Started Native Compiler")
         super.start()
     }
-
-
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
         val argsList = CompilationArgsGenerator.getAllCombinations(project)
@@ -27,25 +23,21 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     }
 
     private fun compile(args: CompilationArgs): KotlincInvokeStatus {
-//        log.debug("Trying to compile with args:\n $args")
+        log.debug("Trying to compile with args:\n $args")
 
         if (args.klib != null) {
-//            log.debug("Trying to compile klib first")
             val result = compile(args.klib!!)
             if (result.hasCompilerCrash() || !result.isCompileSuccess) {
-//                log.debug("klib was not compiled successfully")
+                log.debug("klib was not compiled successfully")
                 return result
             }
         }
-
         val hasTimeout = !executeCompiler {
-            log.debug("Before")
             MsgCollector.clear()
             val services = Services.EMPTY
             val compiler = K2Native()
             val args = createArguments(args.build())
             compiler.exec(MsgCollector, services, args)
-            log.debug("After")
         }
         val status = KotlincInvokeStatus(
             MsgCollector.crashMessages.joinToString("\n") +
@@ -70,6 +62,4 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         K2Native().parseArguments(compilerArgumentsList.toTypedArray() , arguments)
         return arguments
     }
-
-
 }
