@@ -11,12 +11,10 @@ import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.eventbus.EventBus
-import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.log4j.Logger
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.random.Random
 
 class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticle() {
 
@@ -111,12 +109,12 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     }
 
     private fun getProjectsToSend(latestProjects: List<ProjectMessage>): List<ProjectMessage> {
-        if (successfullyCompiledProjects.isEmpty() || checkedProjects.size > LIMIT_OF_CHECKED_PROJECTS) {
+        if (successfullyCompiledProjects.isEmpty() || successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS) {
             val newProject = mutationProblem.getProjectMessage()
             log.debug("Created new starting project ${newProject.files.firstOrNull()?.name}")
             successfullyCompiledProjects =
                 successfullyCompiledProjects.shuffled()
-                    .take(LIMIT_OF_CHECKED_PROJECTS / 100 + 1)
+                    .take(LIMIT_OF_COMPILED_PROJECTS / 100 + 1)
                     .toMutableSet()
             return listOf(newProject)
         }
@@ -126,6 +124,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 .take(MAX_PROJECTS_TO_MUTATE - projects.size)
 //                .filter { Random.nextInt(100) < 75 }
         )
+        if (checkedProjects.size > LIMIT_OF_CHECKED_PROJECTS) {
+            checkedProjects = mutableSetOf()
+        }
         return projects
     }
 
@@ -135,10 +136,11 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         private val counter = AtomicInteger(0)
     }
 
-    private val MAX_PROJECTS_TO_MUTATE = 3 // 20
-    private val MAX_PROJECTS_TO_COMPILERS = 10 // 500
-    private val LIMIT_OF_CHECKED_PROJECTS = 10 //2500
-    private val checkedProjects = mutableSetOf<ProjectMessage>()
+    private val MAX_PROJECTS_TO_MUTATE = 20
+    private val MAX_PROJECTS_TO_COMPILERS = 500
+    private val LIMIT_OF_COMPILED_PROJECTS = 2500
+    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000
+    private var checkedProjects = mutableSetOf<ProjectMessage>()
     private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
 
     private val log = Logger.getLogger("coordinatorLogger")
