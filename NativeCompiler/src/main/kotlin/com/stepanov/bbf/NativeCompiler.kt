@@ -23,7 +23,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     }
 
     private fun compile(args: CompilationArgs): KotlincInvokeStatus {
-        log.debug("Trying to compile with args:\n $args")
+//        log.debug("Trying to compile with args:\n $args")
 
         if (args.klib != null) {
             val result = compile(args.klib!!)
@@ -47,9 +47,9 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
             hasTimeout,
             args
         )
-        if (!status.isCompileSuccess) {
-            log.debug(status.combinedOutput)
-        }
+//        if (!status.isCompileSuccess) {
+//            log.debug(status.combinedOutput)
+//        }
         return status
     }
 
