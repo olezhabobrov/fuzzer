@@ -8,6 +8,5 @@
     "mutationTarget": {
         "type": "random"
     },
-    "repeatInf": true,
-    "mutateInOrder": true
+    "repeatInf": true
 }

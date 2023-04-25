@@ -1,3 +1,3 @@
-Bugs: 177
+Bugs: 236
 Time: 0
 Bugs per minute: 0.0  
