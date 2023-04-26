@@ -6,45 +6,33 @@
 // privateCompanionObjectAccessedFromMethodInlinedInNestedClass.kt
 // isKlib=false
 
-internal sealed class Kcw  (var ydg: Outer?, dbq: UShort, var dnx: Outer? = Outer(), var eia: Double = 85.41314697071618, geg: UShort = 16.toUShort()){
-
-
-protected open fun <T, S>  hqakx(a: Long, b: LinkedHashSet<ArrayList<Short>>, c: HashMap(tyum: Boolean)Outer, Short>, d: Collection<Outer>): ULong? = TODO()
-
-protected var jeil: UShort  
-get() = TODO()
-set(value) = TODO()
-
-
-internal val rwdu: Char  
-get() = '?'
-
-
-public val aiai: LinkedHashSet<UByte>  = LinkedHashSet<UByte>(-53)
-
-
-
-}
+//internal sealed class Kcw  (var ydg: Outer?, dbq: UShort, var dnx: Outer? = Outer(), var eia: Double = 85.41314697071618, geg: UShort = 16.toUShort()){
+//
+//
+//protected open fun <T, S>  hqakx(a: Long, b: LinkedHashSet<ArrayList<Short>>, c: HashMap(tyum: Boolean)Outer, Short>, d: Collection<Outer>): ULong? = TODO()
+//
+//protected var jeil: UShort
+//get() = TODO()
+//set(value) = TODO()
+//
+//
+//internal val rwdu: Char
+//get() = '?'
+//
+//
+//public val aiai: LinkedHashSet<UByte>  = LinkedHashSet<UByte>(-53)
+//
+//
+//
+//}
 // !LANGUAGE: +ProperVisibilityForCompanionObjectInstanceField
 
 class Outer {
-    private companion object {
-        val result = "OK"
-    }
 
-    private inline fun bar() = result
-
-    class Nested {
-        fun foo(x: Outer) = x.bar()
-    private tailrec  fun  vocak(a: Map<Char, UInt>, b: ArrayDeque<Kcw>, c: LinkedHashSet<(Kcw)?>): Kcw = TODO()
+    fun test<
 }
 
-    fun test< = Nested().foo(this)
-internal  fun  abkdw(a: ArrayList<Function1<Long, ULong>>?, b: Kcw, c: MutableMap<Outer, String>): Double? = TODO()
-internal open fun  kxtsb(a: Kcw, b: Pair<Char, Kcw?>, c: Double?): Char = TODO()
-}
-
-fun box() = Outer().test(true)
+fun box() = Outer().test()
 
 // STACKTRACE:
 // org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression in (40,13) in /home/olezhka/fuzzer/NativeCompiler/projectTmp/privateCompanionObjectAccessedFromMethodInlinedInNestedClass.kt

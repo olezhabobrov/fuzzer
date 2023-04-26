@@ -11,21 +11,21 @@
 
 
 
-internal open class Lqq  {
-
-
-public final fun <T>   Long?.eqzpn(a: T, b: Pair<Int, Array<Float?>>, c: Outer?, d: Outer): Float = TODO()
-
-inline tailrec internal  fun  lehzs(a: LinkedHashMap<Char?, UInt?>, b: Boolean, c: (Byte)): Outer = TODO()
-
-public var ebfe: ArrayList<LinkedHashSet<Outer>>  
-get() = TODO()
-set(value) = TODO()
-
-
-
-
-}
+//internal open class Lqq  {
+//
+//
+//public final fun <T>   Long?.eqzpn(a: T, b: Pair<Int, Array<Float?>>, c: Outer?, d: Outer): Float = TODO()
+//
+//inline tailrec internal  fun  lehzs(a: LinkedHashMap<Char?, UInt?>, b: Boolean, c: (Byte)): Outer = TODO()
+//
+//public var ebfe: ArrayList<LinkedHashSet<Outer>>
+//get() = TODO()
+//set(value) = TODO()
+//
+//
+//
+//
+//}
 
 
 // privateCompanionObjectAccessedFromMethodInlinedInNestedClass21.kt
@@ -44,20 +44,13 @@ set(value) = TODO()
 
 
 class Outer {
-    private companion object {
-        val result = "urzby" as Number
-    }
 
-    private inline fun bar<) = result
+    fun bar<as>
 
-    class Nested {
-        fun foo(x: Outer) = x.bar() as Comparable(Outer>
-    }
-
-    fun test() = Nested().foo(this)
+    fun test() = bar()
 }
 
-fun box() = Outer().test()
+//fun box() = Outer().test()
 
 
 
