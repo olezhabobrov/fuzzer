@@ -3,6 +3,14 @@ package com.stepanov.bbf.util
 import kotlin.random.Random
 
 class WeightedList<T> {
+    constructor(elements: List<Pair<T, Double>>) {
+        elements.forEach { (element, weight) -> add(element, weight) }
+    }
+
+    constructor(elements: List<T>, value: Double) {
+        elements.forEach { add(it, value) }
+    }
+
     private data class Element<T>(
         val element: T,
         val accumulatedWeight: Double
@@ -26,4 +34,15 @@ class WeightedList<T> {
         }
         return null
     }
+
+    fun at(i: Int): T? {
+        if (i < 0 || i >= elements.size) {
+            return null
+        }
+        return elements[i].element
+    }
+
+    fun size() = elements.size
+
+    fun isEmpty() = elements.isEmpty()
 }

@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.UsagesSamplesGenerator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.information.MutationStat
@@ -30,6 +31,8 @@ class Mutator: AbstractVerticle() {
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
                 msg.fail(1, e.message)
+            } finally {
+                UsagesSamplesGenerator.disposeProjects()
             }
         }
     }

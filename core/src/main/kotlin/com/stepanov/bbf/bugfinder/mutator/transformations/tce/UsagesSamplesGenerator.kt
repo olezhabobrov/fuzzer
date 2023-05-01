@@ -29,6 +29,15 @@ import org.jetbrains.kotlin.types.KotlinType
 
 object UsagesSamplesGenerator {
 
+    val usedProjects = mutableListOf<Project>()
+
+    fun disposeProjects() {
+        usedProjects.forEach { project ->
+            Disposer.dispose(project.env.project)
+        }
+        usedProjects.clear()
+    }
+
     fun generate(
         file: BBFFile,
         project: Project?
@@ -155,15 +164,17 @@ object UsagesSamplesGenerator {
 
     private fun generateTypes(file: BBFFile, resToStr: String): List<Triple<KtExpression, String, KotlinType?>> {
         val func = psiFactory.createFunction("fun usageExamples(){\n$resToStr\n}")
-        val newFile = Project(file.text + "\n\n" + func.text).files.first()
+//        file.psiFile.add(func)
+        val project = Project(file.text + "\n\n" + func.text)
+//        usedProjects.add(project)
+        val newFile = project.files.first()
         val myFunc = newFile.psiFile.findFunByName("usageExamples")!!
         return myFunc.getAllPSIChildrenOfType<KtExpression>()
             .filter { it.parent == myFunc.bodyBlockExpression }
-            .map { Triple(it, it.text, it.getType(newFile.ctx!!)) }
+            .map { it.copy() as KtExpression }
+            .map { Triple(it, it.text, it.getType(newFile.updateCtx()!!)) }
             .filter { it.third != null }
-            .also {
-                Disposer.dispose(newFile.env.project)
-            }
+            .also { Disposer.dispose(project.env.project) }
     }
 
     private fun List<Triple<KtExpression, String, KotlinType?>>.getValueOfType(type: String): KtExpression? =

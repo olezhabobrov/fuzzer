@@ -29,6 +29,7 @@ class LocalTCE: Transformation() {
         usageExamples = TCEUsagesCollector.collectUsageCases(target.file, target.project).toMutableList()
         addRandomUnitCalls(target.file)
         replaceNodesOfFile(target.file, target.file.psiFile.getAllPSIChildrenOfType())
+        usageExamples.clear()
     }
 
     private fun addRandomUnitCalls(file: BBFFile) {
