@@ -31,7 +31,6 @@ object StdLibraryGenerator {
     val funDescriptors: List<SimpleFunctionDescriptor>
     private val maxDepth = 2
     private val blockList = listOf("hashCode", "toString")
-    private val userClasses: MutableList<ClassDescriptor> = mutableListOf()
     private val fileHelper: BBFFile
 
     //TODO
@@ -533,6 +532,7 @@ object StdLibraryGenerator {
                 else it.getAllPSIChildrenOfType<PsiClass>().map { it.name }
             }.filterNotNull()
         val classDescriptorsFromPackage = packages.flatMap { getAllClassesFromPackage(it) }
+        val userClasses: MutableList<ClassDescriptor> = mutableListOf()
         classDescriptorsFromPackage
             .filter { it.name.asString() in classesFromProject }
             .forEach { userClasses.add(it) }

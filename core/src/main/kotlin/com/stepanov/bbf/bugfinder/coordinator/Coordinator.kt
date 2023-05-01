@@ -112,11 +112,8 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         if (successfullyCompiledProjects.isEmpty() || successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS) {
             val newProject = mutationProblem.getProjectMessage()
             log.debug("Created new starting project ${newProject.files.firstOrNull()?.name}")
-            successfullyCompiledProjects = mutableSetOf()
-            checkedProjects
-                successfullyCompiledProjects.shuffled()
-                    .take(LIMIT_OF_COMPILED_PROJECTS / 100 + 1)
-                    .toMutableSet()
+            successfullyCompiledProjects.clear()
+            checkedProjects.clear()
             return listOf(newProject)
         }
         val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS_TO_MUTATE).toMutableList()

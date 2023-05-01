@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.util.WeightedList
 import com.stepanov.bbf.util.getSimpleNameFile
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -36,10 +37,10 @@ data class MutationProblem(
 
     fun getNextTransformationAndIncreaseCounter(): Transformation =
         if (mutateInOrder) {
-            listOfTransformations[completedMutations % listOfTransformations.size]
+            listOfTransformations.at(completedMutations % listOfTransformations.size())
         } else {
-            listOfTransformations.random()
-        }.callConstructor().also { completedMutations++ }
+            listOfTransformations.getRandom()
+        }?.callConstructor().also { completedMutations++ } ?: error("Shouldn't be null")
 
     fun getProjectMessage() = mutationTarget.createProjectMessage()
 
@@ -58,12 +59,12 @@ data class MutationProblem(
 //        )
 //    )
 
-    private val listOfTransformations: List<TransformationClass>
+    private val listOfTransformations: WeightedList<TransformationClass>
         get() {
             if (allowedTransformations is All)
                 return Constants.allTransformations
             if (allowedTransformations is TransformationsList)
-                return allowedTransformations.transformationsList
+                return WeightedList(allowedTransformations.transformationsList, 100.0)
             error("wtf")
         }
 
