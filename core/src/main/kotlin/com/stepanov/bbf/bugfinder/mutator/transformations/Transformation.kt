@@ -20,9 +20,12 @@ abstract class Transformation(
                 log.debug("File is too big, returning back")
                 return@repeat
             }
-            transform(FTarget(project, file))
-            result.add(project.createProjectMessage())
-            FooBarCompiler.tearDownMyEnv(project.env)
+            try {
+                transform(FTarget(project, file))
+            } finally {
+                result.add(project.createProjectMessage())
+                project.dispose()
+            }
             if (it % 10 == 0 && it != 0)
                 log.debug("$it transformations completed")
         }

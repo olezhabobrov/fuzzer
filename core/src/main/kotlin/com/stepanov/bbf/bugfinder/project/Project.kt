@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.project
 
+import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiErrorElement
 import com.stepanov.bbf.bugfinder.server.messages.SourceFileTarget
 import com.stepanov.bbf.messages.FileData
@@ -8,13 +9,21 @@ import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.util.getSimpleNameFile
+import org.apache.log4j.Logger
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 class Project(
     projectMessage: ProjectMessage
 ) {
+
+    companion object {
+        val counter = AtomicInteger(0)
+    }
+
     init {
+        counter.incrementAndGet()
         projectMessage.files.forEach { (name, text) ->
             File(projectMessage.dir + name).writeText(text)
         }
@@ -83,5 +92,14 @@ class Project(
             first.second == second.second
         }
     }
+
+    fun dispose() {
+        Disposer.dispose(env.project)
+        counter.decrementAndGet()
+//        if (counter.decrementAndGet() > 3)
+//        log.debug("PROJECT COUNT IS ${counter.get()}")
+    }
+
+    private val log = Logger.getLogger("mutatorLogger")
 
 }

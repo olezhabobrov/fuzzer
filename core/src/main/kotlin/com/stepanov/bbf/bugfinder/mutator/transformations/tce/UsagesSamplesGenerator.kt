@@ -29,15 +29,6 @@ import org.jetbrains.kotlin.types.KotlinType
 
 object UsagesSamplesGenerator {
 
-    val usedProjects = mutableListOf<Project>()
-
-    fun disposeProjects() {
-        usedProjects.forEach { project ->
-            Disposer.dispose(project.env.project)
-        }
-        usedProjects.clear()
-    }
-
     fun generate(
         file: BBFFile,
         project: Project?
@@ -174,7 +165,7 @@ object UsagesSamplesGenerator {
             .map { it.copy() as KtExpression }
             .map { Triple(it, it.text, it.getType(newFile.updateCtx()!!)) }
             .filter { it.third != null }
-            .also { Disposer.dispose(project.env.project) }
+            .also { project.dispose() }
     }
 
     private fun List<Triple<KtExpression, String, KotlinType?>>.getValueOfType(type: String): KtExpression? =
