@@ -119,6 +119,5 @@ object FooBarCompiler {
     }
 
 
-    fun tearDownMyEnv(env: KotlinCoreEnvironment) = Disposer.dispose(env.project)
 
 }

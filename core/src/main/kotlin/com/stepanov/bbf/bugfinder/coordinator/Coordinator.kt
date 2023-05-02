@@ -85,7 +85,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     }
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
-        val projects = mutationResult.projects.shuffled().take(MAX_PROJECTS_TO_COMPILERS)
+        val projects = mutationResult.projects.filter { project ->
+            project !in checkedProjects
+        }.shuffled().take(MAX_PROJECTS_TO_COMPILERS)
         log.debug("Sending ${projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->
             eb.send(address,

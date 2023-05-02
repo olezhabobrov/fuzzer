@@ -31,8 +31,6 @@ class Mutator: AbstractVerticle() {
             } catch(e: Throwable) {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
                 msg.fail(1, e.message)
-            } finally {
-                UsagesSamplesGenerator.disposeProjects()
             }
         }
     }
