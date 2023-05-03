@@ -5,8 +5,9 @@ import java.io.File
 
 object ResultsFilter {
     fun filter() {
-        File(CompilerArgs.resultsDir + "/NativeCompiler").listFiles()?.forEach { file ->
-            if (file.exists()) {
+        File(CompilerArgs.resultsDir).walkTopDown().forEach { file ->
+            if (file.exists() && file.isFile) {
+                println("In file ${file.name}")
                 if (file.readLines().size > 1000) {
                     file.delete()
                     return@forEach
@@ -19,7 +20,7 @@ object ResultsFilter {
 
                 val stackTrace = extractStackTrace(file.readText())
                 if (stackTrace.contains("Source files")) { // in empty stack trace not really interested right now
-                    File(CompilerArgs.resultsDir + "/NativeCompiler").listFiles()?.forEach { other ->
+                    File(CompilerArgs.resultsDir).walkTopDown().filter { it.isFile }.forEach { other ->
                         if (other.name != file.name) {
                             val st2 = extractStackTrace(other.readText())
                             if (
