@@ -9,72 +9,23 @@
 // MODULE: lib
 // FILE: FakeOverrideBuilder_lib.kt
 
-class IrPropertySymbolImpl :
-    IrBindableSymbolBase<IrProperty>(),
-    IrPropertySymbol
+//class Foo :
+//    Bar<Int>()
+//
+//class Bar<break>
 
-abstract class IrBindableSymbolBase<
-val l = false
-if (l) {B : IrSymbolOwner} else {B : IrSymbolOwner}
-> :
-    IrBindableSymbol<B>, IrSymbolBase() {
+fun <break> foo()
 
-    private var _owner: B? = null
-    override val owner: B
-        get() = _owner ?: (throw IllegalStateException(""))
-
-    override fun bind(owner: B) {for (y in ULongRange(17.toULong(), 3.toULong())) { 
- if (_owner == null) {
-            _owner = owner
-        } else {
-            throw IllegalStateException("")
-        }
-break
-
-}
-        }
+fun box(){
+    foo()
 }
 
-abstract class IrSymbolBase : IrSymbol
 
-interface IrPropertySymbol : IrBindableSymbol<IrProperty>
 
-interface IrBindableSymbol<B : IrSymbolOwner> : IrSymbol {
-    override val owner: B
-
-    fun bind(owner: B)
-inline  private  fun <reified T, reified S: IrSymbol>  xxgjr(a: Double?): ArrayList<String> = TODO()
-}
-
-interface IrSymbol {
-    val owner: IrSymbolOwner
-}
-
-interface IrSymbolOwner {
-    val symbol: IrSymbol
-}
-
-class IrProperty(override val symbol: IrPropertySymbol, val name: String) : IrSymbolOwner{
-internal  fun  tstai(a: IrProperty?, b: Int, c: String): Double = TODO()
-external internal final fun <T>  bhmlp(a: T, b: IrBindableSymbolBase<IrProperty>, c: Boolean): ArrayList<UShort>
-}
 
 // MODULE: main(lib)
 // FILE: FakeOverrideBuilder_main.kt
 
-fun link(declaration: IrSymbolOwner) {
-    val tempSymbol = IrPropertySymbolImpl()
-    tempSymbol.bind(@OptIn(Annotation::class, Annotation::class, Annotation::class)
-declaration as IrProperty)
-}
-
-fun box(): String {
-    val symbol = IrPropertySymbolImpl()
-    val property = IrProperty(symbol, "OK")
-    symbol.bind(property)
-    link(property)
-    return symbol.owner.name
-}
 
 
 // STACKTRACE:

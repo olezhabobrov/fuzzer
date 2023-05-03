@@ -7,22 +7,9 @@
 // files
 // returnInParentheses01.kt
 // isKlib=false
-internal  class Hsn  (var zyb: Int, val bzt: LinkedHashMap<Int, String>, val rfm: Boolean, val xln: HashSet<Collection<Double>>){
 
-external private  fun   Int.dmueb(a: MutableMap<Char, Sequence<Byte>>, brfm Sequence<String>) = object {
-external internal  fun <T>  higwd(a: Float, b: T, c: HashSet<Short>): Boolean = TODO()
+val foo: Int = (:)
 
-inline    fun  ksqwn(a: Char): Double = TODO()
-
-tailrec   fun  pcpaj(a: Double, b: Triple<UByte, List<Long>, Boolean>, c: List<Float>): Boolean? = TODO()
-
-private var jjhv: UShort  = 1806330252.toUShort()
-}
-internal val rjac: Int  = (:).compareTo(rfm).shr(-83)
-
-
-
-}
 
 
 
@@ -36,32 +23,10 @@ internal val rjac: Int  = (:).compareTo(rfm).shr(-83)
 
 
 
-fun box(): String {
-    foo(1000000)
-    
-val l = false
-when ((l)) {
- true -> {(return "OK")}
- else -> {(return "OK")}
-}
-
-}
 
 
 // returnInParentheses022.kt
 // isKlib=true
-import kotlin.jvm.*
-
-
-
-
-tailrec fun foo(x: Int) {
-    if (x == 0) return
-    
-val d = false
-if (d) {(return foo(x - 1))} else {(return foo(x - 1))}
-
-}
 
 
 
