@@ -14,7 +14,6 @@ object ResultsFilter {
 //        }
         File(CompilerArgs.resultsDir).walkTopDown().forEach { file ->
             if (file.exists() && file.isFile) {
-                println("In file ${file.name}")
                 if (file.readLines().size > 1000) {
                     file.delete()
                     return@forEach
@@ -33,6 +32,7 @@ object ResultsFilter {
                             if (
                                 deleteSourceFile(stackTrace) == deleteSourceFile(st2)
                             ) {
+                                println("${other.name} -> ${file.name}")
                                 other.delete()
                             }
                         }
@@ -47,6 +47,7 @@ object ResultsFilter {
             file.readText().substringAfterLast("causeThrowable")
         else
             file.readText().substringAfterLast("STACKTRACE"))
+            .substringAfter("// \tat")
             .split("\n").take(10).joinToString("\n")
 
     private fun deleteSourceFile(code: String) = code.substringBefore("com.stepanov.bbf")
