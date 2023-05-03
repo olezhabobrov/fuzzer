@@ -20,10 +20,7 @@ object FileReporter : Reporter {
 
     override fun dump(bug: Bug): String {
         val resDir = CompilerArgs.resultsDir
-        val name = currentTime() +
-                if (bug.project.files.size == 1) "_FILE" else "_PROJECT"
-        val newPath = "$resDir/$name.kt"
-        File(newPath.substringBeforeLast('/')).mkdirs()
+
         val info = StringBuilder()
         val result = bug.result.results.first()
         val compiler = bug.result.compiler
@@ -36,6 +33,13 @@ object FileReporter : Reporter {
         }
 
         val msg = result.results.first { it.hasCompilerCrash() }.combinedOutput
+
+        val name = currentTime() +
+                (if (bug.project.files.size == 1) "_FILE" else "_PROJECT") +
+                (if (msg.contains("Exception while analyzing expression")) "_FRONTEND" else "_BACKEND")
+
+        val newPath = "$resDir/$name.kt"
+        File(newPath.substringBeforeLast('/')).mkdirs()
 
         val commentedStackTrace =
                 "// STACKTRACE:\n${msg.split("\n").joinToString("\n") { "// $it" }}"
