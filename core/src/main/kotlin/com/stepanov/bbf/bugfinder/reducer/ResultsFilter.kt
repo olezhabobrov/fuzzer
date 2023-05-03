@@ -26,7 +26,7 @@ object ResultsFilter {
                 }
 
                 val stackTrace = extractStackTrace(file)
-                if (stackTrace.contains("Source files")) { // in empty stack trace not really interested right now
+                if (stackTrace.count { it == '\n' } > 5) { // in empty stack trace not really interested right now
                     File(CompilerArgs.resultsDir).walkTopDown().filter { it.isFile }.forEach { other ->
                         if (other.name != file.name) {
                             val st2 = extractStackTrace(other)
@@ -43,10 +43,11 @@ object ResultsFilter {
     }
 
     private fun extractStackTrace(file: File) =
-        if (file.name.contains("FRONTEND"))
+        (if (file.name.contains("FRONTEND"))
             file.readText().substringAfterLast("causeThrowable")
         else
-            file.readText().substringAfterLast("STACKTRACE")
+            file.readText().substringAfterLast("STACKTRACE"))
+            .split("\n").take(10).joinToString("\n")
 
     private fun deleteSourceFile(code: String) = code.substringBefore("com.stepanov.bbf")
 }
