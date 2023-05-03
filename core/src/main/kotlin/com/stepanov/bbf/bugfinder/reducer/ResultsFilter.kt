@@ -5,6 +5,13 @@ import java.io.File
 
 object ResultsFilter {
     fun filter() {
+//        File(CompilerArgs.resultsDir).listFiles()!!.filter { it.isFile }.forEach { file ->
+//            if (file.readText().contains("Exception while analyzing expression")) {
+//                file.renameTo(File("tmp/results/" + file.nameWithoutExtension + "_FRONTEND" + ".kt"))
+//            } else {
+//                file.renameTo(File("tmp/results/" + file.nameWithoutExtension + "_BACKEND" + ".kt"))
+//            }
+//        }
         File(CompilerArgs.resultsDir).walkTopDown().forEach { file ->
             if (file.exists() && file.isFile) {
                 println("In file ${file.name}")
@@ -38,5 +45,5 @@ object ResultsFilter {
     private fun extractStackTrace(code: String) =
         code.substringAfterLast("STACKTRACE")
 
-    private fun deleteSourceFile(code: String) = code.substringBefore("Source files")
+    private fun deleteSourceFile(code: String) = code.substringBefore("com.stepanov.bbf")
 }
