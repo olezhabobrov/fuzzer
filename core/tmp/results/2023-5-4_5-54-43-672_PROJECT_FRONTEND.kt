@@ -7,7 +7,6 @@
 // files
 // rangeCheckOnSubjectVariable1.kt
 // isKlib=false
-import kotlin.annotation.*
 
 
 
@@ -22,31 +21,17 @@ import kotlin.annotation.*
 
 
 fun box() =
-    when (val .. = x) {
-        in 0y2 -> "OK"
-        else -> "Fail: $y"
+    when (val = x) {
+        in y -> ""
+        else -> ""
     }
 
 
 // rangeCheckOnSubjectVariable22.kt
 // isKlib=true
-private abstract class Hig  (var lyr: Float? = 84.159805f, val oys: MutableMap<(Float)?, Double>, dgj: Char, neb: Float?){
-
-
-fun <T>  melir(a: T, b: Function2<UByte, Byte, UShort>, c: Collection<Double>, d: Sequence<Boolean?>): Array<UByte> = TODO()
-
-@Deprecated("lvgyf", ReplaceWith("unoak", "uzrva", "vdqqf"), kotlin.DeprecationLevel.WARNING)
-abstract var geqi: UByte
 
 
 
-inline  private  fun  jafzx(a: List<UInt>, b: Hig?, c: Hig): Long = TODO()
-}
-
-
-
-
-val x = 1
 
 
 
