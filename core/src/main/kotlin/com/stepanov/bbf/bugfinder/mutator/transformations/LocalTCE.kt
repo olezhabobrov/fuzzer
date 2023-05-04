@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 import kotlin.random.Random
 
-class LocalTCE: Transformation() {
+class LocalTCE: Transformation(10) {
 
     private val blockListOfTypes = listOf("Unit", "Nothing", "Nothing?")
     lateinit var usageExamples: MutableList<Triple<KtExpression, String, KotlinType?>>
@@ -70,11 +70,11 @@ class LocalTCE: Transformation() {
                 continue
             }
             log.debug("replacement of ${node.first.text} of type ${node.second} is ${replacement.text}")
-            TODO("WTF")
-//            MutationProcessor.addNode(
-//                node.first.node,
-//                replacement.copy().node
-//            )?.let { replacementsList.add(it.psi) }
+            MutationProcessor.replaceNodeReturnNode(
+                node.first.node,
+                replacement.copy().node,
+                file
+            )?.let { replacementsList.add(it.psi) }
             nodesForChange = updateReplacement(replaceNodes, file.ctx!!)
         }
 //        changeValuesInExpression(replacementsList)
