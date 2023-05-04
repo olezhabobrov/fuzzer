@@ -1,0 +1,75 @@
+//NativeCompiler ver 1.8.0
+//not failed with arguments: result:[-p, library, -l, projectTmp/directCall121842079488, -o, projectTmp/directCall11-1709709453, projectTmp/directCall11.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/directCall121842079488, projectTmp/directCall12.kt]
+//failed with arguments: result:[-p, library, -Xpartial-linkage, -o, projectTmp/directCall121842079488, projectTmp/directCall12.kt]
+//not failed with arguments: result:[-p, library, -l, projectTmp/directCall121842079488, -Xpartial-linkage, -o, projectTmp/directCall11-1709709453, projectTmp/directCall11.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/directCall121842079488, projectTmp/directCall12.kt]
+//not failed with arguments: result:[-p, library, -l, projectTmp/directCall121842079488, -Xpartial-linkage, -o, projectTmp/directCall11-1709709453, projectTmp/directCall11.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/directCall121842079488, projectTmp/directCall12.kt]
+
+// files
+// directCall11.kt
+// isKlib=false
+import kotlin.jvm.*
+import kotlin.annotation.*
+
+
+
+
+
+box fun() = C().foo(Result.success("OK")).getOrNull()
+
+
+// directCall12.kt
+// isKlib=true
+@file:OptIn(Annotation::class, Annotation::class, Annotation::class)
+
+
+
+
+// WITH_RUNTIME
+// IGNORE_BACKEND: JVM, WASM
+interface I<T> {
+    fun foo(x: T): T
+}
+
+class C : I<Result<(Any)?>> {
+    override fun foo(x: Result<Any?>) = x
+}
+
+
+
+// STACKTRACE:
+// java.lang.OutOfMemoryError: Cannot reserve 4761324 bytes of direct buffer memory (allocated: 6226949513, limit: 6228541440)
+// 	at java.base/java.nio.Bits.reserveMemory(Bits.java:178)
+// 	at java.base/java.nio.DirectByteBuffer.<init>(DirectByteBuffer.java:121)
+// 	at java.base/java.nio.ByteBuffer.allocateDirect(ByteBuffer.java:330)
+// 	at java.base/sun.nio.ch.Util.getTemporaryDirectBuffer(Util.java:243)
+// 	at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:242)
+// 	at java.base/sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:229)
+// 	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.readFullyAt(ZipFileSystem.java:1231)
+// 	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.readFullyAt(ZipFileSystem.java:1226)
+// 	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.initCEN(ZipFileSystem.java:1539)
+// 	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystem.<init>(ZipFileSystem.java:172)
+// 	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.getZipFileSystem(ZipFileSystemProvider.java:125)
+// 	at jdk.zipfs/jdk.nio.zipfs.ZipFileSystemProvider.newFileSystem(ZipFileSystemProvider.java:120)
+// 	at java.base/java.nio.file.FileSystems.newFileSystem(FileSystems.java:527)
+// 	at java.base/java.nio.file.FileSystems.newFileSystem(FileSystems.java:399)
+// 	at org.jetbrains.kotlin.com.intellij.ide.plugins.DescriptorLoadingContext.open(DescriptorLoadingContext.java:40)
+// 	at org.jetbrains.kotlin.com.intellij.ide.plugins.PluginDescriptorLoader.loadDescriptorFromJar(PluginDescriptorLoader.java:84)
+// 	at org.jetbrains.kotlin.com.intellij.ide.plugins.PluginManagerCore.registerExtensionPointAndExtensions(PluginManagerCore.java:1325)
+// 	at org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment.registerExtensionPointAndExtensions(CoreApplicationEnvironment.java:287)
+// 	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment$Companion.registerApplicationExtensionPointsAndExtensionsFrom(KotlinCoreEnvironment.kt:620)
+// 	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment$Companion.createApplicationEnvironment(KotlinCoreEnvironment.kt:590)
+// 	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment$Companion.getOrCreateApplicationEnvironment(KotlinCoreEnvironment.kt:521)
+// 	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment$Companion.getOrCreateApplicationEnvironmentForProduction(KotlinCoreEnvironment.kt:502)
+// 	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment$Companion.createForProduction(KotlinCoreEnvironment.kt:446)
+// 	at org.jetbrains.kotlin.cli.bc.K2Native.doExecute(K2Native.kt:62)
+// 	at org.jetbrains.kotlin.cli.bc.K2Native.doExecute(K2Native.kt:38)
+// 	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:101)
+// 	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:47)
+// 	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+// 	at com.stepanov.bbf.NativeCompiler.compile$lambda$1(NativeCompiler.kt:40)
+// 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+// 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+// 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+// 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:630)
+// 	at java.base/java.lang.Thread.run(Thread.java:831)
+// 
