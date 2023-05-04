@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_jvm_version"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_jvm_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_jvm_compiler_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_jvm_compiler_version"
     }
 }
 
@@ -23,12 +23,12 @@ dependencies {
     implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
     implementation "commons-io:commons-io:2.6"
 
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: kotlin_jvm_version
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "${kotlin_jvm_version}"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: "${kotlin_jvm_version}"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler', version: "${kotlin_jvm_version}"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-daemon-embeddable', version: "${kotlin_jvm_version}"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_jvm_version}"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: kotlin_jvm_compiler_version
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "${kotlin_jvm_compiler_version}"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: "${kotlin_jvm_compiler_version}"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler', version: "${kotlin_jvm_compiler_version}"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-daemon-embeddable', version: "${kotlin_jvm_compiler_version}"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_jvm_compiler_version}"
 
 
     implementation group: 'io.vertx', name: 'vertx-hazelcast', version: vertx_version
@@ -41,21 +41,21 @@ dependencies {
     implementation "org.slf4j:slf4j-api:1.7.28"
     implementation "net.sourceforge.argparse4j:argparse4j:0.8.1"
 
-    toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_jvm_version}"
-    toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-common', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-script-runtime', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-annotations-common', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-js', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-js', version: "${kotlin_jvm_version}"
-    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_jvm_version}"
+    toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_jvm_compiler_version}"
+    toCopy "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-common', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-script-runtime', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-annotations-common', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-js', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-js', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_jvm_compiler_version}"
 }
 
 task download(type: Copy) {
-    if (!file("tmp/lib/kotlin-stdlib-${kotlin_jvm_version}.jar").exists()) {
+    if (!file("tmp/lib/kotlin-stdlib-${kotlin_jvm_compiler_version}.jar").exists()) {
         from configurations.toCopy
         into 'tmp/lib'
     }
@@ -70,5 +70,5 @@ run {
 }
 
 run.doFirst {
-    environment 'kotlin_jvm_version', kotlin_jvm_version
+    environment 'kotlin_jvm_compiler_version', kotlin_jvm_compiler_version
 }
