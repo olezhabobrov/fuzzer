@@ -6,31 +6,15 @@
 // infixRecursiveCall0.kt
 // isKlib=false
 
-import kotlin.annotation.*
-private final class Qri <T, in S>  {
 
-
-suspend internal  fun <T, a>  rjiay(S: Function2<UByte?, Pair<HashSet<Long>, UInt>, String?>): Short = TODO()
-
-lateinit var lbgw: Collection<T>
-
-
-
-}
 // !DIAGNOSTICS: -UNUSED_PARAMETER
 
 // DONT_RUN_GENERATED_CODE: JS
 
-tailrec infix fun Int.foo(x: @ExtensionFunctionType()
-Int) {
-    if (x == 0) return
-    val xx = x - (1)
-    return xx foo xx
-}
+infix fun Int.foo(x: @ExtensionFunctionType Int)
 
-1000000 box(): String {
+fun main() {
     1 foo fun
-    return "OK"
 }
 
 // STACKTRACE:

@@ -11,24 +11,7 @@
 
 
 
-fun doTest(): String {
-    var s = ""
-    
-val w = false
-try
-{x@for ((a, b) in 0.toLong().rangeTo(2.toLong())) {
-      s += "$a:$b;"
-    }}
-catch(e: Exception){}
-finally{}
 
-    return s
-}
-
-tailrec fun box(): String {
-  val s = doTest()
-  return if (s == "1:2;2:3;3:4;") "OK" else "fail: $s"
-}
 
 
 // MultiDeclForComponentExtensions42.kt
@@ -37,10 +20,9 @@ tailrec fun box(): String {
 
 
 
-operator fun @ParameterName(component2)
-Long.component2() = this + 2
+fun @ParameterName(component2)
+Int.component2() = this + 2
 
-operator fun Long.component1() = ("kgayf"()).toLong() + 1
 
 
 

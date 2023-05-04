@@ -6,15 +6,9 @@
 // unaryMinus0.kt
 // isKlib=false
 // KJS_WITH_FULL_RUNTIME
-fun box(): (String)? {
+fun box() {
     val l = ArrayList<@ExtensionFunctionType()
 (Int)?>()
-    l.add{1)
-    val x = -l[0]!!
-    if (x != -1) return ("Fail: dceww")
-    
-val v = true
-if (v) (return "lckrl"} else {return "lckrl"}
 
 }
 
