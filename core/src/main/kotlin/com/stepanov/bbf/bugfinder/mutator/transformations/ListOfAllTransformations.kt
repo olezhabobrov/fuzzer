@@ -46,7 +46,7 @@ object Constants {
 //        ExpressionObfuscator::class,
         ExpressionReplacer::class to 100.0,
         FilePartitionRandomDivision::class to 200.0,
-        LocalTCE::class to 100.0,
+        LocalTCE::class to 200.0,
 //        ReinitProperties::class,
 //        RemoveRandomLines::class,
 //        ReplaceDotExpression::class,

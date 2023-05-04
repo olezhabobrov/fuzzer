@@ -1,21 +1,23 @@
-import java.util.*
 import kotlin.*
 
 
 
 
-val abcq1: HashSet<Double> = TODO()
+val abcq1: (Float, B?) -> Double = TODO()
 
-fun  abcq(a: HashSet<Double>){}
+fun  abcq(a: (Float, B?) -> Double){}
 
-// DONT_TARGET_EXACT_BACKEND: WASM
-// WASM_MUTE_REASON: STDLIB_COLLECTIONS
-// KJS_WITH_FULL_RUNTIME
-// WITH_RUNTIME
+// IGNORE_FIR_DIAGNOSTICS
+open abstract class B {
+    fun foo(arg: Int  = -67) : Int = (arg).compareTo(arg).inc()
+fun  gngnh(a: C? = null, b: ULong? = (a)?.gngnh(C(), 39.toULong(), -35, {a: C, b: C -> 46.toUShort()})?.div(37.toULong()), c: Byte? = null, d: Function2<C, C, UShort?> = {a: C, b: C -> 2.toUShort()}): UByte? = 73.toUByte()
+}
 
-fun box(): String {
-    val m = hashMapOf<String, String?>()
-    m.put("b", null)
-    val oldValue = m.getOrPut(box(), { "Foo" })
-    return if (oldValue == "Foo") "OK" else "fail: $oldValue"
+class C() : B() {
+}
+
+tailrec fun box() : (String)? {
+    if(C().foo(C().foo()) != (C().foo()).compareTo(1)) return "fail"
+    if(C().foo() != 240) return "fail"
+    return "OK"
 }

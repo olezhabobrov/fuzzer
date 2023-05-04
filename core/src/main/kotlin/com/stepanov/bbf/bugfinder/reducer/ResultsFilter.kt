@@ -24,6 +24,11 @@ object ResultsFilter {
                     return@forEach
                 }
 
+                if (file.readText().contains("java.lang.OutOfMemoryError: Cannot reserve")) {
+                    file.delete()
+                    return@forEach
+                }
+
                 val stackTrace = extractStackTrace(file)
                 if (stackTrace.count { it == '\n' } > 5) { // in empty stack trace not really interested right now
                     File(CompilerArgs.resultsDir).walkTopDown().filter { it.isFile }.forEach { other ->
