@@ -1,17 +1,31 @@
 //NativeCompiler ver 1.8.0
-//failed with arguments: result:[-p, library, -l, projectTmp/infixCallLabelling22-1800273879, -o, projectTmp/infixCallLabelling1-948103409, projectTmp/infixCallLabelling1.kt, projectTmp/infixCallLabelling21.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/infixCallLabelling22-1800273879, projectTmp/infixCallLabelling22.kt]
-//failed with arguments: result:[-p, library, -l, projectTmp/infixCallLabelling22-1800273879, -o, projectTmp/infixCallLabelling1-948103409, projectTmp/infixCallLabelling1.kt, projectTmp/infixCallLabelling21.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/infixCallLabelling22-1800273879, projectTmp/infixCallLabelling22.kt]
-//failed with arguments: result:[-p, library, -l, projectTmp/infixCallLabelling22-1800273879, -Xpartial-linkage, -o, projectTmp/infixCallLabelling1-948103409, projectTmp/infixCallLabelling1.kt, projectTmp/infixCallLabelling21.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/infixCallLabelling22-1800273879, projectTmp/infixCallLabelling22.kt]
-//failed with arguments: result:[-p, library, -l, projectTmp/infixCallLabelling22-1800273879, -Xpartial-linkage, -o, projectTmp/infixCallLabelling1-948103409, projectTmp/infixCallLabelling1.kt, projectTmp/infixCallLabelling21.kt] klib:result:[-p, library, -Xpartial-linkage, -o, projectTmp/infixCallLabelling22-1800273879, projectTmp/infixCallLabelling22.kt]
+//failed with arguments: result:[-p, library, -o, projectTmp/defaultargs1860153537, projectTmp/defaultargs.kt]
+//failed with arguments: result:[-p, library, -Xpartial-linkage, -o, projectTmp/defaultargs1860153537, projectTmp/defaultargs.kt]
 
 // files
-// infixCallLabelling1.kt
+// defaultargs.kt
 // isKlib=false
+// IGNORE_FIR_DIAGNOSTICS
+open abstract class B {
+    tailrec fun foo(arg: Int = (
+val l = true
+when (l) {
+ true -> {C}
+ else -> {C}
+}
+()).foo(C().foo(arg = 59)).minus(76)) : Int = C().foo(arg = 30)
+open fun <T, S>  amaho(a: Array<Char>): Boolean = true
+}
 
+class C() : @ParameterName("pkcob")
+B() {
+}
 
-
-
-fun myMap(x: Int = @someLabel)
+fun box() : String {
+    if((box()).plus("qtwux").isEmpty()) return ((C()).foo(-19)).toString()
+    if(C().foo() != 240) return (box()).plus("cduax")
+    return box()
+}
 
 
 // STACKTRACE:
@@ -49,7 +63,7 @@ fun myMap(x: Int = @someLabel)
 // 	at java.base/java.lang.Thread.run(Thread.java:831)
 // Compilation failed: null
 // 
-//  * Source files: infixCallLabelling1.kt, infixCallLabelling21.kt
+//  * Source files: defaultargs.kt
 //  * Compiler version info: Konan: 1.8.0 / Kotlin: 1.8.0
 //  * Output kind: LIBRARY
 // 

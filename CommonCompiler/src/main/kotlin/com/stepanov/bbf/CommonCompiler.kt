@@ -42,6 +42,7 @@ abstract class CommonCompiler(
                 createLocalTmpProject(projectMessage)
                 val compileResult = executeCompilationCheck(projectMessage)
                 compileResults.add(compileResult)
+                deleteLocalTmpProject(projectMessage)
             }
             log.debug("Sending back compile results")
             eb.send(
@@ -64,6 +65,10 @@ abstract class CommonCompiler(
         project.files.forEach { (name, text) ->
             File(project.dir + name).writeText(text)
         }
+    }
+
+    private fun deleteLocalTmpProject(project: ProjectMessage) {
+        File(project.dir).deleteRecursively()
     }
 
     protected fun getAllPathsInLine(project: ProjectMessage): String {
