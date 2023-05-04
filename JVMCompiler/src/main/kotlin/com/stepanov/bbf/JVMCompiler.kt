@@ -1,8 +1,8 @@
 package com.stepanov.bbf
 
+import com.stepanov.bbf.information.CompilationArgs
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
-import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
@@ -14,7 +14,7 @@ import java.io.File
 
 open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
 
-    private val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
+//    private val compiler = K2JVMCompiler() // TODO: make it in CommonCompiler, can't figure suitable type
 
     override fun start() {
         log.debug("Started JVMCompiler")
@@ -22,20 +22,22 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
     }
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
-        TODO("")
-//        val args = prepareArgs(project, "tmp/build/")
-//        val hasTimeout = !executeCompiler {
-//            val services = Services.EMPTY
-//            compiler.exec(MsgCollector, services, args)
-//        }
-//        val status = KotlincInvokeStatus(
-//            MsgCollector.crashMessages.joinToString("\n") +
-//                    MsgCollector.compileErrorMessages.joinToString("\n"),
-//            !MsgCollector.hasCompileError,
-//            MsgCollector.hasException,
-//            hasTimeout
-//        )
-//        return status
+        val args = prepareArgs(project, project.dir)
+        val hasTimeout = !executeCompiler {
+            MsgCollector.clear()
+            val services = Services.EMPTY
+            val compiler = K2JVMCompiler()
+            compiler.exec(MsgCollector, services, args)
+        }
+        val status = KotlincInvokeStatus(
+            MsgCollector.crashMessages.joinToString("\n") +
+                    MsgCollector.compileErrorMessages.joinToString("\n"),
+            !MsgCollector.hasCompileError,
+            MsgCollector.hasException,
+            hasTimeout,
+            CompilationArgs()
+        )
+        return KotlincInvokeResult(project, listOf(status))
     }
 
     // TODO: add some additional arguments maybe
