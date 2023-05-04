@@ -9,16 +9,16 @@
 // MODULE: lib
 // FILE: FakeOverrideBuilder_lib.kt
 
-//class Foo :
-//    Bar<Int>()
+class Foo :
+    Bar<Int>()
+
+class Bar<break>
+
+//fun <break> foo()
 //
-//class Bar<break>
-
-fun <break> foo()
-
-fun box(){
-    foo()
-}
+//fun box(){
+//    foo()
+//}
 
 
 
