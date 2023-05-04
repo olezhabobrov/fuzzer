@@ -1,8 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.UsagesSamplesGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
-import com.stepanov.bbf.kootstrap.FooBarCompiler
 import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.log4j.Logger
 
@@ -15,16 +15,17 @@ abstract class Transformation(
         val result = mutableSetOf<ProjectMessage>()
         repeat(amountOfTransformations) {
             val project = Project(projectMessage)
+            try {
             val file = project.files.random()
             if (file.text.lines().size > MAX_LINES) {
                 log.debug("File is too big, returning back")
                 return@repeat
             }
-            try {
-                transform(FTarget(project, file))
+            transform(FTarget(project, file))
             } finally {
                 result.add(project.createProjectMessage())
                 project.dispose()
+                UsagesSamplesGenerator.disposeProjects()
             }
             if (it % 10 == 0 && it != 0)
                 log.debug("$it transformations completed")
