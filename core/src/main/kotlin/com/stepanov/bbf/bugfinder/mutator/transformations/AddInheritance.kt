@@ -31,7 +31,7 @@ import kotlin.random.Random
 //Don't forget to add import for projects
 //Deal with TypeParameters
 
-class AddInheritance: Transformation(5) {
+class AddInheritance: Transformation(100) {
 
     override fun transform(target: FTarget) {
         val file = target.file

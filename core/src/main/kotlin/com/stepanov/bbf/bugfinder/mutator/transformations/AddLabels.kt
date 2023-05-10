@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import kotlin.random.Random
 
-class AddLabels: Transformation(5) {
+class AddLabels: Transformation(100) {
     override fun transform(target: FTarget) {
         val file = target.file
         val randomLoop =

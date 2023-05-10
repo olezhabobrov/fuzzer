@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.psi.KtImportList
 import org.jetbrains.kotlin.psi.KtPackageDirective
 import kotlin.random.Random
 
-class FilePartitionRandomDivision: Transformation(10) {
+class FilePartitionRandomDivision: Transformation(30) {
     override fun transform(target: FTarget) {
         val projectMessage = splitFile(target.file, target.project)
         if (projectMessage != null)

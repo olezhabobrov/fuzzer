@@ -20,7 +20,7 @@ import kotlin.random.Random
 
 //TODO add field to class
 class AddArgumentToFunction:
-    Transformation(1) {
+    Transformation(30) {
 
 
     override fun transform(target: FTarget) {

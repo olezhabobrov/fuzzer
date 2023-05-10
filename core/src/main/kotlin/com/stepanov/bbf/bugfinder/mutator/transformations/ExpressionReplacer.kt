@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 
 //Class which trying to replace expression of one type by expressions from available context
-class ExpressionReplacer: Transformation(6) {
+class ExpressionReplacer: Transformation(20) {
 
     private val blockListOfTypes = listOf("Nothing", "Nothing?")
     private val generatedFunCalls = mutableMapOf<FunctionDescriptor, KtExpression?>()

@@ -138,7 +138,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 
     private val MAX_PROJECTS_TO_MUTATE = 20
     private val MAX_PROJECTS_TO_COMPILERS = 500
-    private val LIMIT_OF_COMPILED_PROJECTS = 2500
+    private val LIMIT_OF_COMPILED_PROJECTS = 3500
 //    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000
     private var checkedProjects = mutableSetOf<ProjectMessage>()
     private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()

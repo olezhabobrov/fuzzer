@@ -6,7 +6,7 @@ import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.KtTypeReference
 
-class AddNullabilityTransformer: Transformation(2) {
+class AddNullabilityTransformer: Transformation(40) {
 
     override fun transform(target: FTarget) {
         val file = target.file

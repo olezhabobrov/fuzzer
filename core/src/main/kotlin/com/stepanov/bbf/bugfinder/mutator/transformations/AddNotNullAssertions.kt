@@ -6,7 +6,7 @@ import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.KtExpression
 
-class AddNotNullAssertions: Transformation(2) {
+class AddNotNullAssertions: Transformation(50) {
 
     override fun transform(target: FTarget) {
         target.file.psiFile.getAllPSIChildrenOfType<KtExpression>()

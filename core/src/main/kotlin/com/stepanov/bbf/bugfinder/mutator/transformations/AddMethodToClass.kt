@@ -7,7 +7,7 @@ import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
-class AddMethodToClass: Transformation() {
+class AddMethodToClass: Transformation(30) {
     override fun transform(target: FTarget) {
         val file = target.file
         val ctx = file.updateCtx() ?: return

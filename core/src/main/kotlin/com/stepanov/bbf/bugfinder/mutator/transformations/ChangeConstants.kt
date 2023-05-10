@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateEntry
 import java.util.*
 
-class ChangeConstants: Transformation() {
+class ChangeConstants: Transformation(50) {
 
     enum class Type { BOOLEAN, INTEGER, DOUBLE }
 
