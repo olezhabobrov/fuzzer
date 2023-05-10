@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import kotlin.random.Random
 
-class AddRandomComponent: Transformation(3) {
+class AddRandomComponent: Transformation(10) {
 
     override fun transform(target: FTarget) {
         val file = target.file

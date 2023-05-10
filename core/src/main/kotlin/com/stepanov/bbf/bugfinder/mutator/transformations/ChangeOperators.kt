@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.lexer.KtTokens
 import java.util.*
 
-class ChangeOperators: Transformation() {
+class ChangeOperators: Transformation(20) {
 
     override fun transform(target: FTarget) {
         val file = target.file

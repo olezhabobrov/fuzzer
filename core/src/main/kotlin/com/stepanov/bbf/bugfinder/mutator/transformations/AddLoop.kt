@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.isBoolean
 import kotlin.random.Random
 
-class AddLoop: Transformation(3) {
+class AddLoop: Transformation(50) {
 
     override fun transform(target: FTarget) {
         addRandomLoops(target.file, target.project)

@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
 
-class AddExpressionToLoop: Transformation() {
+class AddExpressionToLoop: Transformation(70) {
     override fun transform(target: FTarget) {
         val file = target.file
         val ctx = file.updateCtx() ?: return

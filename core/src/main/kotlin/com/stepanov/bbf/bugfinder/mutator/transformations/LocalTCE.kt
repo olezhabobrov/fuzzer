@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 import kotlin.random.Random
 
-class LocalTCE: Transformation(10) {
+class LocalTCE: Transformation(20) {
 
     private val blockListOfTypes = listOf("Unit", "Nothing", "Nothing?")
     lateinit var usageExamples: MutableList<Triple<KtExpression, String, KotlinType?>>

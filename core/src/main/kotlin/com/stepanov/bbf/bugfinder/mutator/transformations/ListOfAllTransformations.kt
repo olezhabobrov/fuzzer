@@ -7,7 +7,7 @@ object Constants {
     // TODO: all transformation classes should be here
     val allTransformations: WeightedList<TransformationClass> = WeightedList(listOf(
         AddArgumentToFunction::class to 100.0,
-        AddBlockToExpression::class to 100.0,
+        AddBlockToExpression::class to 150.0,
         AddBracketsToExpression::class to 100.0,
 //        AddCallableReference::class,
         AddCasts::class to 100.0,
@@ -45,8 +45,8 @@ object Constants {
 //        ChangeVarToNull::class,
 //        ExpressionObfuscator::class,
         ExpressionReplacer::class to 100.0,
-        FilePartitionRandomDivision::class to 200.0,
-        LocalTCE::class to 200.0,
+        FilePartitionRandomDivision::class to 300.0,
+        LocalTCE::class to 300.0,
 //        ReinitProperties::class,
 //        RemoveRandomLines::class,
 //        ReplaceDotExpression::class,

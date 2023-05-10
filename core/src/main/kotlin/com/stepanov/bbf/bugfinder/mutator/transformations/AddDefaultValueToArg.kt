@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import kotlin.random.Random
 
 
-class AddDefaultValueToArg: Transformation() {
+class AddDefaultValueToArg: Transformation(30) {
 
     //TODO MAYBE INIT AND REINIT SOME PROPERTIES
     override fun transform(target: FTarget) {

@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
 import java.util.*
 
-class AddPossibleModifiers: Transformation(5) {
+class AddPossibleModifiers: Transformation(100) {
 
     override fun transform(target: FTarget) {
         val file = target.file
