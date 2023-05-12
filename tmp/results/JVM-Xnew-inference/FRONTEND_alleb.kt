@@ -1,3 +1,0 @@
-val array =
-node in []!!!! -
-""

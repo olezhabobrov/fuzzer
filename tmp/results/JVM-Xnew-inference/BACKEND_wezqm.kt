@@ -1,2 +1,0 @@
-fun 
- Collection(): Any = (::four)!!

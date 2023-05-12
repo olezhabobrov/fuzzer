@@ -1,4 +1,0 @@
-fun 
-()  {
-equals ?: ::Int
-}

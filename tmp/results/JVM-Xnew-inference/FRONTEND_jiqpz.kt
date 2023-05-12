@@ -1,5 +1,0 @@
-fun 
-(): String
- {
-return +=[]!!
-}

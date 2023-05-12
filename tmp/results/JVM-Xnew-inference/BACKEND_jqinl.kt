@@ -1,1 +1,0 @@
-val i: Int = arrayOf( TODO(),arrayOf(),1  ).iterator().next()

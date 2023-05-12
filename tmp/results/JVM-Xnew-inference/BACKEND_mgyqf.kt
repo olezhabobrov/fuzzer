@@ -1,2 +1,0 @@
-val an: Any
- = (::foo)!!
