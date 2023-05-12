@@ -1,10 +1,15 @@
 package com.stepanov.bbf.bugfinder
 
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
+import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
+import com.stepanov.bbf.bugfinder.manager.BugManager
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.apache.log4j.PropertyConfigurator
 import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -17,9 +22,54 @@ fun main(args: Array<String>) {
         Logger.getLogger("reducerLogger").level = Level.OFF
         Logger.getLogger("transformationManagerLog").level = Level.OFF
     }
-    val file = File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
-    SingleFileBugFinder(file.absolutePath).findBugsInFile()
-    exitProcess(0)
+    val log = Logger.getLogger("bugFinderLogger")
+    var checkedFilesN = JVMCompiler.uniqueProjects.size
+    repeat(100) {
+        println("START FUZZING #$it")
+        val file =
+            File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
+
+
+//        val thread = Thread {
+//            SingleFileBugFinder(file.absolutePath).findBugsInFile()
+//        }
+//
+//        thread.start()
+//
+//        try {
+//            thread.join(TimeUnit.MINUTES.toMillis(3))
+//        } catch (e: InterruptedException) {
+//            // The thread was interrupted before the timeout
+//        }
+//
+//        if (thread.isAlive) {
+//            thread.interrupt()
+//            println("The task was forcefully terminated.")
+//        }
+
+        val threadPool = Executors.newCachedThreadPool()
+        val futureExitCode = threadPool.submit {
+            SingleFileBugFinder(file.absolutePath).findBugsInFile()
+        }
+        try {
+            futureExitCode.get(3, TimeUnit.MINUTES)
+        } catch (e: TimeoutException) {
+            futureExitCode.cancel(true)
+            log.debug("Memory used: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
+        } catch (e: Throwable) {
+            log.debug("Exception caught ${e.stackTraceToString()}")
+        }
+        log.debug("FINISHED MUTATE")
+        log.debug("Memory used: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
+        var newCheckedFIles = JVMCompiler.uniqueProjects.size
+        log.debug("CHECKED FILES = #${newCheckedFIles - checkedFilesN}")
+        checkedFilesN = newCheckedFIles
+    }
+    println("Final memory used info: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
+    println("Bugs found: #${BugManager.foundBugs}")
+    while(true) {
+
+    }
 //    val results = mutableMapOf<String, Pair<Double, Double>>()
 //    var fl = false
 //    for (f in File("/home/zver/IdeaProjects/kotlinBugs/performance/tmp").listFiles()) {

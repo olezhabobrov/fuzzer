@@ -38,7 +38,7 @@ class AddRandomDS : Transformation() {
                 addedPsiElement.replaceThis(psiWhiteSpace)
                 if (!checker.checkCompiling()) {
                     println(file.text)
-                    exitProcess(0)
+                    return
                 }
             } else if (generator is AbstractClassGenerator) successClasses++
             if (successClasses == enoughClasses) break

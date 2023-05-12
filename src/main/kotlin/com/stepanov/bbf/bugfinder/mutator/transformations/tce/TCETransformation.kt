@@ -83,7 +83,7 @@ class TCETransformation : Transformation() {
             replaceNodesOfFile(updateAddedNodes, ctx2)
         }
         log.debug("Final res = ${psi.text}")
-        exitProcess(0)
+        return
         checker.curFile.changePsiFile(psi.text)
         //file = creator.getPSIForText(psi.text)
     }

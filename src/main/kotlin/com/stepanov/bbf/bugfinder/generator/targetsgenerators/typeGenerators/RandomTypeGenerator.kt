@@ -38,7 +38,7 @@ object RandomTypeGenerator {
 
     fun setFileAndContext(file: KtFile, project: Project? = null) {
         RandomTypeGenerator.file = file
-        ctx = PSICreator.analyze(file, project) ?: exitProcess(0)
+        ctx = PSICreator.analyze(file, project) ?: error("Couldn't analyze")
     }
 
     fun setFileAndContext(file: KtFile, ctx: BindingContext) {

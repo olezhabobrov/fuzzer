@@ -42,6 +42,6 @@ object ReflektTester {
                 continue
             }
         }
-        exitProcess(0)
+        return
     }
 }

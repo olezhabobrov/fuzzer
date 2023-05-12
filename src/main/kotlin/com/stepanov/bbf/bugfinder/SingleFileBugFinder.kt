@@ -53,16 +53,15 @@ class SingleFileBugFinder(pathToFile: String) : BugFinder(pathToFile) {
             log.debug("Ignore some of backends")
         }
         if (compilers.any { !it.checkCompiling(project) }) {
-            log.debug("Can not compile $dir")
-            return
+            error("Can not compile $dir")
+
         }
         log.debug("Start to mutate")
         log.debug("BEFORE = $project")
 //            CompilerArgs.isInstrumentationMode = false
         //ProjectPreprocessor.preprocess(project, null)
         if (compilers.any { !it.checkCompiling(project) }) {
-            log.debug("=(")
-            exitProcess(0)
+            error("=(")
         }
         if (CompilerArgs.isGuidedByCoverage) {
             CoverageGuider.init("", project)

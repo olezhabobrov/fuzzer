@@ -123,7 +123,10 @@ object BugManager {
 //        } else bug
 
 
+    var foundBugs = 0
+
     fun saveBug(bug: Bug) {
+        foundBugs++
         try {
             val field = when (bug.type) {
                 BugType.BACKEND -> "Backend"

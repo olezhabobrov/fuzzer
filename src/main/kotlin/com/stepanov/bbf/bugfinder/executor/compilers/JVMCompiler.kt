@@ -105,6 +105,10 @@ open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
     }
 
     private fun executeCompiler(project: Project, args: K2JVMCompilerArguments): KotlincInvokeStatus {
+        if (Thread.interrupted()) {
+            error("current thread is interrupted")
+        }
+        uniqueProjects.add(project.moveAllCodeInOneFile())
         val compiler = K2JVMCompiler()
         val services = Services.EMPTY
         MsgCollector.clear()
@@ -164,6 +168,11 @@ open class JVMCompiler(override val arguments: String = "") : CommonCompiler() {
     //commonExec("java -classpath ${CompilerArgs.jvmStdLibPaths.joinToString(":")} -jar $path", streamType)
 
     private fun analyzeErrorMessage(msg: String): Boolean = !msg.split("\n").any { it.contains(": error:") }
+
+    companion object {
+        val uniqueProjects = mutableSetOf<String>()
+    }
+
 
     private val log = Logger.getLogger("compilerErrorsLog")
 }

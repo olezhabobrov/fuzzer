@@ -112,7 +112,7 @@ class Mutator(val project: Project) {
 //                BugType.PERFORMANCE
 //            )
 //        )
-        exitProcess(0)
+        return
 //        executeMutation(AddTryExpression(), 100)
 //        executeMutation(AddRandomControlStatements(), 100)
 //        executeMutation(AddLoop(), 100)

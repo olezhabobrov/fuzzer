@@ -103,21 +103,22 @@ object CompilerArgs {
     fun getCompilersList(): List<CommonCompiler> {
         val compilers = mutableListOf<CommonCompiler>()
         //Init compilers
-        val compilersConf = BBFProperties.getStringGroupWithoutQuotes("BACKENDS")
-        compilersConf.filter { it.key.contains("JVM") }.forEach {
-            compilers.add(
-                JVMCompiler(
-                    it.value
-                )
-            )
-        }
-        compilersConf.filter { it.key.contains("JS") }.forEach {
-            compilers.add(
-                JSCompiler(
-                    it.value
-                )
-            )
-        }
+//        val compilersConf = BBFProperties.getStringGroupWithoutQuotes("BACKENDS")
+//        compilersConf.filter { it.key.contains("JVM") }.forEach {
+//            compilers.add(
+//                JVMCompiler(
+//                    it.value
+//                )
+//            )
+//        }
+//        compilersConf.filter { it.key.contains("JS") }.forEach {
+//            compilers.add(
+//                JSCompiler(
+//                    it.value
+//                )
+//            )
+//        }
+        compilers.add(JVMCompiler())
         return compilers
     }
 

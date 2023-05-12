@@ -18,7 +18,7 @@ open class TypeAndValueParametersGenerator(val file: KtFile) {
 
     init {
         if (!rtg.isInitialized()) {
-            val ctx = PSICreator.analyze(file) ?: exitProcess(0)
+            val ctx = PSICreator.analyze(file) ?: error("couldn't analyze")
             rtg.setFileAndContext(file, ctx)
         }
     }
