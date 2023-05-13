@@ -4,10 +4,7 @@ import com.stepanov.bbf.bugfinder.executor.compilers.ReflektCompiler
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile
 import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import java.io.File
-import java.util.*
-import kotlin.system.exitProcess
 
 object ReflektTester {
     fun test() {

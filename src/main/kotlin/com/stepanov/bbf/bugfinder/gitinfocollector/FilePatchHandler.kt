@@ -6,7 +6,6 @@ import com.stepanov.bbf.bugfinder.util.getNodesBetweenWhitespaces
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import kotlin.system.exitProcess
 
 class FilePatchHandler(private val patches: List<FilePatch>) {
 

@@ -1,7 +1,6 @@
 package com.stepanov.bbf.bugfinder.util
 
 import java.io.File
-import kotlin.system.exitProcess
 
 object PerformanceResultsProcessor {
 
@@ -25,7 +24,7 @@ object PerformanceResultsProcessor {
         }
         var i = 0
         res.sortedByDescending { it.third }.map { it }.take(50).forEach(::println)
-        exitProcess(0)
+        error("govno govna")
         for (f in res.sortedByDescending { it.third }.map { it.first }.take(50)) {
             val b1 = text.split("\n").indexOfFirst { it.contains(f) }
             val neededText = text.split("\n").drop(b1).takeWhile { !it.contains("-------") }

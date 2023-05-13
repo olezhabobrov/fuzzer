@@ -4,9 +4,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.tryToCreateExp
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class ReplaceDotExpression: Transformation() {
     override fun transform() {

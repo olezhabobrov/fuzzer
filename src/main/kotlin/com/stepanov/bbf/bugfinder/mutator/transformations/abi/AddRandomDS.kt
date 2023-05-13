@@ -1,13 +1,12 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi
 
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
-import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.*
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.AbstractClassGenerator
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.psi.KtFile
-import kotlin.system.exitProcess
 
 class AddRandomDS : Transformation() {
 

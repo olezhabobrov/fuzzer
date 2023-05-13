@@ -10,7 +10,6 @@ import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     //Init log4j
@@ -27,7 +26,7 @@ fun main(args: Array<String>) {
     repeat(100) {
         println("START FUZZING #$it")
         val file =
-            File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random() ?: exitProcess(0)
+            File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith("ifElse1.kt") }?.random()!!
 
 
 //        val thread = Thread {
@@ -57,7 +56,7 @@ fun main(args: Array<String>) {
             futureExitCode.cancel(true)
             log.debug("Memory used: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
         } catch (e: Throwable) {
-            log.debug("Exception caught ${e.stackTraceToString()}")
+            return@repeat
         }
         log.debug("FINISHED MUTATE")
         log.debug("Memory used: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
@@ -166,7 +165,6 @@ fun main(args: Array<String>) {
 //        }
 //    }
 //    println(sumCov.intersect(CoverageGuider.desiredCoverage))
-    exitProcess(0)
 //    val parser = ArgumentParsers.newFor("bbf").build()
 //    parser.addArgument("-r", "--reduce")
 //        .required(false)

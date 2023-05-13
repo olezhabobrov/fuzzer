@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.reflektTester
 
 import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
-import com.stepanov.bbf.bugfinder.mutator.transformations.getPath
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
@@ -14,7 +13,6 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.types.KotlinType
 import kotlin.collections.flatMap
-import kotlin.system.exitProcess
 
 //TODO make it for object
 class QueryGenerator(private val project: Project) {

@@ -1,15 +1,14 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
-import com.stepanov.bbf.bugfinder.mutator.transformations.util.ScopeCalculator
-import com.stepanov.bbf.bugfinder.util.*
+import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
+import com.stepanov.bbf.bugfinder.util.getTrue
+import com.stepanov.bbf.bugfinder.util.replaceThis
 import com.stepanov.bbf.reduktor.parser.PSICreator
-import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class AddExpressionToLoop : Transformation() {
     override fun transform() {

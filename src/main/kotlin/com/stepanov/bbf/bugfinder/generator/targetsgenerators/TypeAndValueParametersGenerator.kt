@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.replace
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
-import kotlin.system.exitProcess
 
 open class TypeAndValueParametersGenerator(val file: KtFile) {
 

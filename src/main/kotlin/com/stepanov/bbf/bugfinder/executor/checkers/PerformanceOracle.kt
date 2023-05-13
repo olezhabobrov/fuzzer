@@ -5,7 +5,6 @@ import com.stepanov.bbf.bugfinder.executor.project.Project
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.system.exitProcess
 
 
 object PerformanceOracle {

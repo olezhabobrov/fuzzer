@@ -1,8 +1,6 @@
 package com.stepanov.bbf.reduktor.manager
 
-import com.intellij.psi.PsiFile
 import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
-import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.reduktor.executor.CompilerTestChecker
 import com.stepanov.bbf.reduktor.passes.*
@@ -11,7 +9,6 @@ import com.stepanov.bbf.reduktor.util.ReduKtorProperties
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
-import kotlin.system.exitProcess
 
 class TransformationManager(val checker: CompilerTestChecker) {
 

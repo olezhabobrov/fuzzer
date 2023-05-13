@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isError
 import java.io.File
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 //TODO make work for projects
 class TCETransformation : Transformation() {

@@ -10,14 +10,13 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerato
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.ScopeCalculator
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.replace
 import org.jetbrains.kotlin.types.typeUtil.asTypeProjection
 import org.jetbrains.kotlin.types.typeUtil.isBoolean
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class AddLoop : Transformation() {
 

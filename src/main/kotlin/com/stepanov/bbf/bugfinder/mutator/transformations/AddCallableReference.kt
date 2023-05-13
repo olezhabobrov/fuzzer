@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class AddCallableReference : Transformation() {
     override fun transform() {

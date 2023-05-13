@@ -1,8 +1,6 @@
 package com.stepanov.bbf.kootstrap
 
 import com.intellij.mock.MockProject
-import com.intellij.openapi.extensions.ExtensionPoint
-import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.util.Disposer
 import com.intellij.pom.PomModel
 import com.intellij.pom.PomTransaction
@@ -10,11 +8,10 @@ import com.intellij.pom.core.impl.PomModelImpl
 import com.intellij.pom.tree.TreeAspect
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.impl.source.codeStyle.IndentHelper
-import com.intellij.psi.impl.source.tree.TreeCopyHandler
-import org.apache.commons.cli.CommandLine
 import com.stepanov.bbf.kootstrap.idea.MockCodeStyleManager
 import com.stepanov.bbf.kootstrap.idea.MockIndentHelper
 import com.stepanov.bbf.kootstrap.util.*
+import org.apache.commons.cli.CommandLine
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoots
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -28,7 +25,6 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.utils.PathUtil
 import java.io.File
-import kotlin.system.exitProcess
 
 /**
  * Created by akhin on 7/5/16.

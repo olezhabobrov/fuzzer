@@ -5,12 +5,10 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerato
 import com.stepanov.bbf.bugfinder.util.addAfterThisWithWhitespace
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.bugfinder.util.getTrue
-import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class AddRandomControlStatements : Transformation() {
     override fun transform() {

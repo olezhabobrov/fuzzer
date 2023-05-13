@@ -1,22 +1,12 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
-
 import com.stepanov.bbf.bugfinder.util.NodeCollector
-import com.stepanov.bbf.bugfinder.util.debugPrint
 import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
-import com.stepanov.bbf.bugfinder.util.getAllParentsWithoutNode
-import com.stepanov.bbf.reduktor.parser.PSICreator
-import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
-import org.apache.log4j.Logger
-import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.psi.KtConstantExpression
-import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import java.io.File
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 
 class ChangeRandomASTNodesFromAnotherTrees : Transformation() {

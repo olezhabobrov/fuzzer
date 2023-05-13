@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.types.replace
 import org.jetbrains.kotlin.types.typeUtil.isAnyOrNullableAny
 import org.jetbrains.kotlin.types.typeUtil.substitute
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 object RandomTypeGenerator {
 

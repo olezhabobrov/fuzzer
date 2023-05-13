@@ -1,12 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.util.getAllChildrenOfCurLevel
-import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfTwoTypes
+import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory
 import com.stepanov.bbf.bugfinder.util.getAllPSIDFSChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator
-import com.stepanov.bbf.reduktor.util.debugPrint
-import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
@@ -16,9 +13,6 @@ import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.types.KotlinType
 import java.util.*
-import kotlin.random.Random
-import kotlin.system.exitProcess
-import com.stepanov.bbf.bugfinder.mutator.transformations.Factory.psiFactory as psiFactory
 
 
 typealias UsageInfo = Triple<KotlinType, Int, MutableList<KtNameReferenceExpression>>
@@ -76,7 +70,7 @@ class SkeletonEnumeration : Transformation() {
             value1.third.replaceAll { if (it == newNode) backUp else it }
             newNode.replaceThis(backUp)
             if (!checker.checkCompiling()) {
-                exitProcess(1)
+                error("spasiba danil")
             }
         }
         return true

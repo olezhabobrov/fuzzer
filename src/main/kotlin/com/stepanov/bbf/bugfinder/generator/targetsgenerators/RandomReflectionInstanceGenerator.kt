@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.serialization.deserialization.descriptors.Deserializ
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeProjection
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 //TODO finish it'
 class RandomReflectionInstanceGenerator(

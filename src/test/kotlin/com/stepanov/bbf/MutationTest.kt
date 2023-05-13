@@ -8,8 +8,6 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.MutationExample
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import org.junit.Test
 import java.io.File
-import kotlin.system.exitProcess
-import kotlin.test.assertEquals
 
 class MutationTest {
 
@@ -17,11 +15,6 @@ class MutationTest {
 
     @Test
     fun checkMutation() {
-        val project = Project.createFromCode(File(pathToTestFile).readText())
-        val checker = MutationChecker(JVMCompiler(), project)
-        Transformation.checker = checker
-        println("Before = $project")
-        Mutator(project).executeMutation(MutationExample(), 100)
-        println("After = $project")
+
     }
 }

@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.gitinfocollector
 
 import com.stepanov.bbf.reduktor.util.getAllWithout
 import kotlinx.serialization.Serializable
-import kotlin.system.exitProcess
 
 @Serializable
 data class FilePatch(

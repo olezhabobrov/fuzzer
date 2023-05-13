@@ -6,7 +6,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import kotlin.system.exitProcess
 
 class GitRepo(orgName: String, projectName: String) {
     private val client = OkHttpClient()

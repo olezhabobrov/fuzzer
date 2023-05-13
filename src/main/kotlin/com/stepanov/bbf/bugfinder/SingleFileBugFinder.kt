@@ -2,18 +2,18 @@ package com.stepanov.bbf.bugfinder
 
 import com.stepanov.bbf.bugfinder.executor.CompilerArgs
 import com.stepanov.bbf.bugfinder.executor.checkers.CoverageGuider
-import com.stepanov.bbf.bugfinder.executor.checkers.MutationChecker
 import com.stepanov.bbf.bugfinder.executor.checkers.PerformanceOracle
-import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.executor.compilers.KJCompiler
 import com.stepanov.bbf.bugfinder.executor.project.LANGUAGE
 import com.stepanov.bbf.bugfinder.executor.project.Project
-import com.stepanov.bbf.bugfinder.util.*
+import com.stepanov.bbf.bugfinder.util.BBFProperties
+import com.stepanov.bbf.bugfinder.util.addImport
+import com.stepanov.bbf.bugfinder.util.noBoxFunModifying
+import com.stepanov.bbf.bugfinder.util.noLastLambdaInFinallyBlock
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import coverage.MyMethodBasedCoverage
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
-import kotlin.system.exitProcess
 
 class SingleFileBugFinder(pathToFile: String) : BugFinder(pathToFile) {
 
@@ -73,7 +73,6 @@ class SingleFileBugFinder(pathToFile: String) : BugFinder(pathToFile) {
         }
         //noLastLambdaInFinallyBlock temporary for avoiding duplicates bugs
         mutate(project, project.files.first(), compilers, listOf(::noBoxFunModifying, ::noLastLambdaInFinallyBlock))
-        exitProcess(0)
 //            //Save mutated file
 //            if (CompilerArgs.shouldSaveMutatedFiles) {
 //                val pathToNewTests = CompilerArgs.dirForNewTests

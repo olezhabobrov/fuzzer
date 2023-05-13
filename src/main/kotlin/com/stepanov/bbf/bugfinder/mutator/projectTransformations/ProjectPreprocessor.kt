@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.psi.KtReturnExpression
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import java.io.File
-import kotlin.system.exitProcess
 
 object ProjectPreprocessor {
 
@@ -84,7 +83,7 @@ object ProjectPreprocessor {
                 preprocess(proj1, checker)
                 if (!comp.checkCompiling(proj1)) {
                     println(proj1)
-                    exitProcess(0)
+                    return
                 }
                 File("/home/stepanov/Kotlin/bbfgradle/tmp/abiTests/${f.name}").writeText(proj1.toString())
             } else {

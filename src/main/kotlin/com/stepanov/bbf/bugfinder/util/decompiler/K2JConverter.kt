@@ -4,11 +4,9 @@ import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiExpressionStatement
-import com.intellij.psi.meta.PsiMetaData
 import com.stepanov.bbf.bugfinder.executor.checkers.MutationChecker
 import com.stepanov.bbf.bugfinder.executor.compilers.JVMCompiler
 import com.stepanov.bbf.bugfinder.executor.project.BBFFile
-import com.stepanov.bbf.bugfinder.executor.project.Project
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.util.addAtTheEnd
@@ -16,13 +14,10 @@ import com.stepanov.bbf.bugfinder.util.addImport
 import com.stepanov.bbf.bugfinder.util.getAllChildrenNodes
 import com.stepanov.bbf.bugfinder.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.parser.PSICreator
-import com.stepanov.bbf.reduktor.util.getAllChildren
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler
 import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 import java.util.zip.ZipFile
-import kotlin.system.exitProcess
 
 object K2JConverter {
 

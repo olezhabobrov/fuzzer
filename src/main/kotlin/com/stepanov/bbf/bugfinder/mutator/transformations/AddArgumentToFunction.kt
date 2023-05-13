@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getFunctionResolvedCallWithAs
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.source.PsiSourceElement
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 //TODO add field to class
 class AddArgumentToFunction : Transformation() {

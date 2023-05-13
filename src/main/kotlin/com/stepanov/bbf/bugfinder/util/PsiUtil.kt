@@ -1,7 +1,9 @@
 package com.stepanov.bbf.bugfinder.util
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.*
+import com.intellij.psi.PsiComment
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.util.IncorrectOperationException
 import com.stepanov.bbf.bugfinder.mutator.transformations.Factory
 import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
@@ -12,7 +14,6 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.types.KotlinType
-import kotlin.system.exitProcess
 
 fun PsiFile.getNodesBetweenWhitespaces(begin: Int, end: Int): List<PsiElement> {
     val resList = mutableListOf<PsiElement>()

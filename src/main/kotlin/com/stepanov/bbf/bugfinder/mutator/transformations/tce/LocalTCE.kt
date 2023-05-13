@@ -2,10 +2,12 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.tce
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
-import com.stepanov.bbf.bugfinder.util.*
+import com.stepanov.bbf.bugfinder.util.addAfterThisWithWhitespace
+import com.stepanov.bbf.bugfinder.util.flatMap
+import com.stepanov.bbf.bugfinder.util.getAvailableValuesToInsertIn
+import com.stepanov.bbf.bugfinder.util.getTrue
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.psi.*
@@ -16,7 +18,6 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.isUnit
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class LocalTCE : Transformation() {
 

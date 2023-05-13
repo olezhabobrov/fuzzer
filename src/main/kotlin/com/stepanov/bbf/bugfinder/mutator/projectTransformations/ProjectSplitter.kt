@@ -5,7 +5,6 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.util.addAtTheEnd
 import com.stepanov.bbf.reduktor.util.getAllChildren
 import org.jetbrains.kotlin.psi.psiUtil.isTopLevelKtOrJavaMember
-import kotlin.system.exitProcess
 
 
 //TODO finish
@@ -29,7 +28,6 @@ class ProjectSplitter : Transformation() {
             newFiles.random().addAtTheEnd(randomEl)
             topLevelObjects.remove(randomEl)
         }
-        exitProcess(0)
     }
 
     val NUM_OF_FILES = 3
