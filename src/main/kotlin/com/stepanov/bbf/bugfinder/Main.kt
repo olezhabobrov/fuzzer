@@ -24,9 +24,9 @@ fun main(args: Array<String>) {
     val log = Logger.getLogger("bugFinderLogger")
     var checkedFilesN = JVMCompiler.uniqueProjects.size
     repeat(100) {
-        println("START FUZZING #$it")
         val file =
-            File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith("ifElse1.kt") }?.random()!!
+            File(CompilerArgs.baseDir).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!
+        log.debug("START FUZZING #$it")
 
 
 //        val thread = Thread {
@@ -51,14 +51,15 @@ fun main(args: Array<String>) {
             SingleFileBugFinder(file.absolutePath).findBugsInFile()
         }
         try {
-            futureExitCode.get(3, TimeUnit.MINUTES)
+            futureExitCode.get(10, TimeUnit.MINUTES)
         } catch (e: TimeoutException) {
             futureExitCode.cancel(true)
             log.debug("Memory used: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
         } catch (e: Throwable) {
             return@repeat
         }
-        log.debug("FINISHED MUTATE")
+        println("File=${file.name}")
+        log.debug("FINISHED MUTATE ${file.name}")
         log.debug("Memory used: ${Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()}")
         var newCheckedFIles = JVMCompiler.uniqueProjects.size
         log.debug("CHECKED FILES = #${newCheckedFIles - checkedFilesN}")
