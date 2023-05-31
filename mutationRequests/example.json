@@ -1,0 +1,12 @@
+{
+    "compilers": [
+        "NativeCompiler"
+    ],
+    "allowedTransformations": {
+        "type": "All"
+    },
+    "mutationTarget": {
+        "type": "random"
+    },
+    "repeatInf": true
+}

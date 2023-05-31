@@ -1,0 +1,14 @@
+{
+    "compilers": [
+        "NativeCompiler"
+    ],
+    "allowedTransformations": {
+        "type": "Some",
+        "transformationsList": ["AddFunInvocations"]
+    },
+    "mutationTarget": {
+        "type": "name",
+        "name": "tmp/arrays/simpleNative.kt"
+    },
+    "mutationCount": 15
+}
