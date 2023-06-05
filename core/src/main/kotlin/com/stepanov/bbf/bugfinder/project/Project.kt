@@ -48,6 +48,12 @@ class Project(
         }
     }
 
+    val mainFile
+        get() = files.first { !it.isKlib }
+
+    val klib
+        get() = files.first { it.isKlib }
+
     fun createFilesFromProjectMessage(projectMessage: ProjectMessage) {
         files = projectMessage.files.map {
             val f = psiFactory.createFile(it.name, it.text)

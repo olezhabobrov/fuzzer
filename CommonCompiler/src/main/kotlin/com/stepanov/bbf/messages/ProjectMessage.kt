@@ -8,6 +8,12 @@ data class ProjectMessage(
     val dir: String = "projectTmp/",
 ) {
 
+    val mainFile
+        get() = files.first { !it.isKlib }
+
+    val klib
+        get() = files.first { it.isKlib }
+
     override fun hashCode(): Int {
         return files.sumOf { (_, text) ->
             text.hashCode()

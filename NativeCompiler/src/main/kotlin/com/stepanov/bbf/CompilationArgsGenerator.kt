@@ -28,6 +28,7 @@ object CompilationArgsGenerator {
         }
         results.add(args)
         results.addAll(partialLinkage(results))
+        results.addAll(k2(results))
         return results
     }
 
@@ -44,6 +45,9 @@ object CompilationArgsGenerator {
         return argsList.map { it.copy().addPartialLinkage() }
     }
 
+    private fun k2(argsList: List<CompilationArgs>): List<CompilationArgs> {
+        return argsList.map { it.copy().useK2() }
+    }
     private fun klib(argsList: List<CompilationArgs>): List<CompilationArgs> {
         return argsList.map { it.copy().makeKlib() }
     }

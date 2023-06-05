@@ -117,7 +117,15 @@ sealed class SingleSourceTarget: MutationTarget() {
     override fun createProjectMessage(): ProjectMessage {
         if (this is RandomFileTarget)
             this.updateRandomFile()
+        if (this is KlibTarget)
+            this.updateRandomFile()
         writeFile()
+        if (this is KlibTarget)
+            return ProjectMessage(listOf(FileData(simpleFileName(), getSourceCode(), isKlib = true), FileData("main.kt", """
+                fun main() {
+                
+                }
+            """.trimIndent())))
         return ProjectMessage(listOf(FileData(simpleFileName(), getSourceCode())))
     }
 
@@ -131,6 +139,30 @@ sealed class SingleSourceTarget: MutationTarget() {
         val fileName = getLocalName()
         File(fileName.substringBeforeLast("/")).mkdir()
             File(fileName).writeText(getSourceCode())
+    }
+}
+
+@Serializable
+@SerialName("klib")
+class KlibTarget: SingleSourceTarget() {
+    private var tmpFileName = randomTmpFileName()
+
+    private val code
+        get() = File("tmp/arrays/$tmpFileName").readText()
+    private val name
+        get() = "projectTmp/$tmpFileName"
+
+    override fun getLocalName(): String = name
+
+    override fun getSourceCode(): String = code
+
+
+    private fun randomTmpFileName() =
+        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
+
+
+    fun updateRandomFile() {
+        tmpFileName = randomTmpFileName()
     }
 }
 

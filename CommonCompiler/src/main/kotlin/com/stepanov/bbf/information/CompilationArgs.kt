@@ -30,7 +30,7 @@ data class CompilationArgs(
         if (isXPartialLinkage)
             result.add("-Xpartial-linkage")
         if (isK2)
-            error("Kotlin/Native doesn't support K2")
+            result.addAll(listOf("-language-version", "2.0"))
         if (outputName.isNotBlank())
             result.addAll(listOf("-o", outputName))
         result.addAll(files)
@@ -41,6 +41,9 @@ data class CompilationArgs(
         isXPartialLinkage = true
     }
 
+    fun useK2(): CompilationArgs = also {
+        isK2 = true
+    }
 
     fun addKlib(addedKlib: CompilationArgs) = also {
         klib = addedKlib

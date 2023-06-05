@@ -91,7 +91,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         log.debug("Sending ${projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(projects, mutationResult.mutationStat)
+                CompilationRequest(projects, mutationResult.mutationStat, true)
             )
         }
     }
