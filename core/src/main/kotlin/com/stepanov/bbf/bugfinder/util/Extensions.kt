@@ -362,6 +362,9 @@ fun getTrueWithProbability(probability: Int): Boolean = Random().nextInt(100) in
 fun Random.getRandomVariableName(length: Int = 5): String =
     this.nextString(('a'..'z').asCharSequence(), length, length + 1)
 
+fun Random.getRandomClassName(): String =
+    getRandomVariableName().capitalize()
+
 fun kotlin.random.Random.getRandomVariableName(length: Int = 5): String =
     Random().nextString(('a'..'z').asCharSequence(), length, length + 1)
 

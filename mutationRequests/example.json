@@ -3,10 +3,11 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "All"
+        "type": "Some",
+        "transformationsList": ["AddNewEntity"]
     },
     "mutationTarget": {
-        "type": "random"
+        "type": "klib"
     },
     "repeatInf": true
 }

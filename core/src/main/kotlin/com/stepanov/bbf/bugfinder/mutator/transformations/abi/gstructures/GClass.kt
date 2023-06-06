@@ -76,6 +76,10 @@ data class GClass(
             null
         }
 
+    fun toPsiThrowable(): PsiElement =
+        if (isObject()) psiFactory.createObject(toString())
+        else psiFactory.createClass(toString())
+
     fun isObject() = classWord == "object"
     fun isFunInterface() = isInterface() && modifiers.contains("fun")
     fun isInner() = modifiers.contains("inner")

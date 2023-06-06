@@ -9,14 +9,14 @@ import org.apache.log4j.Logger
 abstract class Transformation(
     private val amountOfTransformations: Int = 1
 ) {
-    protected abstract fun transform(target: FTarget)
+    abstract fun transform(target: FTarget)
 
     fun execTransformations(projectMessage: ProjectMessage): Set<ProjectMessage> {
         val result = mutableSetOf<ProjectMessage>()
         repeat(amountOfTransformations) {
             val project = Project(projectMessage)
             try {
-            val file = project.files.random()
+            val file = project.klib
             if (file.text.lines().size > MAX_LINES) {
                 log.debug("File is too big, returning back")
                 return@repeat

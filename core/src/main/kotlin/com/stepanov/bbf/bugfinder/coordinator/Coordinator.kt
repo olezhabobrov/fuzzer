@@ -27,10 +27,10 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         log.debug("Coordinator deployed with mutation problem:")
         val projectToCompile = mutationProblem.getProjectMessage()
         log.debug(json.encodeToString(mutationProblem))
-//        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
-        sendProjectToCompilers(MutationResult(
-            setOf(projectToCompile),
-            MutationStat.emptyStat))
+        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
+//        sendProjectToCompilers(MutationResult(
+//            setOf(projectToCompile),
+//            MutationStat.emptyStat))
     }
 
     private fun establishConsumers() {

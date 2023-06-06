@@ -145,7 +145,7 @@ sealed class SingleSourceTarget: MutationTarget() {
 @Serializable
 @SerialName("klib")
 class KlibTarget: SingleSourceTarget() {
-    private var tmpFileName = randomTmpFileName()
+    private var tmpFileName = "experiment.kt" //randomTmpFileName()
 
     private val code
         get() = File("tmp/arrays/$tmpFileName").readText()
@@ -158,7 +158,7 @@ class KlibTarget: SingleSourceTarget() {
 
 
     private fun randomTmpFileName() =
-        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
+        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith("experiment.kt") }?.random()!!.name
 
 
     fun updateRandomFile() {

@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.server.messages
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
+import com.stepanov.bbf.bugfinder.mutator.transformations.klib.BinaryCompatibleTransformation
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -15,7 +16,7 @@ object TransformationClassSerializer: KSerializer<TransformationClass> {
 
     override fun deserialize(decoder: Decoder): TransformationClass {
         val simpleName = decoder.decodeString()
-        val transformationPath = Transformation::class.qualifiedName!!
+        val transformationPath = BinaryCompatibleTransformation::class.qualifiedName!!
         val qualifiedName = transformationPath.substring(0, transformationPath.lastIndexOf('.') + 1) + simpleName
         try {
             return TransformationClass(Class.forName(qualifiedName).kotlin as KClass<out Transformation>)
