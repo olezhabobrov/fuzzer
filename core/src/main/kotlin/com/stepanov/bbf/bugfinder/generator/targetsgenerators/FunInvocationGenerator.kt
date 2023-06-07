@@ -4,8 +4,7 @@ import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
 import com.stepanov.bbf.bugfinder.project.BBFFile
-import com.stepanov.bbf.bugfinder.util.findClassByName
-import com.stepanov.bbf.bugfinder.util.getTrue
+import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
@@ -79,8 +78,14 @@ internal class FunInvocationGenerator(file: BBFFile) :
         if (funInvocation == null) {
             return ""
         }
+        val returnType = func.getReturnType(file.ctx!!)
+        val property =
+            if (returnType != null && returnType.name != "Unit")
+                "val ${Random.getRandomVariableName()}: ${returnType.name} = "
+            else
+                ""
         if (outerRef == null) {
-            return funInvocation.text
+            return property + funInvocation.text
         }
         val clazz = file.psiFile.findClassByName(outerRef.text)
         if (clazz == null) {
@@ -90,7 +95,8 @@ internal class FunInvocationGenerator(file: BBFFile) :
         if (instance == null) {
             return ""
         }
-        return "${instance.text}.${funInvocation.text}"
+
+        return "$property${instance.text}.${funInvocation.text}"
     }
 
     fun generateTopLevelFunInvocation(
