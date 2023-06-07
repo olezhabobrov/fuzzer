@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
@@ -20,30 +21,19 @@ object Invocator {
         val ctx = klibFile.ctx
         val expressions = klibFile.psiFile.getAllPSIChildrenOfType<KtCallExpression>()
         val functions = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
-        val classes = klibFile.psiFile.getAllPSIChildrenOfType<KtClass>()
+        val classes = klibFile.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+        val result = RandomInstancesGenerator(klibFile).generateInstancesOfClass(classes[4])
         val clazz = classes[0]
-        val constructor = clazz.createPrimaryConstructorIfAbsent()
-        val parameterList = clazz.createPrimaryConstructorParameterListIfAbsent()
+//        val constructor = clazz.createPrimaryConstructorIfAbsent()
+//        val parameterList = clazz.createPrimaryConstructorParameterListIfAbsent()
         TODO()
     }
 
     fun invokeAllClasses(klib: BBFFile, mainFile: BBFFile) {
-        klib.psiFile.getAllPSIChildrenOfType<KtClass>().forEach {
-            invokeAllClassConstructors(it)
+        val result = klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().flatMap {  clazz ->
+            RandomInstancesGenerator(klib).generateInstancesOfClass(clazz)
         }
-    }
-
-    fun invokeAllClassConstructors(clazz: KtClass): List<String> =
-        clazz.allConstructors
-            .filter { it.isPublic }
-            .map { invokeClassConstructor(clazz, it) }
-
-    fun invokeClassConstructor(clazz: KtClass, constructor: KtConstructor<*>): String {
-        constructor.valueParameters.forEach { parameter ->
-            val type = parameter.typeReference
-
-        }
-
         TODO()
     }
+
 }

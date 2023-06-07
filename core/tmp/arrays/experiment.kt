@@ -1,6 +1,13 @@
-class FooClass(val x: Int) {
-    class FooInner {
+class FooClass(val x: FooClass2) {
 
+    private constructor(x: Int)
+
+    constructor(y: String)
+
+    constructor(y: String, x: FooClass2)
+
+    inner class FooInner {
+        constructor(x: FooClass)
     }
 
     fun fooFunc(val x: FooClass2) {

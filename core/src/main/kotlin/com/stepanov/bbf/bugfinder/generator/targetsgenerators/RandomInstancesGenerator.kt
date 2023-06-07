@@ -18,8 +18,6 @@ import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.descriptors.impl.EnumEntrySyntheticClassDescriptor
 import org.jetbrains.kotlin.ir.expressions.typeParametersCount
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.descriptorUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.types.*
@@ -35,7 +33,10 @@ open class RandomInstancesGenerator(private val file: BBFFile) {
     }
 
     fun generateRandomInstanceOfClass(ktClass: KtClassOrObject) =
-        classInstanceGenerator.generateRandomInstanceOfUserClass(ktClass)
+        classInstanceGenerator.generateInstancesOfUserClass(ktClass).randomOrNull()
+
+    fun generateInstancesOfClass(ktClass: KtClassOrObject) =
+        classInstanceGenerator.generateInstancesOfUserClass(ktClass)
 
     fun generateValueOfTypeAsExpression(
         t: KotlinType,

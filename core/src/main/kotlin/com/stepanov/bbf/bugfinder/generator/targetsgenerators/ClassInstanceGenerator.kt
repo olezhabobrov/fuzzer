@@ -63,13 +63,18 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
     fun generateRandomInstanceOfUserClass(
         klOrObjType: KotlinType,
         depth: Int = 0
-    ): Pair<PsiElement?, KotlinType?>? {
-//        log.debug("Generate instance of class $klOrObjType")
-        if (depth > MAX_DEPTH) return null
-        val classDescriptor = klOrObjType.constructor.declarationDescriptor as? ClassDescriptor ?: return null
-        if (classDescriptor.isFunInterface()) return generateFunInterfaceInstance(classDescriptor, depth)
-        if (classDescriptor.name.asString().trim().isEmpty()) return null
-        if (classDescriptor.parentsWithSelf.any { it is FunctionDescriptor }) return null
+    ): Pair<PsiElement?, KotlinType?>? =
+        generateInstancesOfUserClass(klOrObjType, depth).randomOrNull()
+
+    fun generateInstancesOfUserClass(
+        klOrObjType: KotlinType,
+        depth: Int = 0
+    ): List<Pair<PsiElement?, KotlinType?>?> {
+        if (depth > MAX_DEPTH) return listOf()
+        val classDescriptor = klOrObjType.constructor.declarationDescriptor as? ClassDescriptor ?: return listOf()
+        if (classDescriptor.isFunInterface()) return listOf(generateFunInterfaceInstance(classDescriptor, depth))
+        if (classDescriptor.name.asString().trim().isEmpty()) return listOf()
+        if (classDescriptor.parentsWithSelf.any { it is FunctionDescriptor }) return listOf()
 //        log.debug("generating klass ${classDescriptor.name} depth = $depth")
         if (classDescriptor.kind == ClassKind.OBJECT) {
             val fullName =
@@ -77,69 +82,70 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
                     .filterIsInstance<ClassDescriptor>()
                     .reversed()
                     .joinToString(".") { it.name.asString() }
-            return psiFactory(file).createExpressionIfPossible(fullName) to klOrObjType
+            return listOf(psiFactory(file).createExpressionIfPossible(fullName) to klOrObjType)
         }
-        val psiClassOrObj = classDescriptor.findPsi() as? KtClassOrObject ?: return null
+        val psiClassOrObj = classDescriptor.findPsi() as? KtClassOrObject ?: return listOf()
         if (classDescriptor.kind == ClassKind.ENUM_CLASS || classDescriptor.kind == ClassKind.ENUM_ENTRY) {
-            return generateEnumInstance(psiClassOrObj) to klOrObjType
+            return listOf(generateEnumInstance(psiClassOrObj) to klOrObjType)
         }
         if (classDescriptor.constructors.isNotEmpty() &&
             classDescriptor.constructors.all { !it.visibility.isPublicAPI }
-        ) return generateImplementation(
+        ) return listOf(generateImplementation(
             klOrObjType,
             depth
-        )
+        ))
         //return null
-        if (classDescriptor.kind == ClassKind.ANNOTATION_CLASS) return null
+        if (classDescriptor.kind == ClassKind.ANNOTATION_CLASS) return listOf()
         if (psiClassOrObj.parents.any { it is KtClassOrObject }) {
-            return generateInstanceOfLocalClass(classDescriptor, psiClassOrObj, depth)
+            return listOf(generateInstanceOfLocalClass(classDescriptor, psiClassOrObj, depth))
         }
         if (psiClassOrObj is KtObjectDeclaration) {
             val expr = psiFactory(file).createExpression(psiClassOrObj.name!!)
-            return expr to klOrObjType
+            return listOf(expr to klOrObjType)
         }
-        if (klOrObjType.isInterface() || klOrObjType.isAbstractClass() || classDescriptor.isSealed()) return generateImplementation(
+        if (klOrObjType.isInterface() || klOrObjType.isAbstractClass() || classDescriptor.isSealed())
+            return listOf(generateImplementation(
             klOrObjType,
             depth
-        )
-        return unsafeGenerateRandomInstanceOfClass(klOrObjType, depth)
+        ))
+        return unsafeGenerateInstancesOfClass(klOrObjType, depth)
     }
 
     @Deprecated("Use KotlinType")
-    fun generateRandomInstanceOfUserClass(
+    fun generateInstancesOfUserClass(
         klOrObj: KtClassOrObject,
         depth: Int = 0
-    ): Pair<PsiElement?, KotlinType?>? {
-        if (depth > MAX_DEPTH) return null
+    ): List<Pair<PsiElement?, KotlinType?>?> {
+        if (depth > MAX_DEPTH) return listOf()
 //        log.debug("generating klass ${klOrObj.name} depth = $depth text = ${klOrObj.text}")
         if (klOrObj.name == null
             || klOrObj.allConstructors.let { it.isNotEmpty() && it.all { it.isPrivate() } }
             || klOrObj.isAnnotation()
             || klOrObj.hasModifier(KtTokens.SEALED_KEYWORD)
-        ) return null
+        ) return listOf()
         if (klOrObj.hasModifier(KtTokens.ENUM_KEYWORD) || klOrObj is KtEnumEntry) {
-            return generateEnumInstance(klOrObj) to null
+            return listOf(generateEnumInstance(klOrObj) to null)
         }
         val classType =
             (klOrObj.getDeclarationDescriptorIncludingConstructors(file.ctx!!) as? ClassDescriptor)?.defaultType
                 ?: rtg.generateKTypeForClass(klOrObj)
-                ?: return null
+                ?: return listOf()
         if (klOrObj.parents.any { it is KtClassOrObject }) {
-            return generateInstanceOfLocalClass(
+            return listOf(generateInstanceOfLocalClass(
                 classType.constructor.declarationDescriptor as ClassDescriptor,
                 klOrObj,
                 depth
-            )
+            ))
         }
         if (klOrObj is KtObjectDeclaration) {
             val expr = psiFactory(file).createExpression(klOrObj.name!!)
-            return expr to classType
+            return listOf(expr to classType)
         }
-        if (classType.isInterface() || classType.isAbstractClass()) return generateImplementation(
+        if (classType.isInterface() || classType.isAbstractClass()) return listOf(generateImplementation(
             classType,
             depth
-        )
-        return unsafeGenerateRandomInstanceOfClass(classType, depth)
+        ))
+        return unsafeGenerateInstancesOfClass(classType, depth)
     }
 
     private fun generateEnumInstance(klOrObj: KtClassOrObject): KtExpression? {
@@ -265,11 +271,23 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         }
     }
 
-    private fun unsafeGenerateRandomInstanceOfClass(classType: KotlinType, depth: Int): Pair<PsiElement?, KotlinType>? {
+    private fun unsafeGenerateRandomInstanceOfClass(classType: KotlinType, depth: Int): Pair<PsiElement?, KotlinType>? =
+        unsafeGenerateInstancesOfClass(classType, depth).randomOrNull()
+
+    private fun unsafeGenerateInstancesOfClass(classType: KotlinType, depth: Int): List<Pair<PsiElement?, KotlinType>?> {
         val classDescriptor =
-            classType.constructor.declarationDescriptor as? ClassDescriptor ?: return null
-        val constructor =
-            classDescriptor.constructors.filter { it.visibility.isPublicAPI }.randomOrNull() ?: return null
+            classType.constructor.declarationDescriptor as? ClassDescriptor ?: return listOf()
+        val constructors =
+            classDescriptor.constructors.filter { it.visibility.isPublicAPI }
+        if (constructors.isEmpty()) {
+            return listOf()
+        }
+        return constructors.map { constructor ->
+            generateWithConstructor(constructor, classType, depth)
+        }.filter { it != null }
+    }
+
+    private fun generateWithConstructor(constructor: ClassConstructorDescriptor, classType: KotlinType, depth: Int): Pair<PsiElement?, KotlinType>? {
         var newTypeParameters =
             if (classType.arguments.all { !it.type.isTypeParameter() }) {
                 classType.arguments.map { it.type }
