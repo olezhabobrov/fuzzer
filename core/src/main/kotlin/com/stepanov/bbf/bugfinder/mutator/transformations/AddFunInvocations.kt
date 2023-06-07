@@ -33,12 +33,12 @@ class AddFunInvocations:
              it.text.contains("\n") && it.getParentOfType<KtBlockExpression>(true) != null
         }
         if (whitespaces.isEmpty()) return
-        val randomPlace = whitespaces.random()
+        val randomPlace = whitespaces[1]
         val funcs =
             (psi.getAllPSIChildrenOfType<KtNamedFunction>() + convertCallExpressonsIntoFuncs(psi, ctx))
                 .map { it to it.myReceiverTypeReference?.text }
         if (funcs.isEmpty()) return
-        val randomFunc = funcs.random()
+        val randomFunc = funcs[1]
         //Avoid recursion
         if (randomPlace.parents.any { it is KtNamedFunction && it.name == randomFunc.first.name }) {
 //            log.debug("AVOIDING RECURSION func: ${randomFunc.first.name}")
