@@ -38,12 +38,12 @@ class AddFunInvocations:
             (psi.getAllPSIChildrenOfType<KtNamedFunction>() + convertCallExpressonsIntoFuncs(psi, ctx))
                 .map { it to it.myReceiverTypeReference?.text }
         if (funcs.isEmpty()) return
-        val randomFunc = funcs[1]
+        val randomFunc = funcs[0]
         //Avoid recursion
-        if (randomPlace.parents.any { it is KtNamedFunction && it.name == randomFunc.first.name }) {
+//        if (randomPlace.parents.any { it is KtNamedFunction && it.name == randomFunc.first.name }) {
 //            log.debug("AVOIDING RECURSION func: ${randomFunc.first.name}")
-            return
-        }
+//            return
+//        }
         val allAvailableVars = getSlice(randomPlace)
             .map { Triple(it, it.text, it.ktGetType(ctx)) }
             .filter { it.third != null }

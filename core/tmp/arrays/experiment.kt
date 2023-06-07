@@ -15,14 +15,14 @@ class FooClass(val x: FooClass2) {
     }
 }
 
+fun blablabla(x: Int, y: FooClass2): FooInterface {}
+
 class FooClass2(val x : Int)
 
 interface FooInterface
 
-object FooObject
+object FooObject {
+    fun fooObjecvtFun(): Int {
 
-fun main() {
-    FooClass2(10)
-    val a = FooClass2(-1)
-    var b = FooClass2(123456)
+    }
 }

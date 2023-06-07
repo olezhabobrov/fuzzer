@@ -4,6 +4,7 @@ import com.intellij.psi.*
 import com.intellij.util.IncorrectOperationException
 import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
@@ -43,6 +44,9 @@ fun KtNamedFunction.isUnit() = this.typeReference == null && this.hasBlockBody()
 fun KtPsiFactory.createNonEmptyClassBody(body: String): KtClassBody {
     return createClass("class A(){\n$body\n}").body!!
 }
+
+fun KtFile.findClassByName(name: String): KtClassOrObject? =
+    this.getAllPSIChildrenOfType<KtClassOrObject>().firstOrNull { it.name == name }
 
 
 fun PsiElement.addAfterThisWithWhitespace(psiElement: PsiElement, whiteSpace: String): PsiElement {

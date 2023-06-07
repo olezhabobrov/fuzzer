@@ -4,7 +4,9 @@ import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor
 import com.stepanov.bbf.bugfinder.mutator.MutationProcessor.psiFactory
 import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.bugfinder.util.findClassByName
 import com.stepanov.bbf.bugfinder.util.getTrue
+import com.stepanov.bbf.reduktor.parser.PSICreator
 import org.apache.log4j.Logger
 import org.jetbrains.kotlin.cfg.getDeclarationDescriptorIncludingConstructors
 import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
@@ -13,6 +15,7 @@ import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.load.java.descriptors.JavaClassConstructorDescriptor
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 import org.jetbrains.kotlin.resolve.calls.components.isVararg
@@ -69,12 +72,33 @@ internal class FunInvocationGenerator(file: BBFFile) :
         }
     }
 
+    fun invokeFunction(func: KtNamedFunction,
+                       file: BBFFile): String {
+        val outerRef = func.myReceiverTypeReference
+        val funInvocation = generateTopLevelFunInvocation(func, file)
+        if (funInvocation == null) {
+            return ""
+        }
+        if (outerRef == null) {
+            return funInvocation.text
+        }
+        val clazz = file.psiFile.findClassByName(outerRef.text)
+        if (clazz == null) {
+            return ""
+        }
+        val instance = RandomInstancesGenerator(file).generateRandomInstanceOfClass(clazz)?.first
+        if (instance == null) {
+            return ""
+        }
+        return "${instance.text}.${funInvocation.text}"
+    }
+
     fun generateTopLevelFunInvocation(
         func: KtNamedFunction,
-        ctx: BindingContext,
+        file: BBFFile,
         depth: Int = 0
     ): KtCallExpression? {
-        val descriptor = func.getDeclarationDescriptorIncludingConstructors(ctx) as? FunctionDescriptor ?: return null
+        val descriptor = func.getDeclarationDescriptorIncludingConstructors(file.ctx!!) as? FunctionDescriptor ?: return null
         return generateTopLevelFunInvocation(descriptor, depth)
     }
 
@@ -136,4 +160,21 @@ internal class FunInvocationGenerator(file: BBFFile) :
             "$generatedExtensionReceiver${func.name}$realTypeParamsAsString$valueArgsAsString"
         return MutationProcessor.createExpressionOrThrow(file, callExpressionAsString) as? KtCallExpression
     }
+
+    private val KtNamedFunction.myReceiverTypeReference
+        get() =
+            if (this.receiverTypeReference != null) receiverTypeReference
+            else {
+                val type = this.parents
+                    .filterIsInstance<KtClassOrObject>()
+                    .toList()
+                    .reversed()
+                    .joinToString(".") { it.name ?: "" }
+                if (type.isEmpty()) null
+                else try {
+                    PSICreator.psiFactory.createTypeIfPossible(type)
+                } catch (e: Exception) {
+                    null
+                }
+            }
 }
