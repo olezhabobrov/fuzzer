@@ -4,6 +4,7 @@ import com.intellij.psi.*
 import com.intellij.util.IncorrectOperationException
 import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -79,4 +80,16 @@ fun KtFile.getAvailableValuesToInsertIn(
         }
         .filter { it.second != null }
     return parameters + props
+}
+
+fun KtBlockExpression.addToBlock(element: PsiElement) {
+    val blockCopy = this.copy() as KtBlockExpression
+    val blockText = blockCopy.let {
+        blockCopy.rBrace?.delete()
+        blockCopy.lBrace?.delete()
+        blockCopy.text
+    }
+    val newText = blockText + "\n${element.text}\n"
+    val newBlock = psiFactory.createBlock(newText)
+    this.replace(newBlock)
 }

@@ -36,7 +36,7 @@ open class RandomInstancesGenerator(private val file: BBFFile) {
         classInstanceGenerator.generateInstancesOfUserClass(ktClass).randomOrNull()
 
     fun generateInstancesOfClass(ktClass: KtClassOrObject) =
-        classInstanceGenerator.generateInstancesOfUserClass(ktClass)
+        classInstanceGenerator.generateInstancesOfUserClass(ktClass).filter { it != null }
 
     fun generateValueOfTypeAsExpression(
         t: KotlinType,

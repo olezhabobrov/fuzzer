@@ -1,11 +1,12 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
+import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
-import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.isPublic
+import org.jetbrains.kotlin.psi.KtClassOrObject
 
 object Invocator {
 
@@ -13,27 +14,23 @@ object Invocator {
 
         val mainFile = target.project.mainFile
         val klibFile = target.project.klib
-
-        val children = klibFile.psiFile.children
-
-
-        invokeAllClasses(klibFile, mainFile)
-        val ctx = klibFile.ctx
-        val expressions = klibFile.psiFile.getAllPSIChildrenOfType<KtCallExpression>()
-        val functions = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
-        val classes = klibFile.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
-        val result = RandomInstancesGenerator(klibFile).generateInstancesOfClass(classes[4])
-        val clazz = classes[0]
-//        val constructor = clazz.createPrimaryConstructorIfAbsent()
-//        val parameterList = clazz.createPrimaryConstructorParameterListIfAbsent()
+        val classInvocations = invokeAllClasses(klibFile)
+        writeToMain(mainFile, classInvocations)
         TODO()
     }
 
-    fun invokeAllClasses(klib: BBFFile, mainFile: BBFFile) {
-        val result = klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().flatMap {  clazz ->
+    private fun writeToMain(mainFile: BBFFile, invocations: List<PsiElement>) {
+        val fileText = invocations
+            .joinToString(separator = "\n", prefix = "fun main() {\n", postfix = "\n}") { it.text }
+        val newKtFile = psiFactory.createFile(fileText)
+        mainFile.psiFile = newKtFile
+    }
+
+
+
+    fun invokeAllClasses(klib: BBFFile): List<PsiElement> =
+        klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().flatMap {  clazz ->
             RandomInstancesGenerator(klib).generateInstancesOfClass(clazz)
-        }
-        TODO()
-    }
+        }.filterNotNull().map { it.first }.filterNotNull()
 
 }
