@@ -3,7 +3,6 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.util
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocationGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
-import com.stepanov.bbf.bugfinder.mutator.transformations.AddFunInvocations
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
@@ -14,7 +13,6 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 object Invocator {
 
     fun addInvocationOfAllCallable(target: FTarget) {
-//        AddFunInvocations().transform(target)
         val mainFile = target.project.mainFile
         val klibFile = target.project.klib
         val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>().map {
@@ -22,7 +20,6 @@ object Invocator {
         }.filter { it.isNotBlank() }
         val classInvocations = invokeAllClasses(klibFile).map { it.text }
         writeToMain(mainFile, classInvocations + functionInvocations)
-//        writeToMain(mainFile, functionInvocations)
         TODO()
     }
 

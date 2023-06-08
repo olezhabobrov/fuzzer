@@ -46,7 +46,7 @@ fun KtPsiFactory.createNonEmptyClassBody(body: String): KtClassBody {
 }
 
 fun KtFile.findClassByName(name: String): KtClassOrObject? =
-    this.getAllPSIChildrenOfType<KtClassOrObject>().firstOrNull { it.name == name }
+    this.getAllPSIChildrenOfType<KtClassOrObject>().firstOrNull { it.fqName.toString() == name }
 
 
 fun PsiElement.addAfterThisWithWhitespace(psiElement: PsiElement, whiteSpace: String): PsiElement {

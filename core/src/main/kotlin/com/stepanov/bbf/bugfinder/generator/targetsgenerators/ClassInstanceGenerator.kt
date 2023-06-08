@@ -277,6 +277,9 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
     private fun unsafeGenerateInstancesOfClass(classType: KotlinType, depth: Int): List<Pair<PsiElement?, KotlinType>?> {
         val classDescriptor =
             classType.constructor.declarationDescriptor as? ClassDescriptor ?: return listOf()
+        if (classDescriptor.kind == ClassKind.OBJECT) {
+            return listOf( psiFactory(file).createExpression(classType.name!!) to classType)
+        }
         val constructors =
             classDescriptor.constructors.filter { it.visibility.isPublicAPI }
         if (constructors.isEmpty()) {
