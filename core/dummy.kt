@@ -1,14 +1,18 @@
+import kotlin.*
 
 
 
 
-val abcq1: FooClass? = TODO()
+val abcq1: Byte = TODO()
 
-fun  abcq(a: FooClass?){}
+fun  abcq(a: Byte){}
 
-class FooClass(val x: Int)
 
-interface FooInterface
+interface Foo {
+    fun bar(x: Int): Foo
 
-object FooObject
+    fun implmentedBar(): String {}
 
+}
+
+class BarClass(val x: Int)

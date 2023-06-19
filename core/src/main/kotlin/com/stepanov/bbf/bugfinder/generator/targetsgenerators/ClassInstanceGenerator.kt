@@ -160,22 +160,7 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
     }
 
     private fun generateImplementation(implementedType: KotlinType, depth: Int): Pair<PsiElement?, KotlinType>? {
-        val implementations = StdLibraryGenerator.findImplementationFromFile(implementedType, true)
-        val randomImpl = implementations.randomOrNull()?.defaultType ?: return null
-        val classDescriptor = randomImpl.constructor.declarationDescriptor as? ClassDescriptor ?: return null
-        val typeParamsToRealTypes = TypeParamsReplacer.throwTypeParams(file, implementedType, classDescriptor)?.second ?: return null
-        val replacedTypeArgs = randomImpl.arguments.map { typeParamsToRealTypes[it.type.getNameWithoutError()]?.asTypeProjection() ?: it }
-        val typeToImplement = randomImpl.replace(replacedTypeArgs)
-        val instance =
-            generateRandomInstanceOfUserClass(typeToImplement, depth + 1)?.let {
-                if (it.second == null) return null
-                else it.first to it.second!!
-            }
-        if (Random.getTrue(10)) {
-            val anObjImpl = generateAnonymousObjectImplementation(implementedType, depth)
-            return listOfNotNull(instance, anObjImpl).randomOrNull()
-        }
-        return instance
+        return generateAnonymousObjectImplementation(implementedType, depth)
     }
 
     private fun generateFunInterfaceInstance(
@@ -253,13 +238,12 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
                         .let { if (it.isEmpty()) "TODO" else it }
                 res.appendLine("override $memberToString: $rtv = $initialValue")
             } else if (member is FunctionDescriptor) {
-                val psi = member.findPsi() as? KtNamedFunction
-                if (psi != null && psi.hasBody() && Random.getTrue(85)) continue
-                val rtv = member.returnType ?: continue
-                val initialValue =
-                    RandomInstancesGenerator(file).generateValueOfType(rtv, depth + 1)
-                        .let { if (it.isEmpty()) "TODO" else it }
-                res.appendLine("override $memberToString: $rtv = $initialValue")
+                val funName = member.name
+                val params = member.valueParameters.joinToString(separator = ", ") { param ->
+                    "${param.name}: ${param.type}"
+                }
+                val rtv = member.returnType?.toString() ?: continue
+                res.appendLine("override fun $funName($params): $rtv { TODO() }")
             }
         }
         res.appendLine("}")
@@ -282,9 +266,6 @@ internal class ClassInstanceGenerator(file: BBFFile) : TypeAndValueParametersGen
         }
         val constructors =
             classDescriptor.constructors.filter { it.visibility.isPublicAPI }
-        if (constructors.isEmpty()) {
-            return listOf()
-        }
         return constructors.map { constructor ->
             generateWithConstructor(constructor, classType, depth)
         }.filter { it != null }

@@ -134,9 +134,9 @@ class RandomFunctionGenerator(
     private fun generateBody(): String =
         when {
             gFunc.modifiers.contains("external") || gFunc.isAbstract() -> ""
-            gFunc.isPrivate() -> "= TODO()"
-            gClass?.isInterface() == true -> if (Random.nextBoolean()) "" else "= TODO()"
-            else -> "= TODO()"
+            gFunc.isPrivate() -> "{ TODO() }"
+            gClass?.isInterface() == true -> if (Random.nextBoolean()) "" else "{ TODO() }"
+            else -> "{ TODO() }"
         }
 
     override fun generateTypeParams(withModifiers: Boolean): List<String> {
@@ -156,7 +156,7 @@ class RandomFunctionGenerator(
             val genTypeArgs = if (gClass?.isFunInterface() == true) listOf() else generateTypeParams(false)
             val genTypeArgsWObounds = genTypeArgs.map { it.substringBefore(':').substringAfter("reified ").trim() }
             typeArgs = genTypeArgs
-            extensionReceiver = generateExtension(genTypeArgsWObounds)
+//            extensionReceiver = generateExtension(genTypeArgsWObounds)
             name = generateName()
             args = generateArgs((gClass?.typeParams ?: listOf()) + genTypeArgsWObounds)
             rtvType = generateRtv()

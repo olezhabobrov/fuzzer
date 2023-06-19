@@ -20,7 +20,6 @@ object Invocator {
         }.filter { it.isNotBlank() }
         val classInvocations = invokeAllClasses(klibFile).map { it.text }
         writeToMain(mainFile, classInvocations + functionInvocations)
-        TODO()
     }
 
     private fun writeToMain(mainFile: BBFFile, invocations: List<String>) {

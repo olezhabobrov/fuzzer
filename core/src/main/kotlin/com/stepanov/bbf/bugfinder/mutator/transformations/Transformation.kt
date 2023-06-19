@@ -16,12 +16,12 @@ abstract class Transformation(
         repeat(amountOfTransformations) {
             val project = Project(projectMessage)
             try {
-            val file = project.klib
-            if (file.text.lines().size > MAX_LINES) {
-                log.debug("File is too big, returning back")
-                return@repeat
-            }
-            transform(FTarget(project, file))
+                val file = project.klib
+                if (file.text.lines().size > MAX_LINES) {
+                    log.debug("File is too big, returning back")
+                    return@repeat
+                }
+                transform(FTarget(project, file))
             } finally {
                 result.add(project.createProjectMessage())
                 project.dispose()

@@ -1,18 +1,9 @@
 
-class Foo {
-    companion object {
-        fun funCompanionObject(): String {
+interface Foo {
+    fun bar(x: Int): Foo
 
-        }
-
-    }
-
-    inner class FooInner {
-        companion object something {
-            fun fooSomething(): Foo {}
-        }
-    }
+    fun implmentedBar(): String {}
 
 }
 
-
+class BarClass(val x: Int)

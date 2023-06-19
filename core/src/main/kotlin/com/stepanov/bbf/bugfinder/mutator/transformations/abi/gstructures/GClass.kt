@@ -39,6 +39,12 @@ data class GClass(
     }
 
     companion object {
+        fun fromPsiOrNull(klass: KtClassOrObject?): GClass? =
+            if (klass == null)
+                null
+            else
+                fromPsi(klass)
+
         fun fromPsi(klass: KtClassOrObject): GClass {
             val gClass = GClass()
             gClass.classWord =
