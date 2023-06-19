@@ -79,7 +79,7 @@ class RandomPropertyGenerator(
 
     //RTV: psi to prop type
     fun generateInterestingProperty(klass: KtClassOrObject): Pair<PsiElement, KotlinType?>? {
-        if (Random.getTrue(20)) return generateDelegate()
+//        if (Random.getTrue(20)) return generateDelegate()
         //Get classes which are supertypes of us
 //        val superClasses = file.getAllPSIChildrenOfType<KtTypeReference>()
 //            .mapNotNull { it.getAbbreviatedTypeOrType(ctx)?.constructor?.declarationDescriptor?.findPackage() }
