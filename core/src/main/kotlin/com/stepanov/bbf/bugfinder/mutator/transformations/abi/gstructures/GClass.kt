@@ -74,7 +74,7 @@ data class GClass(
         }
     }
 
-    fun toPsi(): PsiElement? =
+    override fun toPsi(): PsiElement? =
         try {
             if (isObject()) psiFactory.createObject(toString())
             else psiFactory.createClass(toString())

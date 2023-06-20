@@ -1,7 +1,15 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 
+import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtTypeParameterListOwner
+
 abstract class GStructure {
     abstract var modifiers: MutableList<String>
+
+    abstract fun toPsi(): PsiElement?
 
     fun isPrivate() = modifiers.contains("private")
     fun isAbstract() = modifiers.contains("abstract")
@@ -15,4 +23,27 @@ abstract class GStructure {
             modifiers.contains("protected") -> "protected"
             else -> "public"
         }
+
+    fun changeVisibility(newVisibility: String) {
+        modifiers.replaceAll {
+            when (it) {
+                "private", "protected", "internal", "public" -> newVisibility
+                else -> it
+            }
+        }
+        if (getVisibility() != newVisibility) {
+            modifiers.add(newVisibility)
+        }
+    }
+
+    companion object {
+        fun fromPsi(entity: KtTypeParameterListOwner): GStructure {
+            return when (entity) {
+                is KtClassOrObject -> GClass.fromPsi(entity)
+                is KtFunction -> GFunction.fromPsi(entity)
+                is KtProperty -> GProperty.fromPsi(entity)
+                else -> error("Not property, class or function, wtf is it then?")
+            }
+        }
+    }
 }

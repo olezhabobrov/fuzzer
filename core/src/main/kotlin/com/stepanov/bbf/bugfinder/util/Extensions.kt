@@ -27,6 +27,7 @@ import com.stepanov.bbf.bugfinder.util.kcheck.asCharSequence
 import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
 import com.stepanov.bbf.bugfinder.util.kcheck.nextString
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.ImportPath

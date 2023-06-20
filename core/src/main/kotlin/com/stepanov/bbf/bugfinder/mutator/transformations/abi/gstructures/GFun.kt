@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.psi.KtFunction
 import kotlin.random.Random
 
 data class GFunction(
@@ -14,11 +15,34 @@ data class GFunction(
     var rtvType: String = "",
     var body: String = ""
 ): GStructure() {
-    fun toPsi(): PsiElement {
+    override fun toPsi(): PsiElement {
         val m = modifiers.let { if (it.all { it.isEmpty() }) "" else it.joinToString(" ") }
         val e = if (extensionReceiver.isEmpty()) "" else " $extensionReceiver."
         val sta = if (typeArgs.isEmpty()) "" else typeArgs.joinToString(prefix = "<", postfix = "> ")
         val strArgs = args.joinToString()
         return psiFactory.createFunction("$m fun $sta $e$name($strArgs): $rtvType $body")
+    }
+
+    companion object {
+        fun fromPsi(function: KtFunction): GFunction {
+            val gfun = GFunction()
+            with (gfun) {
+                modifiers = function.modifierList?.text?.split(" ")?.toMutableList() ?: mutableListOf()
+                typeArgs = function.typeParameters.let { if (it.isEmpty()) listOf() else it.map { it.text } }
+                // TODO: extensionReceiver = function.????
+                name = function.name ?: ""
+                args = function.valueParameters.let { if (it.isEmpty()) listOf() else it.map { it.text } }
+                rtvType = function.typeReference?.text ?: ""
+                body =
+                    when {
+                        function.bodyBlockExpression == null -> ""
+                        function.bodyBlockExpression!!.text.trim().startsWith("{") ->
+                            function.bodyBlockExpression!!.text
+                                .substringAfter('{').substringBeforeLast('}')
+                        else -> function.bodyBlockExpression!!.text
+                    }
+            }
+            return gfun
+        }
     }
 }
