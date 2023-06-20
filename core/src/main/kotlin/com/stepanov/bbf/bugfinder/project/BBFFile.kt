@@ -2,9 +2,9 @@ package com.stepanov.bbf.bugfinder.project
 
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
+import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
 
@@ -48,5 +48,12 @@ class BBFFile(
             return false
         }
         return other.text == text
+    }
+
+    fun getAllEntities(): List<KtTypeParameterListOwner> {
+        val allClasses = psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+        val allProperties = psiFile.getAllPSIChildrenOfType<KtProperty>()
+        val allFunctions = psiFile.getAllPSIChildrenOfType<KtFunction>()
+        return (allFunctions + allProperties + allClasses)
     }
 }

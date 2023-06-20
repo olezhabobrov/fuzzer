@@ -36,6 +36,13 @@ abstract class GStructure {
         }
     }
 
+    fun makeOpen() {
+        modifiers.add("open")
+    }
+
+    fun isOpen() = modifiers.contains("open")
+
+
     companion object {
         fun fromPsi(entity: KtTypeParameterListOwner): GStructure {
             return when (entity) {

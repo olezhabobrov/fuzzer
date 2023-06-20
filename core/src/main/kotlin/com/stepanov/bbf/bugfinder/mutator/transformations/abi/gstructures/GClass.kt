@@ -82,6 +82,8 @@ data class GClass(
             null
         }
 
+
+
     fun toPsiThrowable(): PsiElement =
         if (isObject()) psiFactory.createObject(toString())
         else psiFactory.createClass(toString())
@@ -94,5 +96,15 @@ data class GClass(
     fun isData() = modifiers.contains("data")
     fun isInterface() = classWord == "interface"
     fun isSealed() = modifiers.contains("sealed")
+
+    fun isClass() = classWord == "class"
+
     fun hasPrivateConstructor() = constructorWord.contains("private")
+
+    fun canBeExtended() =
+                isOpen() ||
+                isInterface() ||
+                isSealed() ||
+                isAbstract()
+
 }
