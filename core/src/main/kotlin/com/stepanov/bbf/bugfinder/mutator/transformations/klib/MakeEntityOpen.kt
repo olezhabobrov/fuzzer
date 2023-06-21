@@ -23,7 +23,7 @@ class MakeEntityOpen: BinaryCompatibleTransformation(1) {
         }
         val openClasses = anchor.getAllPSIChildrenOfTypeOfFirstLevel<KtClass>().filter {
             val gclass = GClass.fromPsi(it)
-            gclass.isOpen() || gclass.isAbstract()
+            gclass.isOpen() || gclass.isAbstract() || gclass.isSealed()
         }
         if ((finalClasses + openClasses).isEmpty())
             return
@@ -53,11 +53,13 @@ class MakeEntityOpen: BinaryCompatibleTransformation(1) {
         val properties = randomClass.body!!.getAllPSIChildrenOfTypeOfFirstLevel<KtProperty>()
         val functions = randomClass.body!!.getAllPSIChildrenOfTypeOfFirstLevel<KtFunction>()
         val allFinalEntities = (properties + functions).filter {
-            !GStructure.fromPsi(it).isOpen() && it !is KtConstructor<*>
+            val gStructure = GStructure.fromPsi(it)
+            gStructure.isImplemented() &&
+            !gStructure.isOpen() && it !is KtConstructor<*>
         }
         if (allFinalEntities.isNotEmpty()) {
             val entity = allFinalEntities.random()
-            val openEntity = GStructure.fromPsi(entity).also { it.makeOpen() }.toPsi()
+            val openEntity = GStructure.fromPsi(entity).also { it.addOpen() }.toPsi()
             if (openEntity != null)
                 entity.replaceThis(openEntity)
         }
@@ -65,7 +67,7 @@ class MakeEntityOpen: BinaryCompatibleTransformation(1) {
 
     private fun makeOpen(entity: KtTypeParameterListOwner): PsiElement? {
         val gStructure = GStructure.fromPsi(entity)
-        gStructure.makeOpen()
+        gStructure.addOpen()
         return gStructure.toPsi()
     }
 }

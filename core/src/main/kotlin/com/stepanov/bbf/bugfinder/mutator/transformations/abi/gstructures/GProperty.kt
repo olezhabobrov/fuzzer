@@ -1,8 +1,11 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.KtProperty
+import kotlin.random.Random
 
 class GProperty(
     override var modifiers: MutableList<String> = mutableListOf(),
@@ -23,6 +26,14 @@ class GProperty(
             $getter
             $setter
         """.trimIndent())
+    }
+
+    fun addDefaultValue() {
+        if (Random.nextBoolean()) {
+            getter = "get() { TODO() }"
+            return
+        }
+        initializer = "TODO()"
     }
 
     companion object {

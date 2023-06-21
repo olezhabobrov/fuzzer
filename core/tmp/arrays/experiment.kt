@@ -1,20 +1,16 @@
+abstract class Foo {
+    val x = 5
 
-internal class BarClass(val x: Int) {
-    protected val y = 4
+    val y: Int
+        get() = TODO()
 
-    protected object Oba {
-        private fun foo() {
+    abstract val z: String
 
-        }
-    }
+    abstract fun dada()
 }
 
-internal fun fofofof(val foo: BarClass): BarClass {
-    TODO()
-}
+interface BarInterface {
+    fun foo(): String
 
-protected interface FooInterface {
-    val someVal: BarClass
-
-    fun someFun()
+    fun too(x: Int) = x + 5
 }

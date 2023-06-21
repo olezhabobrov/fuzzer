@@ -20,7 +20,11 @@ data class GFunction(
         val e = if (extensionReceiver.isEmpty()) "" else " $extensionReceiver."
         val sta = if (typeArgs.isEmpty()) "" else typeArgs.joinToString(prefix = "<", postfix = "> ")
         val strArgs = args.joinToString()
-        return psiFactory.createFunction("$m fun $sta $e$name($strArgs): $rtvType $body")
+        val rt = if (rtvType.isNotBlank())
+            ": $rtvType"
+        else
+            ""
+        return psiFactory.createFunction("$m fun $sta $e$name($strArgs)$rt $body")
     }
 
     companion object {

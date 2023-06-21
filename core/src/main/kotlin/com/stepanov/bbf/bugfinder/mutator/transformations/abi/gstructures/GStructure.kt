@@ -15,6 +15,20 @@ abstract class GStructure {
     fun isAbstract() = modifiers.contains("abstract")
     fun isInline() = modifiers.contains("inline")
 
+    fun removeAbstract() {
+        modifiers.remove("abstract")
+    }
+
+    fun addAbstract() {
+        modifiers.add("abstract")
+    }
+
+    fun addOpen() {
+        modifiers.add("open")
+    }
+
+    fun isOpen() = modifiers.contains("open")
+
     fun getVisibility() =
         when {
             modifiers.contains("public") -> "public"
@@ -36,12 +50,23 @@ abstract class GStructure {
         }
     }
 
-    fun makeOpen() {
-        modifiers.add("open")
+
+
+    fun isImplemented() = when(this) {
+        is GFunction -> body.isNotBlank()
+        is GProperty -> initializer.isNotBlank() || getter.isNotBlank()
+        else -> true
     }
 
-    fun isOpen() = modifiers.contains("open")
+    fun isNotImplemented() = !isImplemented()
 
+    fun addDefaultImplementation() {
+        when (this) {
+            is GFunction -> body = "{ TODO() }"
+            is GProperty -> addDefaultValue()
+            else -> error("Is not function or property, shouldn't be so...")
+        }
+    }
 
     companion object {
         fun fromPsi(entity: KtTypeParameterListOwner): GStructure {

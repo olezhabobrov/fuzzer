@@ -4,4 +4,4 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 
 abstract class BinaryCompatibleTransformation(amount: Int): Transformation(amount)
 
-abstract class BinaryIncompatibleTransformation: Transformation()
+abstract class BinaryIncompatibleTransformation(amount: Int): Transformation(amount)
