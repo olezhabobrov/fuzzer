@@ -1,18 +1,15 @@
-abstract class Foo: BarInterface, Bar2 {
-    val x = 5
+fun <T> print(x: Int, y: T, z = "aboba"): T {
 
-    val y: Int
-        get() = TODO()
-
-    abstract val z: String
-
-    abstract fun dada()
 }
 
-interface Bar2
+class Foo<T>(val t: T, x: Int): Collection<T>, Da, Bar<Int, T> {
+    val x: Int = 5
 
-interface BarInterface {
-    fun foo(): String
+    constructor(t: T) {
 
-    fun too(x: Int) = x + 5
+    }
+
+    fun foo(q: T): T { TODO() }
 }
+
+interface Da
