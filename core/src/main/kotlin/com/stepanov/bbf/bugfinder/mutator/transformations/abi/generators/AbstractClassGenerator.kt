@@ -32,7 +32,7 @@ abstract class AbstractClassGenerator(
             name = Random.getRandomVariableName(3).capitalize()
             typeParams = generateTypeParams(true)
             constructorArgs = generateConstructor()
-            supertypes = generateSupertypes()
+            supertypes = generateSupertypes().toMutableList()
             body = ClassBodyGenerator(file, gClass, depth + 1).generateBodyAsString()
         }
         return gClass.toPsi()
@@ -47,7 +47,7 @@ abstract class AbstractClassGenerator(
             if (name.isEmpty()) name = Random.getRandomVariableName(3).capitalize()
             if (typeParams.isEmpty()) typeParams = generateTypeParams(true)
             if (constructorArgs.isEmpty()) constructorArgs = generateConstructor()
-            if (supertypes.isEmpty()) supertypes = generateSupertypes()
+            if (supertypes.isEmpty()) supertypes = generateSupertypes().toMutableList()
             if (body.isEmpty()) body = ClassBodyGenerator(file, gClass, depth + 1).generateBodyAsString()
         }
         return gClass.toPsi()

@@ -2,22 +2,28 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
-import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GFunction
-import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GProperty
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.replaceThis
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.*
 
 class ClassifierCompatibleTransformations: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
         val file = target.file
-        fromAbstractToOpen(file.psiFile)
+//        fromAbstractToOpen(file.psiFile)
+        changeSupertypeOrder(file.psiFile)
     }
 
+    private fun changeSupertypeOrder(file: KtFile) {
+        file.getAllPSIChildrenOfType<KtClassOrObject>().map { it to GClass.fromPsi(it) }
+            .filter { it.second.supertypes.size > 1 }
+            .map {
+                it.second.supertypes.shuffle()
+                it
+            }.forEach {
+                it.first.replaceThis(it.second.toPsiThrowable())
+            }
+    }
 
     private fun fromAbstractToOpen(file: KtFile) {
         val allAbstractClasses = file.getAllPSIChildrenOfType<KtClass>().filter {

@@ -16,7 +16,7 @@ data class GClass(
     var typeParams: List<String> = listOf(),
     var constructorWord: String = "",
     var constructorArgs: List<String> = listOf(),
-    var supertypes: List<String> = listOf(),
+    var supertypes: MutableList<String> = mutableListOf(),
     var body: String = ""
 ): GStructure() {
 
@@ -63,7 +63,7 @@ data class GClass(
                 ?.let { if (it.isEmpty()) listOf() else it.map { it.text } } ?: listOf()
             gClass.supertypes = klass.superTypeListEntries.let {
                 if (it.isEmpty()) listOf() else it.map { it.text }
-            }
+            }.toMutableList()
             gClass.body =
                 when {
                     klass.body == null -> ""
