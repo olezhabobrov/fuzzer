@@ -21,10 +21,10 @@ abstract class Transformation(
                     log.debug("File is too big, returning back")
                     return@repeat
                 }
-//                repeat(5) {
+                repeat(5) {
                 transform(FTarget(project, file))
-//                    println("DADA")
-//                }
+                    println("DADA")
+                }
             } finally {
                 result.add(project.createProjectMessage())
                 project.dispose()
