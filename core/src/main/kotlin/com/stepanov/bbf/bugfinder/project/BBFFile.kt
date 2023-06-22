@@ -56,4 +56,8 @@ class BBFFile(
         val allFunctions = psiFile.getAllPSIChildrenOfType<KtFunction>()
         return (allFunctions + allProperties + allClasses)
     }
+
+    fun getAllFunctions(): List<KtFunction> {
+        return psiFile.getAllPSIChildrenOfType<KtFunction>().filter { it !is KtConstructor<*> }
+    }
 }

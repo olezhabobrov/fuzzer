@@ -49,4 +49,36 @@ data class GFunction(
             return gfun
         }
     }
+
+    fun isTailrec() = modifiers.contains("tailrec")
+
+    fun removeTailrec() {
+        modifiers.remove("tailrec")
+    }
+
+    fun addTailrec() {
+        modifiers.add("tailrec")
+    }
+
+    fun isOperator() = modifiers.contains("operator")
+
+    fun removeOperator() = modifiers.remove("operator")
+
+    fun addOperator() = modifiers.add("operator")
+
+    fun isInfix() = modifiers.contains("infix")
+
+    fun removeInfix() {
+        modifiers.remove("infix")
+    }
+
+    fun addInfix() {
+        modifiers.add("infix")
+    }
+
+
+
+    fun addInline() {
+        modifiers.add("inline")
+    }
 }

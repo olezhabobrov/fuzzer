@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["RenameTypeParameter"]
+        "transformationsList": ["FunctionCompatibleChanges"]
     },
     "mutationTarget": {
         "type": "klib"
