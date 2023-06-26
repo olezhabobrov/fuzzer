@@ -60,4 +60,8 @@ class BBFFile(
     fun getAllFunctions(): List<KtFunction> {
         return psiFile.getAllPSIChildrenOfType<KtFunction>().filter { it !is KtConstructor<*> }
     }
+
+    fun getAllProperties(): List<KtProperty> {
+        return psiFile.getAllPSIChildrenOfType()
+    }
 }

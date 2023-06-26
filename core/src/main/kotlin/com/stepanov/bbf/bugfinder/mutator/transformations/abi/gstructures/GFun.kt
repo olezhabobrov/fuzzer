@@ -86,9 +86,4 @@ data class GFunction(
         modifiers.add("infix")
     }
 
-
-
-    fun addInline() {
-        modifiers.add("inline")
-    }
 }

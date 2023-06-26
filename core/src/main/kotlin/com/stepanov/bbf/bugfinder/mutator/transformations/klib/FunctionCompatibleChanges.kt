@@ -4,6 +4,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GFunction
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.reduktor.util.replaceThis
+import kotlin.random.Random
 
 class FunctionCompatibleChanges: BinaryCompatibleTransformation(1) {
 
@@ -13,12 +14,15 @@ class FunctionCompatibleChanges: BinaryCompatibleTransformation(1) {
         if (functions.isNotEmpty()) {
             val function = functions.random()
             val gfun = GFunction.fromPsi(function)
-            swapInfix(gfun)
-            swapOperator(gfun)
-            swapTailrec(gfun)
+            if (Random.nextBoolean())
+                swapInfix(gfun)
+            if (Random.nextBoolean())
+                swapOperator(gfun)
+            if (Random.nextBoolean())
+                swapTailrec(gfun)
             function.replaceThis(gfun.toPsi())
-
-            nonInlineToInline(file)
+            if (Random.nextBoolean())
+                nonInlineToInline(file)
         }
     }
 

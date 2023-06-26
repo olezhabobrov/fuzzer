@@ -15,6 +15,14 @@ abstract class GStructure {
     fun isAbstract() = modifiers.contains("abstract")
     fun isInline() = modifiers.contains("inline")
 
+    fun addInline() {
+        modifiers.add("inline")
+    }
+
+    fun removeInline() {
+        modifiers.remove("inline")
+    }
+
     fun removeAbstract() {
         modifiers.remove("abstract")
     }

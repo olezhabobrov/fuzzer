@@ -56,4 +56,29 @@ class GProperty(
         }
     }
 
+    fun isLateinit() = modifiers.contains("lateinit")
+
+    fun addLateinit() {
+        modifiers.add("lateinit")
+    }
+
+    fun removeLateinit() {
+        modifiers.remove("lateinit")
+    }
+
+    fun isConst() = modifiers.contains("const")
+
+    fun addConst() {
+        modifiers.add("const")
+    }
+
+    fun removeConst() {
+        modifiers.remove("const")
+    }
+
+    fun isVar() = valOrVar == "var"
+
+    fun makeVal() {
+        valOrVar = "val"
+    }
 }
