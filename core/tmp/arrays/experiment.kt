@@ -1,5 +1,3 @@
-fun foo(bar: Bar): String {
-
+class Bar(var x: Int) {
+    constructor(y: String): this(5) {}
 }
-
-interface Bar
