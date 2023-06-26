@@ -99,6 +99,10 @@ data class GClass(
 
     fun isClass() = classWord == "class"
 
+    fun addData() {
+        modifiers.add("data")
+    }
+
     fun hasPrivateConstructor() = constructorWord.contains("private")
 
     fun canBeExtended() =

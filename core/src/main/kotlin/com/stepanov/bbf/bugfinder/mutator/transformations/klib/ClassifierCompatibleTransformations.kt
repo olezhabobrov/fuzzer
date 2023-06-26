@@ -6,12 +6,36 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStruc
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.psi.*
+import kotlin.random.Random
 
 class ClassifierCompatibleTransformations: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
         val file = target.file
-//        fromAbstractToOpen(file.psiFile)
-        changeSupertypeOrder(file.psiFile)
+        if (Random.nextBoolean())
+            makeClassDataClass(file.psiFile)
+        if (Random.nextBoolean())
+            fromAbstractToOpen(file.psiFile)
+        if (Random.nextBoolean())
+            changeSupertypeOrder(file.psiFile)
+
+    }
+
+    private fun makeClassDataClass(file: KtFile) {
+        val (clazz, gclass) = file.getAllPSIChildrenOfType<KtClass>().map { it to GClass.fromPsi(it) }
+            .filter { !it.second.canBeExtended() && !it.second.isData() }
+            .filter {
+                val b = it.first.primaryConstructor?.valueParameters?.all { it.hasValOrVar() }
+                val c = it.first.primaryConstructor?.valueParameters?.isNotEmpty()
+                // cringe haha
+                // thanks God nobody's gonna see that
+                if (c == null) {
+                    false
+                } else
+                    b != null && b && c
+            }.randomOrNull() ?: return
+        gclass.addData()
+        val newClass = gclass.toPsiThrowable()
+        clazz.replaceThis(newClass)
     }
 
     private fun changeSupertypeOrder(file: KtFile) {
