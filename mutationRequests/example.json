@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["FunctionCompatibleChanges"]
+        "transformationsList": ["AddDefaultValue"]
     },
     "mutationTarget": {
         "type": "klib"

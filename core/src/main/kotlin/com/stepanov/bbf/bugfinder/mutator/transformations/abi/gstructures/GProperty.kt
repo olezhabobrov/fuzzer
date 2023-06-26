@@ -17,15 +17,19 @@ class GProperty(
     var name: String = "",
     ) : GStructure() {
 
-    override fun toPsi(): PsiElement {
+    override fun toString(): String {
         val m = modifiers.let { if (it.all { it.isEmpty() }) "" else it.joinToString(" ") }
         val t = if (type.isBlank()) "" else ": $type"
         val initializer = if (initializer.isBlank()) "" else "= $initializer"
-        return psiFactory.createProperty("""
+        return """
             $m $valOrVar $name $t $initializer
             $getter
             $setter
-        """.trimIndent())
+        """.trimIndent()
+    }
+
+    override fun toPsi(): PsiElement {
+        return psiFactory.createProperty(toString())
     }
 
     fun addDefaultValue() {

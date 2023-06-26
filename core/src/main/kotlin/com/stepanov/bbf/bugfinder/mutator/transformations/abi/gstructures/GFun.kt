@@ -3,7 +3,9 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.KtParameter
 import kotlin.random.Random
 
 data class GFunction(
@@ -12,6 +14,7 @@ data class GFunction(
     var extensionReceiver: String = "",
     var name: String = Random.getRandomVariableName(5),
     var args: List<String> = listOf(),
+    var argsParams: MutableList<GParameter> = mutableListOf(),
     var rtvType: String = "",
     var body: String = ""
 ): GStructure() {
@@ -19,7 +22,7 @@ data class GFunction(
         val m = modifiers.let { if (it.all { it.isEmpty() }) "" else it.joinToString(" ") }
         val e = if (extensionReceiver.isEmpty()) "" else " $extensionReceiver."
         val sta = if (typeArgs.isEmpty()) "" else typeArgs.joinToString(prefix = "<", postfix = "> ")
-        val strArgs = args.joinToString()
+        val strArgs = argsParams.joinToString(", ")
         val rt = if (rtvType.isNotBlank())
             ": $rtvType"
         else
@@ -36,18 +39,25 @@ data class GFunction(
                 // TODO: extensionReceiver = function.????
                 name = function.name ?: ""
                 args = function.valueParameters.let { if (it.isEmpty()) listOf() else it.map { it.text } }
+                argsParams = function.valueParameters.let { it.map { GParameter.fromPsi(it) } }.toMutableList()
                 rtvType = function.typeReference?.text ?: ""
                 body =
                     when {
                         function.bodyBlockExpression == null -> ""
-                        function.bodyBlockExpression!!.text.trim().startsWith("{") ->
-                            function.bodyBlockExpression!!.text
-                                .substringAfter('{').substringBeforeLast('}')
                         else -> function.bodyBlockExpression!!.text
                     }
             }
             return gfun
         }
+    }
+
+    fun addDefaultToArg(parameter: KtParameter, defaultValue: String) {
+        argsParams.find { it.name == parameter.name }!!.defaultValue = defaultValue
+        updateArgs()
+    }
+
+    fun updateArgs() {
+        args = argsParams.map { it.toString() }
     }
 
     fun isTailrec() = modifiers.contains("tailrec")

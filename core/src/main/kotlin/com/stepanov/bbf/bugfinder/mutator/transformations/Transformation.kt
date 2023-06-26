@@ -23,6 +23,7 @@ abstract class Transformation(
                 }
                 repeat(5) {
                 transform(FTarget(project, file))
+                file.updateCtx()
                     println("DADA")
                 }
             } finally {
