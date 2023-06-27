@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomFunctionGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.UsagesSamplesGenerator
+import com.stepanov.bbf.bugfinder.mutator.transformations.util.Invocator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.information.MutationStat

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectMessage(
-    val files: List<FileData>,
+    val files: MutableList<FileData>,
     val dir: String = "projectTmp/",
 ) {
 
@@ -13,6 +13,21 @@ data class ProjectMessage(
 
     val klib
         get() = files.first { it.isKlib }
+
+    val oldKlib
+        get() = files.find { it.name == "oldKlib.kt" }
+
+    val newKlib
+        get() = files.find { it.name == "newKlib.kt" }
+
+    fun addNewProjectMessage(projectMessage: ProjectMessage) {
+        files.add(FileData("newKlib.kt", projectMessage.klib.text, true))
+    }
+
+    fun beforeTransformation() {
+        klib.name = "oldKlib.kt"
+        mainFile.name = "main.kt"
+    }
 
     override fun hashCode(): Int {
         return files.sumOf { (_, text) ->
@@ -46,4 +61,8 @@ data class ProjectMessage(
 }
 
 @Serializable
-data class FileData(val name: String, val text: String, val isKlib: Boolean = false)
+data class FileData(var name: String, val text: String, val isKlib: Boolean = false) {
+    fun makeOldKlib() { name = "oldKlib.kt" }
+
+    fun makeNewKlib() { name = "newKlib.kt" }
+}

@@ -1,8 +1,10 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.UsagesSamplesGenerator
+import com.stepanov.bbf.bugfinder.mutator.transformations.util.Invocator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.project.Project
+import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
 import org.apache.log4j.Logger
 
@@ -14,27 +16,37 @@ abstract class Transformation(
     fun execTransformations(projectMessage: ProjectMessage): Set<ProjectMessage> {
         val result = mutableSetOf<ProjectMessage>()
         repeat(amountOfTransformations) {
+            projectMessage.files.add(FileData("main.kt", """
+                fun main() {
+                
+                }
+            """.trimIndent()))
             val project = Project(projectMessage)
+            val file = project.klib
+            file.updateCtx()
+            val ftarget = FTarget(project, file)
+            Invocator.addInvocationOfAllCallable(ftarget)
+            val oldProjectMessage = project.createProjectMessage()
+            oldProjectMessage.beforeTransformation()
             try {
-                val file = project.klib
                 if (file.text.lines().size > MAX_LINES) {
                     log.debug("File is too big, returning back")
                     return@repeat
                 }
-                repeat(5) {
-                transform(FTarget(project, file))
-                file.updateCtx()
-                    println("DADA")
-                }
+                transform(ftarget)
             } finally {
-                result.add(project.createProjectMessage())
+                val newProjectMessage = project.createProjectMessage()
+                if (newProjectMessage.klib.text != oldProjectMessage.klib.text) {
+                    oldProjectMessage.addNewProjectMessage(newProjectMessage)
+                    result.add(oldProjectMessage)
+                }
                 project.dispose()
                 UsagesSamplesGenerator.disposeProjects()
             }
             if (it % 10 == 0 && it != 0)
                 log.debug("$it transformations completed")
         }
-        result.remove(projectMessage)
+//        result.remove(projectMessage)
         return result
     }
 

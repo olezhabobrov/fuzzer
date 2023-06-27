@@ -121,12 +121,10 @@ sealed class SingleSourceTarget: MutationTarget() {
             this.updateRandomFile()
         writeFile()
         if (this is KlibTarget)
-            return ProjectMessage(listOf(FileData(simpleFileName(), getSourceCode(), isKlib = true), FileData("main.kt", """
-                fun main() {
-                
-                }
-            """.trimIndent())))
-        return ProjectMessage(listOf(FileData(simpleFileName(), getSourceCode())))
+            return ProjectMessage(
+                mutableListOf(FileData(simpleFileName(), getSourceCode(), isKlib = true))
+            )
+        return ProjectMessage(mutableListOf(FileData(simpleFileName(), getSourceCode())))
     }
 
     fun simpleFileName(): String = getLocalName().getSimpleNameFile()
@@ -145,7 +143,7 @@ sealed class SingleSourceTarget: MutationTarget() {
 @Serializable
 @SerialName("klib")
 class KlibTarget: SingleSourceTarget() {
-    private var tmpFileName = "experiment.kt" //randomTmpFileName()
+    private var tmpFileName = randomTmpFileName()
 
     private val code
         get() = File("tmp/arrays/$tmpFileName").readText()
@@ -158,7 +156,7 @@ class KlibTarget: SingleSourceTarget() {
 
 
     private fun randomTmpFileName() =
-        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith("experiment.kt") }?.random()!!.name
+        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
 
 
     fun updateRandomFile() {
@@ -221,7 +219,7 @@ data class ProjectTarget(
 
     override fun createProjectMessage(): ProjectMessage {
         writeProject()
-        return ProjectMessage(files.map { FileData(it.getLocalName(), it.getSourceCode())})
+        return ProjectMessage(files.map { FileData(it.getLocalName(), it.getSourceCode())}.toMutableList())
     }
 
     fun writeProject() {

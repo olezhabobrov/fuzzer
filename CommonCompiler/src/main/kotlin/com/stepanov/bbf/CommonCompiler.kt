@@ -2,6 +2,8 @@ package com.stepanov.bbf
 
 import com.stepanov.bbf.codecs.CompilationResultCodec
 import com.stepanov.bbf.codecs.CompilationRequestCodec
+import com.stepanov.bbf.codecs.KotlincInvokeResultCodec
+import com.stepanov.bbf.codecs.ProjectMessageCodec
 import com.stepanov.bbf.information.*
 import com.stepanov.bbf.messages.*
 import io.vertx.core.AbstractVerticle
@@ -29,6 +31,8 @@ abstract class CommonCompiler(
     private fun registerCodecs() {
         vertx.eventBus().registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
         vertx.eventBus().registerDefaultCodec(CompilationResult::class.java, CompilationResultCodec())
+        vertx.eventBus().registerDefaultCodec(ProjectMessage::class.java, ProjectMessageCodec())
+        vertx.eventBus().registerDefaultCodec(KotlincInvokeResult::class.java, KotlincInvokeResultCodec())
     }
 
     private fun establishConsumers() {
@@ -58,6 +62,19 @@ abstract class CommonCompiler(
                 | Exception: ${throwable.stackTraceToString()}
             """.trimMargin())
         }
+
+        eb.consumer<ProjectMessage>(VertxAddresses.checkCompile) { msg ->
+            log.debug("Got request to check compilation for a project")
+            val projectMessage = msg.body()
+            createLocalTmpProject(projectMessage)
+            val compileResult = checkCompiling(projectMessage)
+            deleteLocalTmpProject(projectMessage)
+            eb.send(VertxAddresses.checkCompileResult, compileResult)
+        }
+    }
+
+    open fun checkCompiling(project: ProjectMessage): KotlincInvokeResult {
+        TODO()
     }
 
     private fun createLocalTmpProject(project: ProjectMessage) {

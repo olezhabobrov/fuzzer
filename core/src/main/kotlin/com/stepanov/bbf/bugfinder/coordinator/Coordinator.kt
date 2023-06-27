@@ -27,13 +27,24 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         log.debug("Coordinator deployed with mutation problem:")
         val projectToCompile = mutationProblem.getProjectMessage()
         log.debug(json.encodeToString(mutationProblem))
-        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
+        startWithNewProject()
+//        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
 //        sendProjectToCompilers(MutationResult(
 //            setOf(projectToCompile),
 //            MutationStat.emptyStat))
     }
 
     private fun establishConsumers() {
+
+        eb.consumer<KotlincInvokeResult>(VertxAddresses.checkCompileResult) { msg ->
+            val result = msg.body()
+            if (result.isCompileSuccess) {
+                sendNextTransformation(listOf(result.projectMessage))
+                successfullyCompiledProjects.add(result.projectMessage)
+            } else {
+                startWithNewProject()
+            }
+        }
 
         eb.consumer<CompilationResult>(VertxAddresses.compileResult) { msg ->
             log.debug("Got compilation result")
@@ -55,18 +66,26 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             log.debug("Checked unique projects: ${checkedProjects.size}")
             log.debug("Successfully compiled projects: ${successfullyCompiledProjects.size}")
             sendResultToStatistics(compileResult)
-            if (mutationProblem.isFinished()) {
-                log.debug("MUTATION PROBLEM IS COMPLETED")
-                eb.send(VertxAddresses.mutationProblemCompleted, coordinatorNumber)
-            }
+//            if (mutationProblem.isFinished()) {
+//                log.debug("MUTATION PROBLEM IS COMPLETED")
+//                eb.send(VertxAddresses.mutationProblemCompleted, coordinatorNumber)
+//            }
             sendNextTransformation(projectsToSend)
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
             val mutationResult = result.body()
             log.debug("Got mutationResult with ${mutationResult.projects.size} results")
+            if (mutationResult.projects.isEmpty()) {
+                sendNextTransformation(listOf())
+            }
             sendProjectToCompilers(mutationResult)
         }
+    }
+
+    private fun startWithNewProject() {
+        val newProject = mutationProblem.getProjectMessage()
+        eb.send(VertxAddresses.checkCompile, newProject)
     }
 
     private fun sendNextTransformation(projects: List<ProjectMessage>) {
@@ -81,6 +100,10 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             )
             log.debug("Transformation#${mutationProblem.completedMutations}: " +
                     "Sending ${projectToSend.size} projects to mutator to transform with $transformation")
+        } else {
+            successfullyCompiledProjects.clear()
+            mutationProblem.completedMutations = 0
+            startWithNewProject()
         }
     }
 
@@ -111,13 +134,13 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     }
 
     private fun getProjectsToSend(latestProjects: List<ProjectMessage>): List<ProjectMessage> {
-        if (successfullyCompiledProjects.isEmpty() || successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS) {
-            val newProject = mutationProblem.getProjectMessage()
-            log.debug("Created new starting project ${newProject.files.firstOrNull()?.name}")
-            successfullyCompiledProjects.clear()
-            checkedProjects.clear()
-            return listOf(newProject)
-        }
+//        if (successfullyCompiledProjects.isEmpty() || successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS) {
+//            val newProject = mutationProblem.getProjectMessage()
+//            log.debug("Created new starting project ${newProject.files.firstOrNull()?.name}")
+//            successfullyCompiledProjects.clear()
+//            checkedProjects.clear()
+//            return listOf(newProject)
+//        }
         val projects = latestProjects.filter { it !in checkedProjects }.take(MAX_PROJECTS_TO_MUTATE).toMutableList()
         projects.addAll(
             successfullyCompiledProjects.shuffled()
@@ -136,7 +159,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         private val counter = AtomicInteger(0)
     }
 
-    private val MAX_PROJECTS_TO_MUTATE = 20
+    private val MAX_PROJECTS_TO_MUTATE = 1
     private val MAX_PROJECTS_TO_COMPILERS = 500
     private val LIMIT_OF_COMPILED_PROJECTS = 3500
 //    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000

@@ -15,10 +15,14 @@ import com.stepanov.bbf.bugfinder.server.messages.parseMutationProblem
 import com.stepanov.bbf.bugfinder.statistics.TransformationStatistics
 import com.stepanov.bbf.codecs.CompilationRequestCodec
 import com.stepanov.bbf.codecs.CompilationResultCodec
+import com.stepanov.bbf.codecs.KotlincInvokeResultCodec
+import com.stepanov.bbf.codecs.ProjectMessageCodec
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.CompilationResult
+import com.stepanov.bbf.messages.KotlincInvokeResult
+import com.stepanov.bbf.messages.ProjectMessage
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.EventBus
@@ -152,6 +156,8 @@ class Server: CoroutineVerticle() {
         eb.registerDefaultCodec(CompilationRequest::class.java, CompilationRequestCodec())
         eb.registerDefaultCodec(Bug::class.java, BugCodec())
         eb.registerDefaultCodec(CompilationResultHolder::class.java, CompilationResultHolderCodec())
+        eb.registerDefaultCodec(ProjectMessage::class.java, ProjectMessageCodec())
+        eb.registerDefaultCodec(KotlincInvokeResult::class.java, KotlincInvokeResultCodec())
     }
 
     private fun localPreparations() {

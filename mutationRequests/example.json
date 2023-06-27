@@ -3,11 +3,11 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": ["ClassifierCompatibleTransformations"]
+        "type": "All"
     },
     "mutationTarget": {
         "type": "klib"
     },
-    "repeatInf": true
+    "mutationCount": 10,
+    "mutateInOrder": true
 }
