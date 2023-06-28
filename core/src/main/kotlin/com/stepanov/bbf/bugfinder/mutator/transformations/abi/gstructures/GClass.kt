@@ -98,6 +98,47 @@ data class GClass(
     fun isSealed() = modifiers.contains("sealed")
 
     fun isClass() = classWord == "class"
+    fun isValue() = modifiers.contains("value")
+
+    fun removeSealed() {
+        modifiers.remove("sealed")
+    }
+
+    fun addSealed() {
+        modifiers.add("sealed")
+    }
+
+    fun addValue() {
+        modifiers.add("value")
+    }
+
+    fun removeValue() {
+        modifiers.remove("value")
+    }
+
+    fun removeEnum() {
+        modifiers.remove("enum")
+    }
+
+    fun addEnum() {
+        modifiers.add("enum")
+    }
+
+    fun removeAnnotation() {
+        modifiers.remove("annotation")
+    }
+
+    fun addAnnotation() {
+        modifiers.add("annotation")
+    }
+
+    fun removeInner() {
+        modifiers.remove("inner")
+    }
+
+    fun addInner() {
+        modifiers.add("inner")
+    }
 
     fun addData() {
         modifiers.add("data")
