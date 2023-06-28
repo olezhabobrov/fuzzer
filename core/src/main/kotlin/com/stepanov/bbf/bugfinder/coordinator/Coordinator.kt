@@ -49,6 +49,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         eb.consumer<CompilationResult>(VertxAddresses.compileResult) { msg ->
             log.debug("Got compilation result")
             val compileResult = msg.body()
+            compileResult.results.all { it.results.all { !it.isCompileSuccess } }
             val projectsToSend = mutableListOf<ProjectMessage>()
             compileResult.results.forEach { result ->
                 checkedProjects.add(result.projectMessage)
@@ -78,8 +79,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             log.debug("Got mutationResult with ${mutationResult.projects.size} results")
             if (mutationResult.projects.isEmpty()) {
                 sendNextTransformation(listOf())
+            } else {
+                sendProjectToCompilers(mutationResult)
             }
-            sendProjectToCompilers(mutationResult)
         }
     }
 
@@ -102,6 +104,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                     "Sending ${projectToSend.size} projects to mutator to transform with $transformation")
         } else {
             successfullyCompiledProjects.clear()
+            checkedProjects.clear()
             mutationProblem.completedMutations = 0
             startWithNewProject()
         }
@@ -114,7 +117,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         log.debug("Sending ${projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->
             eb.send(address,
-                CompilationRequest(projects, mutationResult.mutationStat, true)
+                CompilationRequest(projects, mutationResult.mutationStat)
             )
         }
     }

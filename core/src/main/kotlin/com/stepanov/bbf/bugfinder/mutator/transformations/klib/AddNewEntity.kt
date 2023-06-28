@@ -10,7 +10,7 @@ import com.stepanov.bbf.util.WeightedList
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import kotlin.random.Random
 
-class AddNewEntity: BinaryCompatibleTransformation(5) {
+class AddNewEntity: BinaryCompatibleTransformation(1) {
 
     override fun transform(target: FTarget) {
         val file = target.file

@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtProperty
 
-class AddProperty: BinaryCompatibleTransformation(5) {
+class AddProperty: BinaryCompatibleTransformation(1) {
 
     override fun transform(target: FTarget) {
         val file = target.file

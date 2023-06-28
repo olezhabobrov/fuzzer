@@ -7,5 +7,4 @@ import kotlinx.serialization.Serializable
 data class CompilationRequest(
     val projects: List<ProjectMessage>,
     val mutationStat: MutationStat,
-    val shouldBeBinaryCompatible: Boolean,
 )

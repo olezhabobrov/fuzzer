@@ -5,6 +5,16 @@ import com.stepanov.bbf.messages.ProjectMessage
 
 object CompilationArgsGenerator {
 
+    fun generateForKlibFuzzing(project: ProjectMessage): List<CompilationArgs> {
+        val withOldArgs = CompilationArgs()
+        withOldArgs.addFile(project.oldKlib!!.name)
+        withOldArgs.addFile(project.mainFile.name)
+        val withNewArgs = CompilationArgs()
+        withNewArgs.addFile(project.newKlib!!.name)
+        withNewArgs.addFile(project.mainFile.name)
+        return listOf(withOldArgs, withNewArgs)
+    }
+
     fun getAllCombinations(project: ProjectMessage): List<CompilationArgs> {
         val klibFiles = project.files.filter { it.isKlib }
         val files = project.files.filter { !it.isKlib }

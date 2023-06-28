@@ -5,7 +5,7 @@ import com.stepanov.bbf.information.MutationStat
 import kotlinx.serialization.Serializable
 
 @Serializable
-class KotlincInvokeStatus(
+class   KotlincInvokeStatus(
     val combinedOutput: String,
     val isCompileSuccess: Boolean,
     val hasException: Boolean,

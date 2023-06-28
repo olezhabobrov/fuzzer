@@ -17,7 +17,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     }
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
-        val argsList = CompilationArgsGenerator.getAllCombinations(project)
+        val argsList = CompilationArgsGenerator.generateForKlibFuzzing(project)
         val statuses = argsList.map { compile(it) }
         return KotlincInvokeResult(project, statuses)
     }

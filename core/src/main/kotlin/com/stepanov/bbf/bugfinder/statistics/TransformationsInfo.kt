@@ -11,6 +11,7 @@ internal data class TransformationFullStat(
     var failedCompilations: ExtendedStat,
     var reasonForBug: ExtendedStat,
     var compilationTimeouts: ExtendedStat,
+    var invocatorProblem: ExtendedStat,
     var totalMutationCount: Int,
     var successfulMutations: Int,
     var uselessMutations: Int, // no new projects produced
@@ -26,6 +27,8 @@ internal data class TransformationFullStat(
         failedCompilations.add(result) { !it.isCompileSuccess }
         reasonForBug.add(result) { it.hasCompilerCrash() }
         compilationTimeouts.add(result) { it.hasTimeout }
+        val allFailedWithAnyConf = result.results.count { it.results.all { !it.isCompileSuccess } }
+        invocatorProblem.total += allFailedWithAnyConf
 
         avgTimeInMS = (avgTimeInMS * totalMutationCount +
                 mutationStat.avgTimeInMS * mutationStat.totalMutationCount) /
@@ -57,6 +60,7 @@ internal data class TransformationFullStat(
     companion object {
         fun initialStat(transformation: String): TransformationFullStat = TransformationFullStat(
             transformation,
+            ExtendedStat(0),
             ExtendedStat(0),
             ExtendedStat(0),
             ExtendedStat(0),
