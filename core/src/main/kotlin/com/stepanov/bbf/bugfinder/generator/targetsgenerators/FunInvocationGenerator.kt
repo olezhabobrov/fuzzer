@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.load.java.descriptors.JavaClassConstructorDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 import org.jetbrains.kotlin.resolve.calls.components.isVararg
 import org.jetbrains.kotlin.types.KotlinType
@@ -72,7 +71,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
     }
 
     fun invokeFunction(func: KtNamedFunction,
-                       file: BBFFile): String {
+                       file: BBFFile, mainFile: BBFFile): String {
         val outerRef = func.myReceiverTypeReference
         val funInvocation = generateTopLevelFunInvocation(func, file)
         if (funInvocation == null) {
@@ -80,7 +79,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
         }
         val returnType = func.getReturnType(file.ctx!!)
         val property =
-            if (returnType != null && returnType.name != "Unit")
+            if (returnType != null)
                 "val ${Random.getRandomVariableName()}: ${returnType.name} = "
             else
                 ""
@@ -91,12 +90,14 @@ internal class FunInvocationGenerator(file: BBFFile) :
         if (clazz == null) {
             return ""
         }
-        val instance = RandomInstancesGenerator(file).generateRandomInstanceOfClass(clazz)?.first
+
+        val instance = mainFile.psiFile.findPropertyByType(outerRef.text)?.name ?:
+            RandomInstancesGenerator(file).generateRandomInstanceOfClass(clazz)?.first?.text
         if (instance == null) {
             return ""
         }
 
-        return "$property${instance.text}.${funInvocation.text}"
+        return "$property$instance.${funInvocation.text}"
     }
 
     fun generateTopLevelFunInvocation(

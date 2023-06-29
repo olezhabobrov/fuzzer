@@ -262,6 +262,8 @@ fun KtNamedFunction.replaceReturnValueTypeOnUnit(psiFactory: KtPsiFactory) {
 fun ASTNode.getAllChildrenOfType(type: IElementType): List<ASTNode> =
     this.getAllChildrenNodes().filter { it.elementType == type }
 
+
+
 inline fun <reified T : PsiElement> PsiElement.getAllPSIChildrenOfType(): List<T> =
     this.node.getAllChildrenNodes().filter { it.psi is T }.map { it.psi as T }
 

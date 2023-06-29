@@ -17,15 +17,14 @@ abstract class Transformation(
         val result = mutableSetOf<ProjectMessage>()
         repeat(amountOfTransformations) {
             projectMessage.files.add(FileData("main.kt", """
-                fun main() {
-                
-                }
+                fun main() {}
             """.trimIndent()))
             val project = Project(projectMessage)
             val file = project.klib
             file.updateCtx()
             val ftarget = FTarget(project, file)
             Invocator.addInvocationOfAllCallable(ftarget)
+            TODO()
             val oldProjectMessage = project.createProjectMessage()
             oldProjectMessage.beforeTransformation()
             try {

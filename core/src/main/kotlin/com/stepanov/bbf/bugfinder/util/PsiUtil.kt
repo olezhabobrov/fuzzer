@@ -3,9 +3,9 @@ package com.stepanov.bbf.bugfinder.util
 import com.intellij.psi.*
 import com.intellij.util.IncorrectOperationException
 import com.stepanov.bbf.bugfinder.mutator.transformations.filterDuplicates
+import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
-import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -47,6 +47,12 @@ fun KtPsiFactory.createNonEmptyClassBody(body: String): KtClassBody {
 
 fun KtFile.findClassByName(name: String): KtClassOrObject? =
     this.getAllPSIChildrenOfType<KtClassOrObject>().firstOrNull { it.fqName.toString() == name }
+
+fun KtFile.findPropertyByType(name: String): KtProperty? =
+    getAllPSIChildrenOfType<KtProperty>()
+        .filter { it.parent is KtBlockExpression }
+        .find { it.typeReference?.text == name }
+
 
 
 fun PsiElement.addAfterThisWithWhitespace(psiElement: PsiElement, whiteSpace: String): PsiElement {
@@ -96,4 +102,38 @@ fun KtBlockExpression.addToBlock(element: PsiElement) {
     val newText = blockText + "\n${element.text}\n"
     val newBlock = psiFactory.createBlock(newText)
     this.replace(newBlock)
+}
+
+fun KtNamedFunction.myReceiverTypeReference(): KtTypeReference? {
+    return if (this.receiverTypeReference != null) receiverTypeReference
+    else {
+        val type = this.parents
+            .filterIsInstance<KtClassOrObject>()
+            .toList()
+            .reversed()
+            .joinToString(".") { it.name ?: "" }
+        if (type.isEmpty()) null
+        else try {
+            psiFactory.createTypeIfPossible(type)
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
+
+fun KtProperty.myReceiverTypeReference(): KtTypeReference? {
+    return if (this.receiverTypeReference != null) receiverTypeReference
+    else {
+        val type = this.parents
+            .filterIsInstance<KtClassOrObject>()
+            .toList()
+            .reversed()
+            .joinToString(".") { it.name ?: "" }
+        if (type.isEmpty()) null
+        else try {
+            psiFactory.createTypeIfPossible(type)
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
