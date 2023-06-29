@@ -33,7 +33,10 @@ abstract class Transformation(
                     log.debug("File is too big, returning back")
                     return@repeat
                 }
-                transform(ftarget)
+                repeat(5) {
+                    transform(ftarget)
+                    file.updateCtx()
+                }
             } finally {
                 val newProjectMessage = project.createProjectMessage()
                 if (newProjectMessage.klib.text != oldProjectMessage.klib.text) {

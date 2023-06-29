@@ -3,7 +3,8 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "All"
+        "type": "Some",
+        "transformationsList": ["MakeVisibilityStronger"]
     },
     "mutationTarget": {
         "type": "klib"

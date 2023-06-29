@@ -2,8 +2,9 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
-import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GFunction
+import com.stepanov.bbf.bugfinder.util.getTrue
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.psi.KtClass
 import kotlin.random.Random
 
@@ -14,22 +15,23 @@ class ClassifierIncompatibleChanges: BinaryIncompatibleTransformation(1) {
         if (allClasses.isNotEmpty()) {
             val randomClass = allClasses.random()
             val gclass = GClass.fromPsi(randomClass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 swapEnum(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 swapAnnotation(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 swapValue(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 swapInner(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 swapInterface(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 swapObject(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 makeAbstract(gclass)
-            if (Random.nextBoolean())
+            if (Random.getTrue(20))
                 makeSealed(gclass)
+            randomClass.replaceThis(gclass.toPsiThrowable())
         }
     }
 
