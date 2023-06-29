@@ -1,7 +1,8 @@
-open class Foo() {
-    open lateinit var foo: Foo
+class Foo {
+    fun foo(x: Int = 5, s: String) {
 
-    val da: Int = 3
+    }
 
-    open fun bar(x: String): String {}
+    inline fun bar() {}
 }
+

@@ -40,6 +40,12 @@ class GProperty(
         initializer = "TODO()"
     }
 
+    fun removeDefaultValue() {
+        initializer = ""
+        getter = ""
+        setter = ""
+    }
+
     companion object {
         fun fromPsi(property: KtProperty): GProperty {
             val gProperty = GProperty()

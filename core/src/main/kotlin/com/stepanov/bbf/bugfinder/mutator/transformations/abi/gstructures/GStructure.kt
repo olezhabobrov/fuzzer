@@ -80,6 +80,15 @@ abstract class GStructure {
         }
     }
 
+    fun removeDefaultImplementation() {
+        when (this) {
+            is GFunction -> body = ""
+            is GProperty -> removeDefaultValue()
+            is GParameter -> defaultValue = ""
+            else -> error("Is not function or property, shouldn't be so...")
+        }
+    }
+
     companion object {
         fun fromPsi(entity: KtTypeParameterListOwner): GStructure {
             return when (entity) {

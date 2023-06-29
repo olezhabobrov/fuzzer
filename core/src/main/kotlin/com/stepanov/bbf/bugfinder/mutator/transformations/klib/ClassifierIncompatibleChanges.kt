@@ -15,22 +15,16 @@ class ClassifierIncompatibleChanges: BinaryIncompatibleTransformation(1) {
         if (allClasses.isNotEmpty()) {
             val randomClass = allClasses.random()
             val gclass = GClass.fromPsi(randomClass)
-            if (Random.getTrue(20))
-                swapEnum(gclass)
-            if (Random.getTrue(20))
-                swapAnnotation(gclass)
-            if (Random.getTrue(20))
-                swapValue(gclass)
-            if (Random.getTrue(20))
-                swapInner(gclass)
-            if (Random.getTrue(20))
-                swapInterface(gclass)
-            if (Random.getTrue(20))
-                swapObject(gclass)
-            if (Random.getTrue(20))
-                makeAbstract(gclass)
-            if (Random.getTrue(20))
-                makeSealed(gclass)
+            when (Random.nextInt(121)) {
+                in 0..15 -> swapEnum(gclass)
+                in 16..30 -> swapAnnotation(gclass)
+                in 31..45 -> swapValue(gclass)
+                in 46..60 -> swapInner(gclass)
+                in 61..75 -> swapInterface(gclass)
+                in 76..90 -> swapObject(gclass)
+                in 91..105 -> makeAbstract(gclass)
+                in 106..120 -> makeSealed(gclass)
+            }
             randomClass.replaceThis(gclass.toPsiThrowable())
         }
     }
