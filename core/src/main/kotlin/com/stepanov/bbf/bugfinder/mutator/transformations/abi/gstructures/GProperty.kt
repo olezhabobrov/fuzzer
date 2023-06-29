@@ -84,7 +84,13 @@ class GProperty(
 
     fun isVar() = valOrVar == "var"
 
+    fun isVal() = valOrVar == "val"
+
     fun makeVal() {
         valOrVar = "val"
+    }
+
+    fun makeVar() {
+        valOrVar = "var"
     }
 }

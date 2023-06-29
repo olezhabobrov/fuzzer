@@ -43,8 +43,8 @@ class PropertyCompatibleChanges: BinaryCompatibleTransformation(1) {
     }
 
     private fun makeVal(gProperty: GProperty) {
-        if (!gProperty.isOpen() && gProperty.isVar()) {
-            gProperty.makeVal()
+        if (!gProperty.isOpen() && gProperty.isVal()) {
+            gProperty.makeVar()
         }
     }
 }

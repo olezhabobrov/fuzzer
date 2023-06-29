@@ -1,8 +1,8 @@
-class Foo {
-    fun foo(x: Int = 5, s: String) {
+open class Foo {
+    const val aboba = "string"
 
-    }
+    inline var qwerty = 1
 
-    inline fun bar() {}
+    open var bar: Int = 123
 }
 
