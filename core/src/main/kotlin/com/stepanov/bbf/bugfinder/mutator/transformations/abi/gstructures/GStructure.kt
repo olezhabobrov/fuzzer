@@ -37,6 +37,10 @@ abstract class GStructure {
 
     fun isOpen() = modifiers.contains("open")
 
+    fun removeOpen() {
+        modifiers.remove("open")
+    }
+
     fun getVisibility() =
         when {
             modifiers.contains("public") -> "public"

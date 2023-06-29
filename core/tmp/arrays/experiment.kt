@@ -1,11 +1,7 @@
-class Bar(var x: Int, y: String) {
+open class Foo() {
+    open lateinit var foo: Foo
 
+    val da: Int = 3
 
-    val foo: String = "asdg"
-
-    lateinit var bar: Int
+    open fun bar(x: String): String {}
 }
-
-class Foo() {}
-
-class Foo2(var x: Int) {}
