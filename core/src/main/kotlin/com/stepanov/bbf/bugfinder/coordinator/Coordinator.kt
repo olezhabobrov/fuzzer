@@ -111,7 +111,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 log.debug("Fail to understand compilation result")
             }
         }
-        if (descr != CompilationDescription.EXPECTED_BEHAVIOUR) {
+        if (descr != CompilationDescription.EXPECTED_BEHAVIOUR && descr != CompilationDescription.KLIB_INVALID) {
             sendResultToBugManager(compileResult, result)
         }
     }
@@ -163,11 +163,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 
     private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeResult) {
         eb.send(
-            VertxAddresses.bugManager, CompilationResult(
-                result.compiler,
-                listOf(status),
-                result.mutationStat
-            )
+            VertxAddresses.bugManager, status
         )
     }
 
