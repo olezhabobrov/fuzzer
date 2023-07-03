@@ -31,7 +31,7 @@ class FilePartitionRandomDivision: Transformation(30) {
                 project.files.filter { it != file }.map {
                     FileData(it.name, it.text)
                 }
-            )}
+            )}, null
         )
     }
 

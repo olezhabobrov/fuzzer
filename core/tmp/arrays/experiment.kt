@@ -1,8 +1,9 @@
-open class Foo {
-    const val aboba = "string"
+class Foo {
+    var ordVar: String = "safv"
 
-    fun barFunc() {
-        val bar: Int = 5
+    class NestedFoo {
+        var nestedVar: Int = 5
+
+        fun fooNested() {}
     }
 }
-

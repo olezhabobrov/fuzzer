@@ -1,14 +1,12 @@
 package com.stepanov.bbf.bugfinder.coordinator
 
+import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
+import com.stepanov.bbf.bugfinder.mutator.transformations.klib.BinaryCompatibleTransformation
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
-import com.stepanov.bbf.information.MutationStat
 import com.stepanov.bbf.information.VertxAddresses
-import com.stepanov.bbf.messages.CompilationRequest
-import com.stepanov.bbf.messages.CompilationResult
-import com.stepanov.bbf.messages.KotlincInvokeResult
-import com.stepanov.bbf.messages.ProjectMessage
+import com.stepanov.bbf.messages.*
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.eventbus.EventBus
 import kotlinx.serialization.encodeToString
@@ -27,8 +25,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         log.debug("Coordinator deployed with mutation problem:")
         val projectToCompile = mutationProblem.getProjectMessage()
         log.debug(json.encodeToString(mutationProblem))
-//        startWithNewProject()
-        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
+        startWithNewProject()
+//        successfullyCompiledProjects.add(projectToCompile)
+//        sendNextTransformation() // TODO: only for debug
 //        sendProjectToCompilers(MutationResult(
 //            setOf(projectToCompile),
 //            MutationStat.emptyStat))
@@ -36,11 +35,12 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 
     private fun establishConsumers() {
 
+        // when checking the initial project
         eb.consumer<KotlincInvokeResult>(VertxAddresses.checkCompileResult) { msg ->
             val result = msg.body()
             if (result.isCompileSuccess) {
-                sendNextTransformation(listOf(result.projectMessage))
                 successfullyCompiledProjects.add(result.projectMessage)
+                sendNextTransformation()
             } else {
                 startWithNewProject()
             }
@@ -50,20 +50,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             log.debug("Got compilation result")
             val compileResult = msg.body()
             compileResult.results.all { it.results.all { !it.isCompileSuccess } }
-            val projectsToSend = mutableListOf<ProjectMessage>()
             compileResult.results.forEach { result ->
-                checkedProjects.add(result.projectMessage)
-
-                if (result.isCompileSuccess) {
-                    projectsToSend.add(result.projectMessage)
-                    successfullyCompiledProjects.add(result.projectMessage)
-                }
-                if (result.hasCompilerCrash) {
-                    log.debug("Found some bug")
-                    sendResultToBugManager(compileResult, result)
-                }
+                processResult(compileResult, result)
             }
-            log.debug("Got ${projectsToSend.size} projects, successfully compiled")
             log.debug("Checked unique projects: ${checkedProjects.size}")
             log.debug("Successfully compiled projects: ${successfullyCompiledProjects.size}")
             sendResultToStatistics(compileResult)
@@ -71,37 +60,86 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 //                log.debug("MUTATION PROBLEM IS COMPLETED")
 //                eb.send(VertxAddresses.mutationProblemCompleted, coordinatorNumber)
 //            }
-            sendNextTransformation(projectsToSend)
+            sendNextTransformation()
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
             val mutationResult = result.body()
             log.debug("Got mutationResult with ${mutationResult.projects.size} results")
             if (mutationResult.projects.isEmpty()) {
-                sendNextTransformation(listOf())
+                sendNextTransformation()
             } else {
                 sendProjectToCompilers(mutationResult)
             }
         }
     }
 
+    private fun processResult(compileResult: CompilationResult, result: KotlincInvokeResult) {
+        checkedProjects.add(result.projectMessage)
+        val transformationName = lastTransformation.javaClass.simpleName
+        val descr = result.getDescription()
+        when (descr) {
+            CompilationDescription.KLIB_INVALID ->
+                log.debug("Klib was modified incorrectly by $transformationName")
+            CompilationDescription.INVOCATOR_FAIL ->
+                log.debug("Got invocator error")
+            CompilationDescription.COMPATIBLE_NOT_LINKING -> {
+                successfullyCompiledProjects.add(result.projectMessage)
+                log.debug(
+                    "Transformation $transformationName is binary compatible, " +
+                            "but compiler resulted with a linking error"
+                )
+            }
+            CompilationDescription.INCOMPATIBLE_LINKING -> {
+                successfullyCompiledProjects.add(result.projectMessage)
+                log.debug(
+                    "Transformation $transformationName is binary INcompatible, " +
+                            "but compiler didn't result with a linking error"
+                )
+            }
+            CompilationDescription.COMPILER_CRASHED ->
+                log.debug("Compiler crashed")
+            CompilationDescription.EXPECTED_BEHAVIOUR -> {
+                if (result.projectMessage.isBinaryCompatible!!) {
+                    log.debug("Binary compatible transformation $transformationName remains ABI")
+                } else {
+                    log.debug("Binary incompatible transformation $transformationName breaks ABI")
+                }
+                successfullyCompiledProjects.add(result.projectMessage)
+            }
+            CompilationDescription.UNKOWN_BEHAVIOUR -> {
+                log.debug("Fail to understand compilation result")
+            }
+        }
+        if (descr != CompilationDescription.EXPECTED_BEHAVIOUR) {
+            sendResultToBugManager(compileResult, result)
+        }
+    }
+
     private fun startWithNewProject() {
         val newProject = mutationProblem.getProjectMessage()
+        successfullyCompiledProjects.clear()
+        checkedProjects.clear()
         eb.send(VertxAddresses.checkCompile, newProject)
     }
 
-    private fun sendNextTransformation(projects: List<ProjectMessage>) {
+    private fun sendNextTransformation() {
         if (mutationProblem.isNotFinished()) {
+            if (successfullyCompiledProjects.isEmpty() || successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS) {
+                startWithNewProject()
+                return
+            }
             val transformation = mutationProblem.getNextTransformationAndIncreaseCounter()
-            val projectToSend = getProjectsToSend(projects)
+            lastTransformation = transformation
+            val projectToSend = successfullyCompiledProjects.last()//getProjectsToSend(projects)
             eb.send(VertxAddresses.mutate,
                 MutationRequest(
                     transformation,
-                    projectToSend
+                    listOf(projectToSend)
                 )
             )
             log.debug("Transformation#${mutationProblem.completedMutations}: " +
-                    "Sending ${projectToSend.size} projects to mutator to transform with $transformation")
+                    "Sending the project to mutator to transform with $transformation")
         } else {
             successfullyCompiledProjects.clear()
             checkedProjects.clear()
@@ -114,6 +152,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         val projects = mutationResult.projects.filter { project ->
             project !in checkedProjects
         }.shuffled().take(MAX_PROJECTS_TO_COMPILERS)
+        projects.forEach { it.isBinaryCompatible = isBinaryCompatible() }
         log.debug("Sending ${projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->
             eb.send(address,
@@ -156,15 +195,18 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         return projects
     }
 
+    private fun isBinaryCompatible() = lastTransformation is BinaryCompatibleTransformation
+
     val coordinatorNumber = counter.getAndIncrement()
 
     companion object {
         private val counter = AtomicInteger(0)
     }
 
+    private lateinit var lastTransformation: Transformation
     private val MAX_PROJECTS_TO_MUTATE = 1
     private val MAX_PROJECTS_TO_COMPILERS = 500
-    private val LIMIT_OF_COMPILED_PROJECTS = 3500
+    private val LIMIT_OF_COMPILED_PROJECTS = 100
 //    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000
     private var checkedProjects = mutableSetOf<ProjectMessage>()
     private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()

@@ -68,4 +68,8 @@ data class CompilationArgs(
                 Random().nextInt()
     }
 
+    fun withOldKlib() = klib?.files?.contains("oldKlib.kt") ?: false
+
+    fun withNewKlib() = klib?.files?.contains("newKlib.kt") ?: false
+
 }

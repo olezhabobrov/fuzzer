@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProjectMessage(
     val files: MutableList<FileData>,
-    val dir: String = "projectTmp/",
+    var isBinaryCompatible: Boolean?,
+    val dir: String = "projectTmp/"
 ) {
 
     val mainFile
@@ -62,6 +63,13 @@ data class ProjectMessage(
 
 @Serializable
 data class FileData(var name: String, val text: String, val isKlib: Boolean = false) {
+    override fun toString(): String = """
+        
+        // $name
+        
+        $text
+    """.trimIndent()
+
     fun makeOldKlib() { name = "oldKlib.kt" }
 
     fun makeNewKlib() { name = "newKlib.kt" }

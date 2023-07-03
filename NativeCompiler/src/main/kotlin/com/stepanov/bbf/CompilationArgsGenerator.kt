@@ -7,11 +7,21 @@ object CompilationArgsGenerator {
 
     fun generateForKlibFuzzing(project: ProjectMessage): List<CompilationArgs> {
         val withOldArgs = CompilationArgs()
-        withOldArgs.addFile(project.oldKlib!!.name)
-        withOldArgs.addFile(project.mainFile.name)
+        with(withOldArgs) {
+            val klibArgs = CompilationArgs()
+            klibArgs.addFile(project.oldKlib!!.name)
+            klibArgs.makeKlib()
+            addKlib(klibArgs)
+            addFile(project.mainFile.name)
+        }
         val withNewArgs = CompilationArgs()
-        withNewArgs.addFile(project.newKlib!!.name)
-        withNewArgs.addFile(project.mainFile.name)
+        with(withNewArgs) {
+            val klibArgs = CompilationArgs()
+            klibArgs.addFile(project.newKlib!!.name)
+            klibArgs.makeKlib()
+            addKlib(klibArgs)
+            addFile(project.mainFile.name)
+        }
         return listOf(withOldArgs, withNewArgs)
     }
 

@@ -12,10 +12,16 @@ object Constants {
         AddNewEntity::class to 100.0,
         AddProperty::class to 100.0,
         ClassifierCompatibleTransformations::class to 100.0,
+        ClassifierIncompatibleChanges::class to 100.0,
         FunctionCompatibleChanges::class to 100.0,
+        FunctionIncompatibleChanges::class to 100.0,
         MakeEntityOpen::class to 100.0,
         MakeVisibilityWeaker::class to 100.0,
+        MakeVisibilityStronger::class to 100.0,
         PropertyCompatibleChanges::class to 100.0,
+        PropertyIncompatibleChanges::class to 100.0,
+        RemoveExistingEntity::class to 100.0,
+        RemoveOpenModifier::class to 100.0,
         RenameTypeParameter::class to 100.0,
     ).map { TransformationClass(it.first) to it.second })
 //    val allTransformations: WeightedList<TransformationClass> = WeightedList(listOf(

@@ -3,12 +3,10 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": ["PropertyIncompatibleChanges"]
+        "type": "All"
     },
     "mutationTarget": {
         "type": "klib"
     },
-    "mutationCount": 10,
-    "mutateInOrder": true
+    "repeatInf": true
 }

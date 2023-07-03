@@ -31,7 +31,7 @@ class Project(
 
     constructor(code: String): this(
         SourceFileTarget(code).also { it.writeFile() }.let {
-            ProjectMessage(mutableListOf(FileData(it.getLocalName().getSimpleNameFile(), it.getSourceCode())))
+            ProjectMessage(mutableListOf(FileData(it.getLocalName().getSimpleNameFile(), it.getSourceCode())), null)
         }
     )
 
@@ -75,7 +75,7 @@ class Project(
         return ProjectMessage(
             files.map { bbfFile ->
                 FileData(bbfFile.name.getSimpleNameFile(), bbfFile.text, bbfFile.isKlib)
-            }.toMutableList()
+            }.toMutableList(), null
         )
     }
 

@@ -22,29 +22,19 @@ object FileReporter : Reporter {
         val resDir = CompilerArgs.resultsDir
 
         val info = StringBuilder()
-        val result = bug.result.results.first()
-        val compiler = bug.result.compiler
-        val version = CompilerArgs.compilerVersion(compiler)
-        info.appendLine("//$compiler ver $version")
-        result.results.forEach { status ->
-            val isFailed = status.hasCompilerCrash()
-            val arguments = status.arguments
-            info.appendLine("//" + (if (isFailed) "failed" else "not failed") + " with arguments: $arguments")
+        info.appendLine("// ${bug.result.getDescription()}")
+        bug.result.results.forEach {
+            info.appendLine("// ${it.arguments}")
         }
 
-        val msg = result.results.first { it.hasCompilerCrash() }.combinedOutput
-
-        val name = currentTime() +
-                (if (bug.project.files.size == 1) "_FILE" else "_PROJECT") +
-                (if (msg.contains("Exception while analyzing expression")) "_FRONTEND" else "_BACKEND")
+        val name = currentTime() + "_KLIB"
+//                (if (bug.project.files.size == 1) "_FILE" else "_PROJECT") +
+//                (if (msg.contains("Exception while analyzing expression")) "_FRONTEND" else "_BACKEND")
 
         val newPath = "$resDir/$name.kt"
         File(newPath.substringBeforeLast('/')).mkdirs()
 
-        val commentedStackTrace =
-                "// STACKTRACE:\n${msg.split("\n").joinToString("\n") { "// $it" }}"
-
-        File(newPath).writeText("$info\n${bug.project.moveAllCodeInOneFile()}\n$commentedStackTrace")
+        File(newPath).writeText("$info\n${bug.project.moveAllCodeInOneFile()}\n")
         return newPath
     }
 

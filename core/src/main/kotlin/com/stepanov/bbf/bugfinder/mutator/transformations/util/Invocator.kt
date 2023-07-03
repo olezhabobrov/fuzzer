@@ -32,7 +32,7 @@ object Invocator {
         writeToMain(mainFile, functionInvocations)
         val propertyInvocations = invokeAllProperties(klibFile, mainFile)
         writeToMain(mainFile, propertyInvocations)
-        TODO()
+//        TODO()
     }
 
     private fun writeToMain(mainFile: BBFFile, invocations: List<String>) {
