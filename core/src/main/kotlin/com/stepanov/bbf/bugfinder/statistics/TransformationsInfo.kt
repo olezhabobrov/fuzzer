@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.statistics
 
+import com.stepanov.bbf.messages.CompilationDescription
 import com.stepanov.bbf.messages.CompilationResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import kotlinx.serialization.Serializable
@@ -7,28 +8,35 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class TransformationFullStat(
     val transformation: String,
-    var successfulCompilations: ExtendedStat,
-    var failedCompilations: ExtendedStat,
-    var reasonForBug: ExtendedStat,
-    var compilationTimeouts: ExtendedStat,
-    var invocatorProblem: ExtendedStat,
-    var totalMutationCount: Int,
-    var successfulMutations: Int,
-    var uselessMutations: Int, // no new projects produced
-    var unSuccessfulMutations: Int, // failed with exception
-    var newProjectsProducedDelta: Double,
-    var avgTimeInMS: Long,
-    var mutationTimeouts: Int,
+    var klibInvalid: Int = 0,
+    var invocatorFail: Int = 0,
+    var compatibleNotLinking: Int = 0,
+    var incompatibleLinking: Int = 0,
+    var compilerCrashed: Int = 0,
+    var expectedBehaviour: Int = 0,
+    var unkownBehaviour: Int = 0,
+    var totalMutationCount: Int = 0,
+    var successfulMutations: Int = 0,
+    var uselessMutations: Int = 0, // no new projects produced
+    var unSuccessfulMutations: Int = 0, // failed with exception
+    var newProjectsProducedDelta: Double = 0.0,
+    var avgTimeInMS: Long = 0L,
+    var mutationTimeouts: Int = 0,
 ) {
     fun add(result: CompilationResult) {
         val mutationStat = result.mutationStat
         require(transformation == mutationStat.transformation)
-        successfulCompilations.add(result) { it.isCompileSuccess }
-        failedCompilations.add(result) { !it.isCompileSuccess }
-        reasonForBug.add(result) { it.hasCompilerCrash() }
-        compilationTimeouts.add(result) { it.hasTimeout }
-        val allFailedWithAnyConf = result.results.count { it.results.all { !it.isCompileSuccess } }
-        invocatorProblem.total += allFailedWithAnyConf
+        result.results.forEach {
+            when (it.getDescription()) {
+                CompilationDescription.KLIB_INVALID -> klibInvalid++
+                CompilationDescription.INVOCATOR_FAIL -> invocatorFail++
+                CompilationDescription.COMPATIBLE_NOT_LINKING -> compatibleNotLinking++
+                CompilationDescription.INCOMPATIBLE_LINKING -> incompatibleLinking++
+                CompilationDescription.COMPILER_CRASHED -> compilerCrashed++
+                CompilationDescription.EXPECTED_BEHAVIOUR -> expectedBehaviour++
+                CompilationDescription.UNKOWN_BEHAVIOUR -> unkownBehaviour++
+            }
+        }
 
         avgTimeInMS = (avgTimeInMS * totalMutationCount +
                 mutationStat.avgTimeInMS * mutationStat.totalMutationCount) /
@@ -57,21 +65,4 @@ internal data class TransformationFullStat(
             .map { it.results }.flatten().filter(predicate)
     }
 
-    companion object {
-        fun initialStat(transformation: String): TransformationFullStat = TransformationFullStat(
-            transformation,
-            ExtendedStat(0),
-            ExtendedStat(0),
-            ExtendedStat(0),
-            ExtendedStat(0),
-            ExtendedStat(0),
-            0,
-            0,
-            0,
-            0,
-            0.0,
-            0L,
-            0
-        )
-    }
 }

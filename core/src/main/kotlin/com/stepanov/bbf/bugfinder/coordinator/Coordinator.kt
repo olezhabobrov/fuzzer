@@ -51,7 +51,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             val compileResult = msg.body()
             compileResult.results.all { it.results.all { !it.isCompileSuccess } }
             compileResult.results.forEach { result ->
-                processResult(compileResult, result)
+                processResult(result)
             }
             log.debug("Checked unique projects: ${checkedProjects.size}")
             log.debug("Successfully compiled projects: ${successfullyCompiledProjects.size}")
@@ -74,7 +74,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         }
     }
 
-    private fun processResult(compileResult: CompilationResult, result: KotlincInvokeResult) {
+    private fun processResult(result: KotlincInvokeResult) {
         checkedProjects.add(result.projectMessage)
         val transformationName = lastTransformation.javaClass.simpleName
         val descr = result.getDescription()
@@ -112,7 +112,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             }
         }
         if (descr != CompilationDescription.EXPECTED_BEHAVIOUR && descr != CompilationDescription.KLIB_INVALID) {
-            sendResultToBugManager(compileResult, result)
+            sendResultToBugManager(result)
         }
     }
 
@@ -161,7 +161,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         }
     }
 
-    private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeResult) {
+    private fun sendResultToBugManager(status: KotlincInvokeResult) {
         eb.send(
             VertxAddresses.bugManager, status
         )

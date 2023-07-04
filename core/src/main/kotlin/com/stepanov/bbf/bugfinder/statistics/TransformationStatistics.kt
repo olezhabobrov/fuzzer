@@ -30,7 +30,7 @@ class TransformationStatistics: AbstractVerticle() {
                 Json.decodeFromString(statisticsText)
 
             } else {
-                TransformationFullStat.initialStat(transformation)
+                TransformationFullStat(transformation)
             }
             currentStatistics.add(compilationResult)
             file.writeText(format.encodeToString(currentStatistics))
