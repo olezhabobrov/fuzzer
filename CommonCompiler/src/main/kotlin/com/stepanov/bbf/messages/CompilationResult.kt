@@ -16,27 +16,7 @@ class   KotlincInvokeStatus(
 
     fun hasCompilationError(): Boolean = !isCompileSuccess
 
-    companion object {
-//        val statusWithoutErrors = KotlincInvokeStatus("", true, false, false, listOf())
-    }
-
-    fun getFailReason(): FailReason {
-        if (arguments.klib == null) {
-            return FailReason.KlibFail
-        }
-        if (arguments.withOldKlib() && hasCompilationError()) {
-            return FailReason.InvocatorFail
-        }
-        return FailReason.LinkingFail // TODO: it can be caused by: bad invocation of callable (Invocator problem), it
-        // can be caused by linking problem
-    }
-
-    enum class FailReason {
-        KlibFail,
-        LinkingFail,
-        InvocatorFail
-    }
-
+    fun failed() = !isCompileSuccess || hasException
 }
 
 @Serializable
@@ -47,37 +27,35 @@ class KotlincInvokeResult(
     val isCompileSuccess = results.all { it.isCompileSuccess }
     val hasCompilerCrash = results.any { it.hasCompilerCrash() }
 
-    fun isKlibValid() = results.all { it.getFailReason() != KotlincInvokeStatus.FailReason.KlibFail }
-
-    fun hasInvocatorError() = results.any { it.getFailReason() == KotlincInvokeStatus.FailReason.InvocatorFail }
-
-    fun hasLinkingError() = results.any { it.getFailReason() == KotlincInvokeStatus.FailReason.LinkingFail }
-
     fun getDescription(): CompilationDescription {
+
         if (hasCompilerCrash)
             return CompilationDescription.COMPILER_CRASHED
-        if (hasInvocatorError())
+
+        if (getById(1).failed())
+            return CompilationDescription.UNKOWN_BEHAVIOUR
+        if (getById(2).failed())
             return CompilationDescription.INVOCATOR_FAIL
-        if (!isKlibValid())
+        if (getById(3).failed())
+            return CompilationDescription.UNKOWN_BEHAVIOUR
+        if (getById(4).failed())
             return CompilationDescription.KLIB_INVALID
-        require(projectMessage.isBinaryCompatible != null)
-        if (projectMessage.isBinaryCompatible!!) {
-            if (!isCompileSuccess) {
-                if (hasLinkingError()) {
-                    return CompilationDescription.COMPATIBLE_NOT_LINKING
-                }
-                return CompilationDescription.UNKOWN_BEHAVIOUR
+        if (getById(5).failed()) {
+            return if (projectMessage.isBinaryCompatible!!) {
+                CompilationDescription.COMPATIBLE_NOT_LINKING
+            } else {
+                CompilationDescription.EXPECTED_BEHAVIOUR
             }
-            return CompilationDescription.EXPECTED_BEHAVIOUR
+        } else {
+            return if (projectMessage.isBinaryCompatible!!) {
+                CompilationDescription.EXPECTED_BEHAVIOUR
+            } else {
+                CompilationDescription.INCOMPATIBLE_LINKING
+            }
         }
-        if (isCompileSuccess) {
-            return CompilationDescription.INCOMPATIBLE_LINKING
-        }
-        if (hasLinkingError()) {
-            return CompilationDescription.EXPECTED_BEHAVIOUR
-        }
-        return CompilationDescription.UNKOWN_BEHAVIOUR
     }
+
+    private fun getById(x: Int) = results.find { it.arguments.number == x }!!
 
 }
 

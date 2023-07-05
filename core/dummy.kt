@@ -1,38 +1,33 @@
 package test
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlin.reflect.KTypeParameter
 import kotlin.test.assertEquals
+import kotlin.collections.*
 import kotlin.*
+import java.util.*
 
 
 
-val abcq1: Int = TODO()
+val abcq1: ArrayDeque<Pair<B<B<Short>>, HashMap<UShort?, Container<UInt>>>> = TODO()
 
-fun  abcq(a: Int){}
+fun  abcq(a: ArrayDeque<Pair<B<B<Short>>, HashMap<UShort?, Container<UInt>>>>){}
 
-// IGNORE_BACKEND: JS, JS_IR
-// IGNORE_BACKEND: JS_IR_ES6
-// WITH_REFLECT
+// TARGET_BACKEND: JVM
+// WITH_RUNTIME
 
-inline class Z(val value: String)
+class Container<T>
 
-fun check(expected: String, actual: KType) {
-    assertEquals(expected, actual.toString())
+class B<W>
+
+class C<X> {
+    val <Y> B<Y>.createY: KTypeParameter where Y : X
+        get() = typeOf<Container<Y>>().arguments.single().type!!.classifier as KTypeParameter
 }
 
 fun box(): String {
-    check("test.Z", typeOf<Z>())
-    check("test.Z?", typeOf<Z?>())
-    check("kotlin.Array<test.Z>", typeOf<Array<Z>>())
-    check("kotlin.Array<test.Z?>", typeOf<Array<Z?>>())
-
-    check("kotlin.UInt", typeOf<UInt>())
-    check("kotlin.UInt?", typeOf<UInt?>())
-    check("kotlin.ULong?", typeOf<ULong?>())
-    check("kotlin.UShortArray", typeOf<UShortArray>())
-    check("kotlin.UShortArray?", typeOf<UShortArray?>())
-    check("kotlin.Array<kotlin.UByteArray>", typeOf<Array<UByteArray>>())
-    check("kotlin.Array<kotlin.UByteArray?>?", typeOf<Array<UByteArray?>?>())
-
+    with(C<Any>()) {
+        val y = B<Any>().createY
+        assertEquals("X (Kotlin reflection is not available)", y.upperBounds.joinToString())
+    }
     return "OK"
 }

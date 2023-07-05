@@ -6,23 +6,18 @@ import com.stepanov.bbf.messages.ProjectMessage
 object CompilationArgsGenerator {
 
     fun generateForKlibFuzzing(project: ProjectMessage): List<CompilationArgs> {
-        val withOldArgs = CompilationArgs()
-        with(withOldArgs) {
-            val klibArgs = CompilationArgs()
-            klibArgs.addFile(project.oldKlib!!.name)
-            klibArgs.makeKlib()
-            addKlib(klibArgs)
-            addFile(project.mainFile.name)
-        }
-        val withNewArgs = CompilationArgs()
-        with(withNewArgs) {
-            val klibArgs = CompilationArgs()
-            klibArgs.addFile(project.newKlib!!.name)
-            klibArgs.makeKlib()
-            addKlib(klibArgs)
-            addFile(project.mainFile.name)
-        }
-        return listOf(withOldArgs, withNewArgs)
+        val oldKlib = project.oldKlib!!.name
+        val newKlib = project.newKlib!!.name
+        val mainFile = project.mainFile.name
+        val libName = "lib.klib"
+        val mainName = "main.klib"
+        val args1 = CompilationArgs(1).addFile(oldKlib).makeKlib().createOutputName(libName)
+        val args2 = CompilationArgs(2).addFile(mainFile).addKlib(libName).makeKlib().createOutputName(mainName)
+        val args3 = CompilationArgs(3).addXinclude(mainName).addKlib(libName).addPartialLinkage()
+        val args4 = CompilationArgs(4).addFile(newKlib).makeKlib().createOutputName(libName)
+        val args5 = CompilationArgs(5).addXinclude(mainName).addKlib(libName).addPartialLinkage()
+
+        return listOf(args1, args2, args3, args4, args5)
     }
 
     fun getAllCombinations(project: ProjectMessage): List<CompilationArgs> {
@@ -41,7 +36,7 @@ object CompilationArgsGenerator {
 
     private fun generateArgsCombinations(files: List<String>, createKlib: Boolean): List<CompilationArgs> {
         val results = mutableListOf<CompilationArgs>()
-        val args = CompilationArgs()
+        val args = CompilationArgs(0)
         args.addFiles(files)
         if (createKlib) {
             args.makeKlib()
@@ -56,7 +51,7 @@ object CompilationArgsGenerator {
                 klibs: List<CompilationArgs>): List<CompilationArgs> {
         return targets.flatMap { args ->
             klibs.map { klib ->
-                args.addKlib(klib)
+                TODO()
             }
         }
     }

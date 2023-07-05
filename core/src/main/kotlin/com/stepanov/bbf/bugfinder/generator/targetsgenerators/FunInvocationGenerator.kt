@@ -73,10 +73,7 @@ internal class FunInvocationGenerator(file: BBFFile) :
     fun invokeFunction(func: KtNamedFunction,
                        file: BBFFile, mainFile: BBFFile): String {
         val outerRef = func.myReceiverTypeReference
-        val funInvocation = generateTopLevelFunInvocation(func, file)
-        if (funInvocation == null) {
-            return ""
-        }
+        val funInvocation = generateTopLevelFunInvocation(func, file) ?: return ""
         val returnType = func.getReturnType(file.ctx!!)
         val property =
             if (returnType != null)

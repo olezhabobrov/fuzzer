@@ -39,7 +39,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         eb.consumer<KotlincInvokeResult>(VertxAddresses.checkCompileResult) { msg ->
             val result = msg.body()
             if (result.isCompileSuccess) {
-                successfullyCompiledProjects.add(result.projectMessage)
+                successfullyCompiledProjects.add(result.projectMessage.getProjectMessageWithKlib())
                 sendNextTransformation()
             } else {
                 startWithNewProject()
@@ -120,7 +120,10 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         val newProject = mutationProblem.getProjectMessage()
         successfullyCompiledProjects.clear()
         checkedProjects.clear()
-        eb.send(VertxAddresses.checkCompile, newProject)
+        eb.request<ProjectMessage>(VertxAddresses.addInvocations, newProject) { amsg ->
+            val project = amsg.result().body()
+            eb.send(VertxAddresses.checkCompile, project)
+        }
     }
 
     private fun sendNextTransformation() {

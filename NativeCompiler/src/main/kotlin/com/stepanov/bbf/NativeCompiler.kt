@@ -18,20 +18,21 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
 
     override fun executeCompilationCheck(project: ProjectMessage): KotlincInvokeResult {
         val argsList = CompilationArgsGenerator.generateForKlibFuzzing(project)
-        val statuses = argsList.map { compile(it) }
+        val statuses = mutableListOf<KotlincInvokeStatus>()
+        run compilation@ {
+            argsList.forEach {
+                val status = compile(it)
+                statuses.add(status)
+                if (!status.isCompileSuccess)
+                    return@compilation
+            }
+        }
         return KotlincInvokeResult(project, statuses)
     }
 
     private fun compile(args: CompilationArgs): KotlincInvokeStatus {
 //        log.debug("Trying to compile with args:\n $args")
 
-        if (args.klib != null) {
-            val result = compile(args.klib!!)
-            if (result.hasCompilerCrash() || !result.isCompileSuccess) {
-                log.debug("klib was not compiled successfully")
-                return result
-            }
-        }
         val hasTimeout = !executeCompiler {
             MsgCollector.clear()
             val services = Services.EMPTY
@@ -56,7 +57,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     override fun checkCompiling(project: ProjectMessage): KotlincInvokeResult {
         return KotlincInvokeResult(project, listOf(
             compile(
-                CompilationArgs().addFile(project.klib.name).makeKlib()
+                CompilationArgs(0).addFile(project.klib.name).addFile(project.mainFile.name)
             )))
     }
 

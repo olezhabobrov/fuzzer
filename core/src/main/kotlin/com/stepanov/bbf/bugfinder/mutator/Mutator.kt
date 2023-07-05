@@ -1,13 +1,16 @@
 package com.stepanov.bbf.bugfinder.mutator
 
+import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.Transformation
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomFunctionGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.UsagesSamplesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.util.Invocator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
+import com.stepanov.bbf.bugfinder.project.Project
 import com.stepanov.bbf.information.MutationStat
 import com.stepanov.bbf.information.VertxAddresses
+import com.stepanov.bbf.messages.FileData
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
 import org.apache.log4j.Logger
@@ -34,6 +37,20 @@ class Mutator: AbstractVerticle() {
                 log.debug("Caught exception while mutating: ${e.stackTraceToString()}")
                 msg.fail(1, e.message)
             }
+        }
+
+        vertx.eventBus().consumer<ProjectMessage>(VertxAddresses.addInvocations) { msg ->
+            val projectMessage = msg.body()
+            val project = Project(ProjectMessage(mutableListOf(
+                projectMessage.klib, FileData("main.kt", """
+                fun main() {}
+            """.trimIndent())
+            ), null))
+            val file = project.klib
+            file.updateCtx()
+            val ftarget = FTarget(project, file)
+            Invocator.addInvocationOfAllCallable(ftarget)
+            msg.reply(project.createProjectMessage())
         }
     }
 

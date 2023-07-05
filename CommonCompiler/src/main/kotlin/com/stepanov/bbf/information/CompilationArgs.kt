@@ -6,16 +6,18 @@ import java.util.Random
 
 @Serializable
 data class CompilationArgs(
+    val number: Int,
     val dir: String = "projectTmp/",
     private var outputName: String = "",
-    var klib: CompilationArgs? = null,
+    var klib: String? = null,
+    var xinclude: String? = null,
     private val files: MutableList<String> = mutableListOf(),
     private var isXPartialLinkage: Boolean = false,
     private var artifactType: String = "program",
     private var isK2: Boolean = false,
 ) {
 
-    override fun toString(): String = "result:${build()}" + if (klib != null) " klib:$klib" else ""
+    override fun toString(): String = "result:${build()}"
 
     fun build(): List<String> {
         val result = mutableListOf<String>()
@@ -24,11 +26,15 @@ data class CompilationArgs(
             "library" -> result.addAll(listOf("-p", "library"))
             else -> {}
         }
+        if (xinclude != null)
+            result.add("-Xinclude=$xinclude")
         if (klib != null) {
-            result.addAll(listOf("-l", klib!!.outputName))
+            result.addAll(listOf("-l", klib!!))
         }
-        if (isXPartialLinkage)
-            result.add("-Xpartial-linkage")
+        if (isXPartialLinkage) {
+//            result.add("-Xpartial-linkage")
+            result.add("-Xpartial-linkage-loglevel=error")
+        }
         if (isK2)
             result.addAll(listOf("-language-version", "2.0"))
         if (outputName.isNotBlank())
@@ -41,12 +47,16 @@ data class CompilationArgs(
         isXPartialLinkage = true
     }
 
-    fun useK2(): CompilationArgs = also {
-        isK2 = true
+    fun addKlib(klibName: String) = also {
+        klib = klibName
     }
 
-    fun addKlib(addedKlib: CompilationArgs) = also {
-        klib = addedKlib
+    fun addXinclude(incl: String) = also {
+        xinclude = incl
+    }
+
+    fun useK2(): CompilationArgs = also {
+        isK2 = true
     }
 
     fun makeKlib() = also {
@@ -55,21 +65,18 @@ data class CompilationArgs(
 
     fun addFile(file: String) = also {
         files.add(dir + file)
-        createOutputName()
     }
 
     fun addFiles(files: List<String>) = also {
         files.forEach { addFile(it) }
-        createOutputName()
     }
 
-    private fun createOutputName() {
-        outputName = files.first().getWithoutExt() +
-                Random().nextInt()
+    fun createOutputName(output: String) = also {
+        outputName = output
     }
 
-    fun withOldKlib() = klib?.files?.contains("oldKlib.kt") ?: false
+    fun withOldKlib() = klib != null && klib!! == "oldKlib.kt"
 
-    fun withNewKlib() = klib?.files?.contains("newKlib.kt") ?: false
+    fun withNewKlib() = klib != null && klib!! == "newKlib.kt"
 
 }
