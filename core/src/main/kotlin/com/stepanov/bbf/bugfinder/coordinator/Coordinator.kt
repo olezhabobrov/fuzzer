@@ -84,14 +84,14 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             CompilationDescription.INVOCATOR_FAIL ->
                 log.debug("Got invocator error")
             CompilationDescription.COMPATIBLE_NOT_LINKING -> {
-                successfullyCompiledProjects.add(result.projectMessage)
+//                successfullyCompiledProjects.add(result.projectMessage)
                 log.debug(
                     "Transformation $transformationName is binary compatible, " +
                             "but compiler resulted with a linking error"
                 )
             }
             CompilationDescription.INCOMPATIBLE_LINKING -> {
-                successfullyCompiledProjects.add(result.projectMessage)
+//                successfullyCompiledProjects.add(result.projectMessage)
                 log.debug(
                     "Transformation $transformationName is binary INcompatible, " +
                             "but compiler didn't result with a linking error"
@@ -105,7 +105,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 } else {
                     log.debug("Binary incompatible transformation $transformationName breaks ABI")
                 }
-                successfullyCompiledProjects.add(result.projectMessage)
+                successfullyCompiledProjects.add(result.projectMessage.getProjectMessageWithNewKlib())
             }
             CompilationDescription.UNKOWN_BEHAVIOUR -> {
                 log.debug("Fail to understand compilation result")
@@ -202,7 +202,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     private lateinit var lastTransformation: Transformation
     private val MAX_PROJECTS_TO_MUTATE = 1
     private val MAX_PROJECTS_TO_COMPILERS = 500
-    private val LIMIT_OF_COMPILED_PROJECTS = 100
+    private val LIMIT_OF_COMPILED_PROJECTS = 10
 //    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000
     private var checkedProjects = mutableSetOf<ProjectMessage>()
     private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()

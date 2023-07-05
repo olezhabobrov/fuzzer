@@ -1,47 +1,38 @@
-import java.util.*
+package test
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
+import kotlin.test.assertEquals
 import kotlin.*
 
 
 
+val abcq1: Int = TODO()
 
-val abcq1: LinkedHashSet<Byte> = TODO()
+fun  abcq(a: Int){}
 
-fun  abcq(a: LinkedHashSet<Byte>){}
+// IGNORE_BACKEND: JS, JS_IR
+// IGNORE_BACKEND: JS_IR_ES6
+// WITH_REFLECT
 
-// !LANGUAGE: +InlineClasses
+inline class Z(val value: String)
 
-inline class IC(val x: Int)
-
-abstract class A<T> {
-    var t: T? = null
-    final fun foo(): T = t!!
+fun check(expected: String, actual: KType) {
+    assertEquals(expected, actual.toString())
 }
-
-class B: A<IC>()
-
-interface I {
-    fun foo(): IC
-}
-
-class B2: A<IC>(), I{
-private var aroo: Function2<I, List<Int>, Function1<Short?, Function2<Map<Long, B2>, ULong, ArrayList<Collection<Set<I>>>>>>  = {a: I, b: List<Int> -> {a: Short? -> {a: Map<Long, B2>, b: ULong -> ArrayList<Collection<Set<I>>>()}}}
-get() = {a: I, b: List<Int> -> {a: Short? -> {a: Map<Long, B2>, b: ULong -> ArrayList<Collection<Set<I>>>()}}}
-private set
-}
-
 
 fun box(): String {
-    val b = B()
-    b.t = IC(10)
-    if (b.foo() != IC(10)) return "Fail 1"
+    check("test.Z", typeOf<Z>())
+    check("test.Z?", typeOf<Z?>())
+    check("kotlin.Array<test.Z>", typeOf<Array<Z>>())
+    check("kotlin.Array<test.Z?>", typeOf<Array<Z?>>())
 
-    val b2 = B2()
-    b2.t = IC(10)
-    if (b2.foo() != IC(10)) return "Fail 2"
-
-    val b2i: I = b2
-    if (b2i.foo() != IC(10)) return "Fail 3"
+    check("kotlin.UInt", typeOf<UInt>())
+    check("kotlin.UInt?", typeOf<UInt?>())
+    check("kotlin.ULong?", typeOf<ULong?>())
+    check("kotlin.UShortArray", typeOf<UShortArray>())
+    check("kotlin.UShortArray?", typeOf<UShortArray?>())
+    check("kotlin.Array<kotlin.UByteArray>", typeOf<Array<UByteArray>>())
+    check("kotlin.Array<kotlin.UByteArray?>?", typeOf<Array<UByteArray?>?>())
 
     return "OK"
 }
-internal fun  bvfia(): I { TODO() }

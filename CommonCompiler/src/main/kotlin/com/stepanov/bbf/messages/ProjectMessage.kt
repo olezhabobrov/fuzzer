@@ -25,6 +25,8 @@ data class ProjectMessage(
         files.add(FileData("newKlib.kt", projectMessage.klib.text, true))
     }
 
+    fun getProjectMessageWithNewKlib() = ProjectMessage(mutableListOf(oldKlib!!), null)
+
     fun beforeTransformation() {
         klib.name = "oldKlib.kt"
         mainFile.name = "main.kt"
