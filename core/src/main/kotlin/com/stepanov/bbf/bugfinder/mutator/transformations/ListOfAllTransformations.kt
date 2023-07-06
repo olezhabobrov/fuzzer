@@ -9,7 +9,7 @@ object Constants {
     val allTransformations: WeightedList<TransformationClass> = WeightedList(listOf(
         AddDefaultValue::class to 100.0,
         AddImplToAbstract::class to 100.0,
-        AddNewEntity::class to 100.0,
+        AddNewEntity::class to 500.0,
         AddProperty::class to 100.0,
         ClassifierCompatibleTransformations::class to 100.0,
         ClassifierIncompatibleChanges::class to 100.0,

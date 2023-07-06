@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomF
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
 import com.stepanov.bbf.bugfinder.util.addPsiToBody
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.util.WeightedList
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -50,6 +51,7 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
         if (outerEntity != null) {
             outerEntity.addPsiToBody(newEntity)
         } else {
+            file.psiFile.add(psiFactory.createWhiteSpace("\n"))
             file.psiFile.add(newEntity)
         }
     }

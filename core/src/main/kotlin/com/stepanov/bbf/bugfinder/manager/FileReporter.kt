@@ -33,8 +33,11 @@ object FileReporter : Reporter {
 
         val newPath = "$resDir/$name.kt"
         File(newPath.substringBeforeLast('/')).mkdirs()
+        val messages = bug.result.results.joinToString(
+            prefix = "Combined output:\n",
+            separator = "====================\n") { it.combinedOutput }
 
-        File(newPath).writeText("$info\n${bug.project.moveAllCodeInOneFile()}\n")
+        File(newPath).writeText("$info\n${bug.project.moveAllCodeInOneFile()}\n\n$messages")
         return newPath
     }
 

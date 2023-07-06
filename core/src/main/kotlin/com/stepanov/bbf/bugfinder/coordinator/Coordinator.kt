@@ -75,7 +75,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     }
 
     private fun processResult(result: KotlincInvokeResult) {
-        checkedProjects.add(result.projectMessage)
+        checkedProjects.add(result.projectMessage.getProjectMessageWithNewKlib())
         val transformationName = lastTransformation.javaClass.simpleName
         val descr = result.getDescription()
         when (descr) {
@@ -117,6 +117,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     }
 
     private fun startWithNewProject() {
+        log.debug("Restarting with new initial project")
         val newProject = mutationProblem.getProjectMessage()
         successfullyCompiledProjects.clear()
         checkedProjects.clear()
@@ -153,8 +154,12 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 
     private fun sendProjectToCompilers(mutationResult: MutationResult) {
         val projects = mutationResult.projects.filter { project ->
-            project !in checkedProjects
+            project.getProjectMessageWithNewKlib() !in checkedProjects
         }.shuffled().take(MAX_PROJECTS_TO_COMPILERS)
+        if (projects.isEmpty()) {
+            sendNextTransformation()
+            return
+        }
         projects.forEach { it.isBinaryCompatible = isBinaryCompatible() }
         log.debug("Sending ${projects.size} projects to compiler")
         mutationProblem.compilers.forEach { address ->

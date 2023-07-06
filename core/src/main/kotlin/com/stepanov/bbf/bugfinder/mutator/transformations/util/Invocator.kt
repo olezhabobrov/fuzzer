@@ -26,13 +26,14 @@ object Invocator {
         val classInvocations = invokeAllClasses(klibFile).map {
             "val ${Random.getRandomVariableName()}: ${it.second} = " + it.first!!.text }
         writeToMain(mainFile, classInvocations)
-        val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>().map {
-            FunInvocationGenerator(klibFile).invokeFunction(it, klibFile, mainFile)
+        val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
+            .filter { it.isPublic }
+            .map {
+                FunInvocationGenerator(klibFile).invokeFunction(it, klibFile, mainFile)
         }.filter { it.isNotBlank() }
         writeToMain(mainFile, functionInvocations)
         val propertyInvocations = invokeAllProperties(klibFile, mainFile)
         writeToMain(mainFile, propertyInvocations)
-//        TODO()
     }
 
     private fun writeToMain(mainFile: BBFFile, invocations: List<String>) {
@@ -45,12 +46,13 @@ object Invocator {
     }
 
     fun invokeAllClasses(klib: BBFFile): List<Pair<PsiElement?, KotlinType?>> =
-        klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().flatMap {  clazz ->
+        klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().filter { it.isPublic }.flatMap {  clazz ->
             RandomInstancesGenerator(klib).generateInstancesOfClass(clazz)
         }.filterNotNull().filter { it.first != null }
 
     fun invokeAllProperties(klib: BBFFile, mainFile: BBFFile): List<String> {
         val properties = klib.psiFile.getAllPSIChildrenOfType<KtProperty>()
+            .filter { it.isPublic }
             .filter { it.parent is KtClassBody && it.isPublic }
         val invocations = mutableListOf<String>()
         properties.forEach { property ->
