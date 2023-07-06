@@ -1,12 +1,12 @@
-import kotlin.collections.*
 import kotlin.*
 
 
 
 
-val abcq1: Set<Pair<Int?, String>> = TODO()
+val abcq1: Int = TODO()
 
-fun  abcq(a: Set<Pair<Int?, String>>){}
+fun  abcq(a: Int){}
 
- 
- tailrec private fun  wklcd(): String { TODO() }
+fun box() {
+    return "OK"
+}

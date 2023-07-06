@@ -1,9 +1,10 @@
 class Foo {
-    var ordVar: String = "safv"
 
     class NestedFoo {
-        var nestedVar: Int = 5
-
         fun fooNested() {}
     }
 }
+
+var x = "aboba"
+
+val y: Int = 5

@@ -8,6 +8,7 @@ import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -24,7 +25,9 @@ object Invocator {
         val mainFile = target.project.mainFile
         val klibFile = target.project.klib
         val classInvocations = invokeAllClasses(klibFile).map {
-            "val ${Random.getRandomVariableName()}: ${it.second} = " + it.first!!.text }
+            val type = it.second
+            val name = type?.getJetTypeFqName(false)
+            "val ${Random.getRandomVariableName()}: $name = " + it.first!!.text }
         writeToMain(mainFile, classInvocations)
         val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
             .filter { it.isPublic }
@@ -53,14 +56,17 @@ object Invocator {
     fun invokeAllProperties(klib: BBFFile, mainFile: BBFFile): List<String> {
         val properties = klib.psiFile.getAllPSIChildrenOfType<KtProperty>()
             .filter { it.isPublic }
-            .filter { it.parent is KtClassBody && it.isPublic }
+//            .filter { it.parent is KtClassBody && it.isPublic }
         val invocations = mutableListOf<String>()
         properties.forEach { property ->
             val outerTypeT = property.getParentOfType<KtClassOrObject>(true)
-            val outerType = outerTypeT?.name ?: return@forEach
+            val outerType = outerTypeT?.name ?: ""
             val type = property.getType(klib.ctx!!)?.name ?: ""
-            val outerProperty = mainFile.psiFile.findPropertyByType(outerType) ?: return@forEach
-            val callExpression = "${outerProperty.name}.${property.name}"
+            val outerProperty = if (outerType.isNotBlank())
+                (mainFile.psiFile.findPropertyByType(outerType)?.name ?: return@forEach) + "."
+            else
+                ""
+            val callExpression = "${outerProperty}${property.name}"
             invocations.add("val ${Random.getRandomVariableName()}: $type = $callExpression")
             if (property.isVar) {
                 invocations.add("$callExpression = TODO()")
