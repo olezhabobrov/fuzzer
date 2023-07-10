@@ -9,10 +9,7 @@ import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
-import org.jetbrains.kotlin.psi.KtClassBody
-import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.types.KotlinType
@@ -30,7 +27,7 @@ object Invocator {
             "val ${Random.getRandomVariableName()}: $name = " + it.first!!.text }
         writeToMain(mainFile, classInvocations)
         val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
-            .filter { it.isPublic }
+            .filter { isPublicAccessible(it) }
             .map {
                 FunInvocationGenerator(klibFile).invokeFunction(it, klibFile, mainFile)
         }.filter { it.isNotBlank() }
@@ -49,13 +46,13 @@ object Invocator {
     }
 
     fun invokeAllClasses(klib: BBFFile): List<Pair<PsiElement?, KotlinType?>> =
-        klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().filter { it.isPublic }.flatMap {  clazz ->
+        klib.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().filter { isPublicAccessible(it) }.flatMap {  clazz ->
             RandomInstancesGenerator(klib).generateInstancesOfClass(clazz)
         }.filterNotNull().filter { it.first != null }
 
     fun invokeAllProperties(klib: BBFFile, mainFile: BBFFile): List<String> {
         val properties = klib.psiFile.getAllPSIChildrenOfType<KtProperty>()
-            .filter { it.isPublic }
+            .filter { isPublicAccessible(it) }
 //            .filter { it.parent is KtClassBody && it.isPublic }
         val invocations = mutableListOf<String>()
         properties.forEach { property ->
@@ -74,5 +71,9 @@ object Invocator {
         }
         return invocations
     }
+
+    private fun isPublicAccessible(element: KtModifierListOwner) =
+        element.isPublic ||
+                element.getParentOfType<KtClassOrObject>(true)?.isPublic ?: false
 
 }

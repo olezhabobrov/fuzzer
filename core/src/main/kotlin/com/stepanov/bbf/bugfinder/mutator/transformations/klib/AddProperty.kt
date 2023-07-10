@@ -15,7 +15,12 @@ class AddProperty: BinaryCompatibleTransformation(1) {
 
     override fun transform(target: FTarget) {
         val file = target.file
-        val randomKlass = file.psiFile.getAllPSIChildrenOfType<KtClass>().randomOrNull() ?: return
+        val randomKlass = file.psiFile.getAllPSIChildrenOfType<KtClass>()
+            .filter {
+                val gclass = GClass.fromPsi(it)
+                !gclass.isInterface()
+            }
+            .randomOrNull() ?: return
         val gClass = GClass.fromPsi(randomKlass)
         val property = RandomPropertyGenerator(file, gClass).generateRandomProperty(false)
         var r = randomKlass.addPsiToBody(psiFactory.createProperty(property)) ?: return
