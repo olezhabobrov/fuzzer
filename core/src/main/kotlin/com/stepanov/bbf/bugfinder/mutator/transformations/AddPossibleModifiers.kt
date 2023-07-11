@@ -41,6 +41,6 @@ class AddPossibleModifiers: Transformation(100) {
     private val possiblePropertyModifiers = listOf("lateinit", "override", "open", "final", "abstract", "private",
             "public", "protected", "internal", "const")
 
-    private val possibleFunctionModifiers = listOf("tailrec", "operator", "infix", "external") //"suspend"
+    private val possibleFunctionModifiers = listOf("tailrec", "operator", "infix") //"external", "suspend"
 
 }
