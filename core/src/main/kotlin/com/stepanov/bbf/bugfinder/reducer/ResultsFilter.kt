@@ -32,6 +32,11 @@ object ResultsFilter {
                     return@forEach
                 }
 
+                if (text.contains("is private in")) {
+                    file.delete()
+                    return@forEach
+                }
+
                 if (text.contains("COMPILER_CRASHED")) {
                     val stackTrace = extractStackTrace(file)
                     if (stackTrace.count { it == '\n' } > 5) { // in empty stack trace not really interested right now
