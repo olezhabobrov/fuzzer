@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 import org.jetbrains.kotlin.resolve.calls.components.isVararg
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.isNullable
 import kotlin.random.Random
 
 internal class FunInvocationGenerator(file: BBFFile) :
@@ -77,7 +78,8 @@ internal class FunInvocationGenerator(file: BBFFile) :
         val returnType = func.getReturnType(file.ctx!!)
         val property =
             if (returnType != null)
-                "val ${Random.getRandomVariableName()}: ${returnType.name} = "
+                "val ${Random.getRandomVariableName()}: ${returnType.name}" +
+                        "${if (returnType.isNullable()) "?" else ""} = "
             else
                 ""
         if (outerRef == null) {

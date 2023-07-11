@@ -16,6 +16,10 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
         val file = target.file
         val allClasses = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+            .filter {
+                val gclass = GClass.fromPsi(it)
+                !gclass.isInterface()
+            }
         val outerEntity: KtClassOrObject?
         if (allClasses.isEmpty() || Random.nextInt(0, 100) < TOP_LEVEL_PROBABILITY) {
             outerEntity = null

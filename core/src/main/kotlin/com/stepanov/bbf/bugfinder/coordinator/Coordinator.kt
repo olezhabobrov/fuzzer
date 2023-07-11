@@ -50,7 +50,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             log.debug("Got compilation result")
             val compileResult = msg.body()
             compileResult.results.all { it.results.all { !it.isCompileSuccess } }
-            compileResult.results.forEach { result ->
+            val descrs = compileResult.results.map { result ->
                 processResult(result)
             }
             log.debug("Checked unique projects: ${checkedProjects.size}")
@@ -60,7 +60,10 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 //                log.debug("MUTATION PROBLEM IS COMPLETED")
 //                eb.send(VertxAddresses.mutationProblemCompleted, coordinatorNumber)
 //            }
-            sendNextTransformation()
+            if (descrs.any { it == CompilationDescription.INVOCATOR_FAIL })
+                startWithNewProject()
+            else
+                sendNextTransformation()
         }
 
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
@@ -74,7 +77,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         }
     }
 
-    private fun processResult(result: KotlincInvokeResult) {
+    private fun processResult(result: KotlincInvokeResult): CompilationDescription {
         checkedProjects.add(result.projectMessage.getProjectMessageWithNewKlib())
         val transformationName = lastTransformation.javaClass.simpleName
         val descr = result.getDescription()
@@ -114,6 +117,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         if (descr != CompilationDescription.EXPECTED_BEHAVIOUR && descr != CompilationDescription.KLIB_INVALID) {
             sendResultToBugManager(result)
         }
+        return descr
     }
 
     private fun startWithNewProject() {
@@ -129,7 +133,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 
     private fun sendNextTransformation() {
         if (mutationProblem.isNotFinished()) {
-            if (successfullyCompiledProjects.isEmpty() || successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS) {
+            if (successfullyCompiledProjects.isEmpty() ||
+                successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS ||
+                checkedProjects.size > 1000) {
                 startWithNewProject()
                 return
             }
