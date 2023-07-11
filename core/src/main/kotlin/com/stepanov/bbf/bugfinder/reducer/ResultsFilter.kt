@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.reducer
 
 import com.stepanov.bbf.information.CompilerArgs
+import com.stepanov.bbf.messages.CompilationDescription
 import java.io.File
 
 object ResultsFilter {
@@ -49,6 +50,36 @@ object ResultsFilter {
                 }
             }
         }
+        File(CompilerArgs.resultsDir).listFiles()?.forEach { file ->
+            if (file != null && file.exists() && file.isFile) {
+                val text = file.readText()
+                if (text.contains(CompilationDescription.INVOCATOR_FAIL.toString())) {
+                    moveFile(file, CompilationDescription.INVOCATOR_FAIL.toString())
+                }
+                if (text.contains(CompilationDescription.COMPATIBLE_NOT_LINKING.toString())) {
+                    moveFile(file, CompilationDescription.COMPATIBLE_NOT_LINKING.toString())
+                }
+                if (text.contains(CompilationDescription.INCOMPATIBLE_LINKING.toString())) {
+                    moveFile(file, CompilationDescription.INCOMPATIBLE_LINKING.toString())
+                }
+                if (text.contains(CompilationDescription.COMPILER_CRASHED.toString())) {
+                    moveFile(file, CompilationDescription.COMPILER_CRASHED.toString())
+                }
+                if (text.contains(CompilationDescription.UNKOWN_BEHAVIOUR.toString())) {
+                    moveFile(file, CompilationDescription.UNKOWN_BEHAVIOUR.toString())
+                }
+            }
+        }
+    }
+
+    private fun moveFile(file: File, dirName: String) {
+        val dir = File(CompilerArgs.resultsDir, dirName)
+        if (!dir.exists()) {
+            dir.mkdir()
+        }
+        val newFile = File(dir, file.name)
+        newFile.writeText(file.readText())
+        file.delete()
     }
 
     private fun extractStackTrace(file: File) =
