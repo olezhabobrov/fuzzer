@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.isNullable
 import kotlin.collections.flatMap
 import kotlin.random.Random
 
@@ -58,7 +59,11 @@ object Invocator {
         properties.forEach { property ->
             val outerTypeT = property.getParentOfType<KtClassOrObject>(true)
             val outerType = outerTypeT?.name ?: ""
-            val type = property.getType(klib.ctx!!)?.name ?: ""
+            val kotlinType =  property.getType(klib.ctx!!)
+            val type = if (kotlinType == null)
+                ""
+            else
+                kotlinType.getJetTypeFqName(false) + if (kotlinType.isNullable()) "?" else ""
             val outerProperty = if (outerType.isNotBlank())
                 (mainFile.psiFile.findPropertyByType(outerType)?.name ?: return@forEach) + "."
             else
