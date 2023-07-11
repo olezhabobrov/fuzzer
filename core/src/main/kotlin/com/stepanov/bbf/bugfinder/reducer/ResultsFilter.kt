@@ -32,7 +32,9 @@ object ResultsFilter {
                     return@forEach
                 }
 
-                if (text.contains("is private in")) {
+
+
+                if (Regex("Type mismatch: inferred type is \\w+\\? but \\w+ was expected").containsMatchIn(text)) {
                     file.delete()
                     return@forEach
                 }
