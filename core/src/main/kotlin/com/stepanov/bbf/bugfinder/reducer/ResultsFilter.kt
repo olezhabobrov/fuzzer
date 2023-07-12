@@ -27,7 +27,7 @@ object ResultsFilter {
 
                 val text = file.readText()
 
-                if (text.contains("Cannot access")) {
+                if (text.contains("expected for interface")) {
                     file.delete()
                     return@forEach
                 }
