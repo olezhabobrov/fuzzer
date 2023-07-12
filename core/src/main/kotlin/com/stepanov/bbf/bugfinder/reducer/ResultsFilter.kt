@@ -27,7 +27,8 @@ object ResultsFilter {
 
                 val text = file.readText()
 
-                if (text.contains("expected for interface")) {
+                if (text.contains("Unresolved reference") ||
+                    text.contains("This type has a constructor, and thus must be initialized here")) {
                     file.delete()
                     return@forEach
                 }
