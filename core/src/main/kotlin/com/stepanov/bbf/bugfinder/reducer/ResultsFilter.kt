@@ -27,7 +27,7 @@ object ResultsFilter {
 
                 val text = file.readText()
 
-                if (text.contains("java.lang.OutOfMemoryError: Cannot reserve")) {
+                if (text.contains("Cannot access")) {
                     file.delete()
                     return@forEach
                 }
