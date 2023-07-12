@@ -24,7 +24,7 @@ object Invocator {
         val klibFile = target.project.klib
         val classInvocations = invokeAllClasses(klibFile).map {
             val type = it.second
-            val name = type?.getJetTypeFqName(false)
+            val name = type?.getJetTypeFqName(true)
             "val ${Random.getRandomVariableName()}: $name = " + it.first!!.text }
         writeToMain(mainFile, classInvocations)
         val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
@@ -63,7 +63,7 @@ object Invocator {
             val type = if (kotlinType == null)
                 ""
             else
-                kotlinType.getJetTypeFqName(false) + if (kotlinType.isNullable()) "?" else ""
+                kotlinType.getJetTypeFqName(true) + if (kotlinType.isNullable()) "?" else ""
             val outerProperty = if (outerType.isNotBlank())
                 (mainFile.psiFile.findPropertyByType(outerType)?.name ?: return@forEach) + "."
             else
@@ -77,8 +77,11 @@ object Invocator {
         return invocations
     }
 
-    private fun isPublicAccessible(element: KtModifierListOwner) =
-        element.isPublic ||
-                element.getParentOfType<KtClassOrObject>(true)?.isPublic ?: false
+    private fun isPublicAccessible(element: KtModifierListOwner?): Boolean =
+        if (element == null)
+            true
+        else
+            element.isPublic &&
+                isPublicAccessible(element.getParentOfType<KtClassOrObject>(true))
 
 }
