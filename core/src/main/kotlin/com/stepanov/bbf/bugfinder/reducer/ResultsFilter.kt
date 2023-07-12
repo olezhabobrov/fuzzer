@@ -32,8 +32,6 @@ object ResultsFilter {
                     return@forEach
                 }
 
-
-
                 if (Regex("Type mismatch: inferred type is \\w+\\? but \\w+ was expected").containsMatchIn(text)) {
                     file.delete()
                     return@forEach
