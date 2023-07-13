@@ -1,5 +1,3 @@
-interface FooInterface
-
-class Foo<T: FooInterface>(t: T)
-
-class Bar: FooInterface
+class Foo<T>(t: T?) {
+    constructor(x: Int): this(null) {}
+}

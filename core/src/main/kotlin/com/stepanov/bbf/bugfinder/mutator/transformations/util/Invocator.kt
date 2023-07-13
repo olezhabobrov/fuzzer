@@ -5,34 +5,30 @@ import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInstanceGener
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocationGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
-import com.stepanov.bbf.bugfinder.util.*
+import com.stepanov.bbf.bugfinder.util.findPropertyByType
+import com.stepanov.bbf.bugfinder.util.getRandomVariableName
+import com.stepanov.bbf.bugfinder.util.getType
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtModifierListOwner
+import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isNullable
-import kotlin.collections.flatMap
 import kotlin.random.Random
 
 object Invocator {
 
     fun foo(file: BBFFile) {
-        val classes = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
+        val constructors = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
             file.getDescriptorByKtClass(it)
-        }
-        val types = classes.map {
-            if (it == null)
-                null
-            else
-                it.defaultType
-        }
-        val results = ClassInstanceGenerator(file).generateInstancesOfUserClass(types[1]!!)
+        }.first()!!.constructors.toList()
         TODO()
     }
 
