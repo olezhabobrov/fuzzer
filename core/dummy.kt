@@ -1,12 +1,13 @@
-import kotlin.*
 
 
 
 
-val abcq1: Int = TODO()
+val abcq1: Bar = TODO()
 
-fun  abcq(a: Int){}
+fun  abcq(a: Bar){}
 
-fun box() {
-    return "OK"
-}
+interface FooInterface
+
+class Foo<T: FooInterface>(t: T)
+
+class Bar: FooInterface

@@ -1,10 +1,5 @@
-class Foo {
+interface FooInterface
 
-    class NestedFoo {
-        fun fooNested() {}
-    }
-}
+class Foo<T: FooInterface>(t: T)
 
-var x = "aboba"
-
-val y: Int = 5
+class Bar: FooInterface

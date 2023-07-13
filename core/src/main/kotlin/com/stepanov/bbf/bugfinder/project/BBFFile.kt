@@ -4,6 +4,7 @@ import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
@@ -22,6 +23,10 @@ class BBFFile(
             name.endsWith(".kt") -> LANGUAGE.KOTLIN
             else -> LANGUAGE.UNKNOWN
         }
+    }
+
+    fun getDescriptorByKtClass(clazz: KtClassOrObject): ClassDescriptor? {
+        return ctx!![BindingContext.CLASS, clazz]
     }
 
     override fun toString(): String =

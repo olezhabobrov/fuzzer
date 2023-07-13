@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInstanceGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocationGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
@@ -8,6 +9,8 @@ import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
@@ -19,9 +22,26 @@ import kotlin.random.Random
 
 object Invocator {
 
+    fun foo(file: BBFFile) {
+        val classes = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
+            file.getDescriptorByKtClass(it)
+        }
+        val types = classes.map {
+            if (it == null)
+                null
+            else
+                it.defaultType
+        }
+        val results = ClassInstanceGenerator(file).generateInstancesOfUserClass(types[1]!!)
+        TODO()
+    }
+
     fun addInvocationOfAllCallable(target: FTarget) {
         val mainFile = target.project.mainFile
         val klibFile = target.project.klib
+
+        foo(klibFile)
+        TODO()
         val classInvocations = invokeAllClasses(klibFile).map {
             val type = it.second
             val name = type?.getJetTypeFqName(true)
