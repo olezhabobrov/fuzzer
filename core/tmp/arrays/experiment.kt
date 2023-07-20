@@ -1,3 +1,4 @@
-class Foo<T>(t: T?) {
-    constructor(x: Int): this(null) {}
+class Bar(x: Int, y: String): Foo {
+    constructor(z: Bar): this(z.x, z.y) {}
 }
+

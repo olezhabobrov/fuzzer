@@ -28,6 +28,7 @@ import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
 import com.stepanov.bbf.bugfinder.util.kcheck.nextString
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
+import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.ImportPath
@@ -519,6 +520,12 @@ fun KotlinType.isKType(): Boolean =
 
 fun KotlinType.isAbstractClass(): Boolean =
     (this.constructor.declarationDescriptor as? ClassDescriptor)?.modality == Modality.ABSTRACT
+
+fun KotlinType.isSubTypeOf(otherType: KotlinType): Boolean =
+    (this.supertypes() + this).any {
+        it.getJetTypeFqName(false) == otherType.getJetTypeFqName(false)
+    }
+
 
 fun KotlinType.replaceTypeOrRandomSubtypeOnTypeParam(typeParams: List<String>): String {
     val typeParamsWithoutBounds = typeParams.map { it.substringBefore(':') }

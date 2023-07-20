@@ -1,9 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInstanceGenerator
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.*
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocationGenerator
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
@@ -13,10 +12,7 @@ import com.stepanov.bbf.bugfinder.util.getType
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
-import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtModifierListOwner
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.types.KotlinType
@@ -26,9 +22,12 @@ import kotlin.random.Random
 object Invocator {
 
     fun foo(file: BBFFile) {
-        val constructors = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
+        val clazz = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
             file.getDescriptorByKtClass(it)
-        }.first()!!.constructors.toList()
+        }.random()!!
+        val result = ClassInvocator(file).randomClassInvocation(clazz)
+//        val func = file.psiFile.getAllPSIChildrenOfType<KtFunction>().random().let { file.getDescriptorByKtFunction(it) }
+//        val result = FunInvocator(file).invokeFunction(func!!)
         TODO()
     }
 
