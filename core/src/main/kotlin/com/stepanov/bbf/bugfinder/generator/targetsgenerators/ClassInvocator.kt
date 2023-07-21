@@ -18,8 +18,11 @@ class ClassInvocator(val file: BBFFile) {
             generateInstances(descriptor, depth).random()
 
     fun generateInstances(descriptor: ClassDescriptor, depth: Int = 0): List<String> {
-        if (descriptor.defaultType.isPrimitiveTypeOrNullablePrimitiveTypeOrString())
-            return listOf(generateDefValuesAsString(descriptor.defaultType.toString()))
+        val type = descriptor.defaultType
+        val primitiveValue = generateDefValuesAsString(type.toString())
+        if (primitiveValue.isNotBlank())
+            return listOf(primitiveValue)
+
 //        descriptor.defaultType.isPrimitiveType()
 //        descriptor.defaultType
 //        descriptor.modality

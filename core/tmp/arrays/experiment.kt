@@ -1,4 +1,6 @@
-class Bar(x: Int, y: String): Foo {
-    constructor(z: Bar): this(z.x, z.y) {}
+class Foo(x: Int)
+
+class Bar(x: Number, z: Any?, y: Foo) {
+
 }
 

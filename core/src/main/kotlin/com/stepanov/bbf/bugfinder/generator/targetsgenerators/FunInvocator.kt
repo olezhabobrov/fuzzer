@@ -3,6 +3,8 @@ package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
+import org.jetbrains.kotlin.types.isNullable
 
 class FunInvocator(val file: BBFFile) {
 
@@ -21,15 +23,38 @@ class FunInvocator(val file: BBFFile) {
 
     fun invokeParameterBrackets(descriptor: FunctionDescriptor, depth: Int = 0): List<String> {
         val values = generateValueParameters(descriptor, depth)
-        val usual = descriptor.valueParameters.joinToString(prefix = "(", postfix = ")", separator = ",") { parameter ->
+        if (descriptor.valueParameters.any { values[it.name.asString()] == null }) {
+            return listOf()
+        }
+
+        val results = mutableListOf<List<String>>()
+        results.add(descriptor.valueParameters.map { parameter ->
             val name = parameter.name.toString()
-            val value = values[name]
-            if (value == null)
-                error("Shouldn't be null")
-            value
+            values[name]!!
+        })
+        if (descriptor.valueParameters.any { it.hasDefaultValue() }) {
+            results.add(
+                descriptor.valueParameters.filter {
+                    !it.hasDefaultValue()
+                }.map {  parameter ->
+                    val value = values[parameter.name.asString()]
+                    "${parameter.name}=$value"
+                }.shuffled()
+            )
+        }
+        if (descriptor.valueParameters.any { it.type.isNullable() }) {
+            results.add(
+                descriptor.valueParameters.map { parameter ->
+                    if (parameter.type.isNullable())
+                        "null"
+                    else
+                        values[parameter.name.asString()]!!
+                }
+            )
         }
         // TODO: smth with default values
-        return listOf(usual)
+        // TODO: with nullable types
+        return results.map { it.joinToString(prefix = "(", postfix = ")", separator = ",") }
     }
 
 }
