@@ -1,6 +1,7 @@
-class Foo(x: Int)
-
-class Bar(x: Number, z: Any?, y: Foo) {
-
+interface FooInterface {
+    fun foo(x: Int = 5): String
 }
 
+abstract class Bar: FooInterface {
+    abstract val x: FooInterface
+}

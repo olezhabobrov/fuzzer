@@ -1,0 +1,75 @@
+package com.stepanov.bbf.bugfinder.generator.targetsgenerators
+
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GFunction
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GProperty
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
+import com.stepanov.bbf.bugfinder.util.filterDuplicatesBy
+import com.stepanov.bbf.bugfinder.util.findPsi
+import com.stepanov.bbf.bugfinder.util.getRandomClassName
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.KtProperty
+import kotlin.random.Random
+
+class ClassImplementer {
+
+    fun randomImplementationOfClasses(supertypes: List<ClassDescriptor>): String {
+        val gclass = GClass()
+        with(gclass) {
+            name = Random.getRandomClassName()
+            classWord = "class"
+            gclass.supertypes = callConstructors(supertypes).toMutableList()
+            body = implementAllMembers(supertypes).joinToString(prefix = "{\n", postfix = "\n}", separator = "\n")
+        }
+        return gclass.toString()
+    }
+
+    fun callConstructors(supertypes: List<ClassDescriptor>): List<String> =
+        supertypes.map {
+            if (it.kind == ClassKind.INTERFACE)
+                it.name.asString()
+            else
+                if (it.modality != Modality.FINAL) {
+                    trivialConstructorCall(it)
+                } else
+                    null
+        }.filterNotNull()
+
+    fun implementAllMembers(supertypes: List<ClassDescriptor>): List<String> {
+        val allMembers = getAllMembers(supertypes).map {
+            val psi = it.findPsi()
+            if (psi == null)
+                null
+            else
+                when (psi) {
+                    is KtFunction -> GFunction.fromPsi(psi)
+                    is KtProperty -> GProperty.fromPsi(psi)
+                    else -> null
+                }
+        }
+        if (allMembers.contains(null))
+            error("Shouldn't have null")
+        return allMembers.filterNotNull().map {
+            it.addOverride()
+            it.addDefaultImplementation()
+            it.toString()
+        }
+    }
+
+    private fun trivialConstructorCall(descriptor: ClassDescriptor): String =
+        descriptor.constructors.random().let {
+            descriptor.name.asString() +
+                    it.valueParameters.joinToString(prefix = "(", postfix = ")", separator = ",") { "TODO()" }
+        }
+
+    private fun getAllMembers(supertypes: List<ClassDescriptor>) =
+        supertypes.map { it.defaultType }.flatMap { StdLibraryGenerator.getMembersToOverride(it) }
+            .filterDuplicatesBy {
+                if (it is FunctionDescriptor) "${it.name}${it.valueParameters.map { it.name.asString() + it.returnType.toString() }}"
+                else it.name.asString()
+            }
+}

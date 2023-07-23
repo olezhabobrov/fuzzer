@@ -31,7 +31,7 @@ data class GClass(
             else typeParams.joinToString(prefix = "<", postfix = "> ")
         val s =
             if (supertypes.isEmpty()) ""
-            else supertypes.joinToString(prefix = ": ")
+            else supertypes.joinToString(prefix = ": ", separator = ", ")
         val b =
             if (body.isEmpty()) ""
             else psiFactory.createBlock(body).text

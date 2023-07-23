@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtParameter
@@ -18,7 +19,7 @@ data class GFunction(
     var rtvType: String = "",
     var body: String = ""
 ): GStructure() {
-    override fun toPsi(): PsiElement {
+    override fun toString(): String {
         val m = modifiers.let { if (it.all { it.isEmpty() }) "" else it.joinToString(" ") }
         val e = if (extensionReceiver.isEmpty()) "" else " $extensionReceiver."
         val sta = if (typeArgs.isEmpty()) "" else typeArgs.joinToString(prefix = "<", postfix = "> ")
@@ -27,7 +28,11 @@ data class GFunction(
             ": $rtvType"
         else
             ""
-        return psiFactory.createFunction("$m fun $sta $e$name($strArgs)$rt $body")
+        return "$m fun $sta $e$name($strArgs)$rt $body"
+    }
+
+    override fun toPsi(): PsiElement {
+        return psiFactory.createFunction(toString())
     }
 
     companion object {
@@ -46,6 +51,24 @@ data class GFunction(
                         function.bodyBlockExpression == null -> ""
                         else -> function.bodyBlockExpression!!.text
                     }
+            }
+            return gfun
+        }
+
+        fun fromDescriptor(function: FunctionDescriptor): GFunction {
+            val gfun = GFunction()
+            with (gfun) {
+                name = function.name.asString()
+//                modifiers = function.modifierList?.text?.split(" ")?.toMutableList() ?: mutableListOf()
+                typeArgs = function.typeParameters.map { it.name.asString() }
+                args = function.valueParameters.map { it.name.asString() }
+//                argsParams = function.valueParameters.let { it.map { GParameter.fromPsi(it) } }.toMutableList()
+//                rtvType = function.typeReference?.text ?: ""
+//                body =
+//                    when {
+//                        function.bodyBlockExpression == null -> ""
+//                        else -> function.bodyBlockExpression!!.text
+//                    }
             }
             return gfun
         }

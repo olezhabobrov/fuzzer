@@ -1,12 +1,13 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.generateDefValuesAsString
-import com.stepanov.bbf.bugfinder.util.isPrimitiveTypeOrNullablePrimitiveTypeOrString
 import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.resolve.descriptorUtil.isPublishedApi
 
 class ClassInvocator(val file: BBFFile) {
 
@@ -23,18 +24,25 @@ class ClassInvocator(val file: BBFFile) {
         if (primitiveValue.isNotBlank())
             return listOf(primitiveValue)
 
+
 //        descriptor.defaultType.isPrimitiveType()
 //        descriptor.defaultType
 //        descriptor.modality
 //        descriptor.kind
         when (descriptor.kind) {
-            ClassKind.CLASS -> {
-                return generateInstancesOfClass(descriptor, depth)
-            }
-            ClassKind.OBJECT -> return listOf(descriptor.name.asString())
-            else -> TODO()
+//            ClassKind.CLASS -> {
+//                return generateInstancesOfClass(descriptor, depth)
+//            }
+//            ClassKind.OBJECT -> return listOf(descriptor.name.asString())
+//            ClassKind.INTERFACE -> return implementOpenMembers(descriptor)
+            else -> return implementOpenMembers(descriptor)
         }
+    }
 
+    fun implementOpenMembers(descriptor: ClassDescriptor): List<String> {
+//        val x: CallableMemberDescriptor = descriptor
+        val result = ClassImplementer().randomImplementationOfClasses(listOf(descriptor))
+        TODO()
     }
 
     fun generateInstancesOfClass(descriptor: ClassDescriptor, depth: Int = 0): List<String> {
@@ -52,7 +60,8 @@ class ClassInvocator(val file: BBFFile) {
     }
 
     private fun invokeAllConstructors(descriptor: ClassDescriptor, depth: Int): List<String> =
-        descriptor.constructors.flatMap { invokeConstructor(descriptor, it, depth) }
+        descriptor.constructors.filter { it.visibility == DescriptorVisibilities.PUBLIC }
+            .flatMap { invokeConstructor(descriptor, it, depth) }
 
     private fun invokeConstructor(descriptor: ClassDescriptor,
                                   constructor: ClassConstructorDescriptor,

@@ -15,6 +15,10 @@ abstract class GStructure {
     fun isAbstract() = modifiers.contains("abstract")
     fun isInline() = modifiers.contains("inline")
 
+    fun addOverride() {
+        modifiers.add("override")
+    }
+
     fun addInline() {
         modifiers.add("inline")
     }
@@ -73,6 +77,7 @@ abstract class GStructure {
     fun isNotImplemented() = !isImplemented()
 
     fun addDefaultImplementation() {
+        removeAbstract()
         when (this) {
             is GFunction -> body = "{ TODO() }"
             is GProperty -> addDefaultValue()

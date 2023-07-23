@@ -24,7 +24,7 @@ object Invocator {
     fun foo(file: BBFFile) {
         val clazz = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
             file.getDescriptorByKtClass(it)
-        }.random()!!
+        }.last()!!
         val result = ClassInvocator(file).generateInstances(clazz)
 //        val func = file.psiFile.getAllPSIChildrenOfType<KtFunction>().random().let { file.getDescriptorByKtFunction(it) }
 //        val result = FunInvocator(file).invokeFunction(func!!)
