@@ -35,7 +35,7 @@ data class GClass(
         val b =
             if (body.isEmpty()) ""
             else psiFactory.createBlock(body).text
-        return "$a$m $classWord $name $t $constructorWord$c$s$b"
+        return "$a$m $classWord $name$t$constructorWord$c$s$b"
     }
 
     companion object {

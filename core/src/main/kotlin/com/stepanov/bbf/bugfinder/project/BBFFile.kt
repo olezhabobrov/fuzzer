@@ -1,8 +1,10 @@
 package com.stepanov.bbf.bugfinder.project
 
+import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.bugfinder.util.isSubTypeOf
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -13,6 +15,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
 import org.jetbrains.kotlin.types.KotlinType
+import kotlin.random.Random
 
 class BBFFile(
     var psiFile: KtFile,
@@ -99,5 +102,13 @@ class BBFFile(
 
     fun getAllProperties(): List<KtProperty> {
         return psiFile.getAllPSIChildrenOfType()
+    }
+
+    fun addExpression(exprString: String) {
+        val mainText = text.substringAfter("{").substringBeforeLast("}")
+        val fileText = "fun main() {\n$mainText\n$exprString\n}"
+        val newKtFile = psiFactory.createFile(fileText)
+        psiFile = newKtFile
+        updateCtx()
     }
 }

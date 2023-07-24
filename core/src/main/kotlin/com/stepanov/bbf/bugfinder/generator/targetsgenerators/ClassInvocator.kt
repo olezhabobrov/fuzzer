@@ -1,13 +1,8 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.generateDefValuesAsString
-import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
-import org.jetbrains.kotlin.descriptors.Modality
-import org.jetbrains.kotlin.resolve.descriptorUtil.isPublishedApi
+import org.jetbrains.kotlin.descriptors.*
 
 class ClassInvocator(val file: BBFFile) {
 
@@ -24,38 +19,29 @@ class ClassInvocator(val file: BBFFile) {
         if (primitiveValue.isNotBlank())
             return listOf(primitiveValue)
 
-
-//        descriptor.defaultType.isPrimitiveType()
-//        descriptor.defaultType
-//        descriptor.modality
-//        descriptor.kind
-        when (descriptor.kind) {
-//            ClassKind.CLASS -> {
-//                return generateInstancesOfClass(descriptor, depth)
-//            }
-//            ClassKind.OBJECT -> return listOf(descriptor.name.asString())
-//            ClassKind.INTERFACE -> return implementOpenMembers(descriptor)
-            else -> return implementOpenMembers(descriptor)
+        return when (descriptor.kind) {
+            ClassKind.CLASS -> {
+                generateInstancesOfClass(descriptor, depth)
+            }
+            ClassKind.OBJECT -> listOf(descriptor.name.asString())
+            ClassKind.INTERFACE -> implementOpenMembers(descriptor, depth)
+            else -> TODO()
         }
     }
 
-    fun implementOpenMembers(descriptor: ClassDescriptor): List<String> {
-//        val x: CallableMemberDescriptor = descriptor
-        val result = ClassImplementer().randomImplementationOfClasses(listOf(descriptor))
-        TODO()
-    }
+    fun implementOpenMembers(descriptor: ClassDescriptor, depth: Int = 0): List<String> =
+        ClassImplementer(file).allImplementationsOfClasses(listOf(descriptor), depth)
 
     fun generateInstancesOfClass(descriptor: ClassDescriptor, depth: Int = 0): List<String> {
         return when (descriptor.modality) {
             Modality.FINAL ->
                 invokeAllConstructors(descriptor, depth)
-//            Modality.ABSTRACT ->
-//                extendClass(descriptor)
-//            Modality.OPEN ->
-//                invokeAllConstructors(descriptor) + extendClass(descriptor)
-            else -> TODO()
-//            Modality.SEALED ->
-//                listOf() // not interested in extending sealed classes in klib
+            Modality.ABSTRACT ->
+                implementOpenMembers(descriptor)
+            Modality.OPEN ->
+                invokeAllConstructors(descriptor, depth) + implementOpenMembers(descriptor, depth)
+            Modality.SEALED ->
+                listOf() // not interested in extending sealed classes in klib
         }
     }
 
@@ -68,22 +54,7 @@ class ClassInvocator(val file: BBFFile) {
                                   depth: Int): List<String> {
         val parameters = FunInvocator(file).invokeParameterBrackets(constructor, depth)
         return parameters.map { "${descriptor.name}$it" }
-//        constructor.valueParameters.forEach {
-//            it.hasDefaultValue()
-//        }
-//        constructor.typeParameters // generate types
-//        constructor.valueParameters // generate instances
-//        TODO()
     }
-
-    private fun extendClass(descriptor: ClassDescriptor): List<String> {
-        TODO()
-    }
-
-    private fun generateAnonObjects(descriptor: ClassDescriptor): List<String> {
-        TODO()
-    }
-
 
 
     private val DEPTH = 10

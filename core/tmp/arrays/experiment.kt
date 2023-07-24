@@ -1,7 +1,7 @@
-interface FooInterface {
-    fun foo(x: Int = 5): String
+abstract class Foo(x: Int) {
+
 }
 
-abstract class Bar: FooInterface {
-    abstract val x: FooInterface
+fun babab(x: Foo): Int? {
+    TODO()
 }

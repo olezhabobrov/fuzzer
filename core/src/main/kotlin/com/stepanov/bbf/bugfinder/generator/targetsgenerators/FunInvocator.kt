@@ -8,17 +8,9 @@ import org.jetbrains.kotlin.types.isNullable
 
 class FunInvocator(val file: BBFFile) {
 
-    fun generateParametersWOdefault(descriptor: FunctionDescriptor, depth: Int = 0): String {
-        TODO()
-    }
-
-    // returns parameterName to value
-    fun generateValueParameters(descriptor: FunctionDescriptor, depth: Int = 0): Map<String, String> =
-        descriptor.valueParameters.associate { parameter ->
-            val descr = parameter.type.constructor.declarationDescriptor as? ClassDescriptor
-            if (descr == null)
-                return mapOf()
-            parameter.name.toString() to ClassInvocator(file).randomClassInvocation(descr, depth + 1)
+    fun invokeFunction(descriptor: FunctionDescriptor, depth: Int = 0): List<String> =
+        invokeParameterBrackets(descriptor).map {  valueParameters ->
+            "${descriptor.name.asString()}$valueParameters"
         }
 
     fun invokeParameterBrackets(descriptor: FunctionDescriptor, depth: Int = 0): List<String> {
@@ -52,9 +44,16 @@ class FunInvocator(val file: BBFFile) {
                 }
             )
         }
-        // TODO: smth with default values
-        // TODO: with nullable types
         return results.map { it.joinToString(prefix = "(", postfix = ")", separator = ",") }
     }
+
+    // returns parameterName to value
+    fun generateValueParameters(descriptor: FunctionDescriptor, depth: Int = 0): Map<String, String> =
+        descriptor.valueParameters.associate { parameter ->
+            val descr = parameter.type.constructor.declarationDescriptor as? ClassDescriptor
+            if (descr == null)
+                return mapOf()
+            parameter.name.toString() to ClassInvocator(file).randomClassInvocation(descr, depth + 1)
+        }
 
 }

@@ -2,9 +2,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.*
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocationGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
-import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.findPropertyByType
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
@@ -32,33 +30,60 @@ object Invocator {
     }
 
     fun addInvocationOfAllCallable(target: FTarget) {
-        val mainFile = target.project.mainFile
+//        val mainFile = target.project.mainFile
         val klibFile = target.project.klib
 
-        foo(klibFile)
-        TODO()
-        val classInvocations = invokeAllClasses(klibFile).map {
-            val type = it.second
-            val name = type?.getJetTypeFqName(true)
-            "val ${Random.getRandomVariableName()}: $name = " + it.first!!.text }
-        writeToMain(mainFile, classInvocations)
-        val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
-            .filter { isPublicAccessible(it) }
+//        foo(klibFile)
+//        TODO()
+        klibFile.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
+            klibFile.getDescriptorByKtClass(it)
+        }.filterNotNull().forEach { descriptor ->
+            val instances = ClassInvocator(klibFile).generateInstances(descriptor).map {
+                "val ${Random.getRandomVariableName()}: " +
+                        "${descriptor.defaultType.getJetTypeFqName(true)} = $it"
+            }
+            writeToMain(klibFile, instances)
+        }
+        klibFile.psiFile.getAllPSIChildrenOfType<KtFunction>()
+            .filter { it !is KtConstructor<*> && it.name != "main"}
             .map {
-                FunInvocationGenerator(klibFile).invokeFunction(it, klibFile, mainFile)
-        }.filter { it.isNotBlank() }
-        writeToMain(mainFile, functionInvocations)
-        val propertyInvocations = invokeAllProperties(klibFile, mainFile)
-        writeToMain(mainFile, propertyInvocations)
+                klibFile.getDescriptorByKtFunction(it)
+            }.filterNotNull().forEach { descriptor ->
+                val instances = FunInvocator(klibFile).invokeFunction(descriptor).map {
+                    val type = descriptor.returnType?.getJetTypeFqName(true) ?: "Nothing"
+                    "val ${Random.getRandomVariableName()}: $type = $it"
+                }
+                writeToMain(klibFile, instances)
+            }
+        TODO()
+//        val classInvocations = invokeAllClasses(klibFile).map {
+//            val type = it.second
+//            val name = type?.getJetTypeFqName(true)
+//            "val ${Random.getRandomVariableName()}: $name = " + it.first!!.text }
+//        writeToMain(mainFile, classInvocations)
+//        val functionInvocations = klibFile.psiFile.getAllPSIChildrenOfType<KtNamedFunction>()
+//            .filter { isPublicAccessible(it) }
+//            .map {
+//                FunInvocationGenerator(klibFile).invokeFunction(it, klibFile, mainFile)
+//        }.filter { it.isNotBlank() }
+//        writeToMain(mainFile, functionInvocations)
+//        val propertyInvocations = invokeAllProperties(klibFile, mainFile)
+//        writeToMain(mainFile, propertyInvocations)
     }
 
-    private fun writeToMain(mainFile: BBFFile, invocations: List<String>) {
-        val mainText = mainFile.text.substringAfter("{").substringBeforeLast("}")
+    private fun writeToMain(file: BBFFile, invocations: List<String>) {
+        var text = file.text
+        if (!text.contains("fun main()")) {
+            text += "\nfun main() {\n}"
+        }
+        val klib = text.substringBefore("fun main()")
+        val mainText = text.substringAfter("fun main()")
+            .substringAfter("{").substringBeforeLast("}")
         val fileText = invocations
-            .joinToString(separator = "\n", prefix = "fun main() {\n$mainText", postfix = "\n}")
+            .joinToString(separator = "\n", prefix = "${klib}\nfun main() {$mainText", postfix = "\n}")
         val newKtFile = psiFactory.createFile(fileText)
-        mainFile.psiFile = newKtFile
-        mainFile.updateCtx()
+        file.psiFile = newKtFile
+        file.updateCtx()
     }
 
     fun invokeAllClasses(klib: BBFFile): List<Pair<PsiElement?, KotlinType?>> =

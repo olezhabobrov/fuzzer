@@ -4,40 +4,57 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GFunction
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GProperty
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.filterDuplicatesBy
 import com.stepanov.bbf.bugfinder.util.findPsi
 import com.stepanov.bbf.bugfinder.util.getRandomClassName
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
 import kotlin.random.Random
 
-class ClassImplementer {
+class ClassImplementer(val file: BBFFile) {
 
     fun randomImplementationOfClasses(supertypes: List<ClassDescriptor>): String {
         val gclass = GClass()
         with(gclass) {
             name = Random.getRandomClassName()
             classWord = "class"
-            gclass.supertypes = callConstructors(supertypes).toMutableList()
-            body = implementAllMembers(supertypes).joinToString(prefix = "{\n", postfix = "\n}", separator = "\n")
+            gclass.supertypes = callConstructors(supertypes).random().toMutableList()
+            body = implementAllMembers(supertypes).joinToString(separator = "\n")
         }
         return gclass.toString()
     }
 
-    fun callConstructors(supertypes: List<ClassDescriptor>): List<String> =
-        supertypes.map {
-            if (it.kind == ClassKind.INTERFACE)
-                it.name.asString()
-            else
-                if (it.modality != Modality.FINAL) {
-                    trivialConstructorCall(it)
-                } else
-                    null
-        }.filterNotNull()
+    fun allImplementationsOfClasses(supertypes: List<ClassDescriptor>, depth: Int = 0): List<String> =
+        callConstructors(supertypes, depth).map { constructors ->
+            val gclass = GClass()
+            with(gclass) {
+                classWord = "object"
+                gclass.supertypes = constructors.toMutableList()
+                body = implementAllMembers(supertypes).joinToString(separator = "\n")
+            }
+            gclass.toString()
+        }
+
+    fun callConstructors(supertypes: List<ClassDescriptor>, depth: Int = 0): List<List<String>>  {
+        val abstractClassesInvocations =
+            supertypes.firstOrNull { it.kind != ClassKind.INTERFACE }?.let { descriptor ->
+                descriptor.constructors.flatMap { constructor ->
+                    FunInvocator(file).invokeParameterBrackets(constructor, depth).map {
+                        "${descriptor.name.asString()}$it"
+                    }
+                }
+            }
+        if (abstractClassesInvocations == null) {
+            return listOf(supertypes.map { it.name.asString() })
+        }
+        return abstractClassesInvocations.map { abstractClass ->
+            supertypes.filter { it.kind == ClassKind.INTERFACE }.map { it.name.asString() } + abstractClass
+        }
+    }
 
     fun implementAllMembers(supertypes: List<ClassDescriptor>): List<String> {
         val allMembers = getAllMembers(supertypes).map {
