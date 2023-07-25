@@ -1,14 +1,9 @@
-class Foo {
-    class Bar {
-        inner class BazInner {
+class Foo(val x: String) {
+    var a = 5
 
-        }
-        class Baz
-    }
+    lateinit var f: Foo
+
 }
 
-class AAA {
-    inner class AA {
-        inner class A
-    }
-}
+val aboba = 5
+var baobab: String = "A"

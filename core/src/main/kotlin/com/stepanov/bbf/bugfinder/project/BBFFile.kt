@@ -52,7 +52,8 @@ class BBFFile(
     // returns name of found property in main
     fun findImplementation(type: KotlinType): String? {
         val allDeclaredProperties = psiFile.getAllPSIChildrenOfType<KtProperty>().filter {
-            it.getParentOfType<KtClassOrObject>(true) == null
+            it.getParentOfType<KtClassOrObject>(true) == null &&
+                    it.getParentOfType<KtFunction>(true) != null
         }
         val applicableProperties = allDeclaredProperties.filter {
             getVariableDescriptor(it)?.type?.isSubTypeOf(type) ?: false

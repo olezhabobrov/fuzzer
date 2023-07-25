@@ -6,10 +6,7 @@ import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.project.BBFFile
-import com.stepanov.bbf.bugfinder.util.findPropertyByType
-import com.stepanov.bbf.bugfinder.util.getRandomVariableName
-import com.stepanov.bbf.bugfinder.util.getType
-import com.stepanov.bbf.bugfinder.util.getTypeName
+import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -17,8 +14,10 @@ import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
+import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isNullable
+import kotlin.collections.flatMap
 import kotlin.random.Random
 
 object Invocator {
@@ -60,6 +59,29 @@ object Invocator {
                 }
                 writeToMain(mainFile, instances)
             }
+        klibFile.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+            .map {
+                 klibFile.getDescriptorByKtClass(it)
+            }.filterNotNull().forEach { descriptor ->
+                val invocations = invokeProperties(descriptor, mainFile)
+                writeToMain(mainFile, invocations)
+            }
+        klibFile.psiFile.getAllPSIChildrenOfType<KtProperty>().filter {
+            it.getParentOfType<KtClassOrObject>(true) == null
+        }.forEach { property ->
+            val kotlinType =  property.getType(klibFile.ctx!!)
+            val type = if (kotlinType == null)
+                ""
+            else
+                kotlinType.getJetTypeFqName(true) + if (kotlinType.isNullable()) "?" else ""
+            val callExpression = property.name ?: "Nothing"
+            val invocations = mutableListOf<String>()
+            invocations.add("val ${Random.getRandomVariableName()}: $type = $callExpression")
+            if (property.isVar) {
+                invocations.add("$callExpression = TODO()")
+            }
+            writeToMain(mainFile, invocations)
+        }
         TODO()
 //        val classInvocations = invokeAllClasses(klibFile).map {
 //            val type = it.second
@@ -96,24 +118,17 @@ object Invocator {
             RandomInstancesGenerator(klib).generateInstancesOfClass(clazz)
         }.filterNotNull().filter { it.first != null }
 
-    fun invokeAllProperties(klib: BBFFile, mainFile: BBFFile): List<String> {
-        val properties = klib.psiFile.getAllPSIChildrenOfType<KtProperty>()
-            .filter { isPublicAccessible(it) }
-//            .filter { it.parent is KtClassBody && it.isPublic }
+    fun invokeProperties(descriptor: ClassDescriptor, file: BBFFile): List<String> {
+        val properties = descriptor.defaultType.getProperties()
+        val parent = ClassInvocator(file).randomClassInvocation(descriptor)
         val invocations = mutableListOf<String>()
         properties.forEach { property ->
-            val outerTypeT = property.getParentOfType<KtClassOrObject>(true)
-            val outerType = outerTypeT?.name ?: ""
-            val kotlinType =  property.getType(klib.ctx!!)
-            val type = if (kotlinType == null)
-                ""
-            else
-                kotlinType.getJetTypeFqName(true) + if (kotlinType.isNullable()) "?" else ""
-            val outerProperty = if (outerType.isNotBlank())
-                (mainFile.psiFile.findPropertyByType(outerType)?.name ?: return@forEach) + "."
+            val type = property.type.getTypeName()
+            val outerProperty = if (parent.isNotBlank())
+                parent + "."
             else
                 ""
-            val callExpression = "${outerProperty}${property.name}"
+            val callExpression = "${outerProperty}${property.name.asString()}"
             invocations.add("val ${Random.getRandomVariableName()}: $type = $callExpression")
             if (property.isVar) {
                 invocations.add("$callExpression = TODO()")

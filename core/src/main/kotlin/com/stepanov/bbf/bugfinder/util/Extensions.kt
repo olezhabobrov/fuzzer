@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.ImportPath
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
+import org.jetbrains.kotlin.resolve.scopes.computeAllNames
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import java.io.BufferedReader
 import java.io.File
@@ -528,6 +529,13 @@ fun KotlinType.isSubTypeOf(otherType: KotlinType): Boolean =
 
 fun KotlinType.getTypeName() = getJetTypeFqName(true) +
         if (isNullable()) "?" else ""
+
+fun KotlinType.getProperties(): List<PropertyDescriptor> {
+    memberScope.computeAllNames()
+    return memberScope.getDescriptorsFiltered {true}
+        .filter { it is PropertyDescriptor }
+        .map { it as PropertyDescriptor }
+}
 
 fun KotlinType.replaceTypeOrRandomSubtypeOnTypeParam(typeParams: List<String>): String {
     val typeParamsWithoutBounds = typeParams.map { it.substringBefore(':') }
