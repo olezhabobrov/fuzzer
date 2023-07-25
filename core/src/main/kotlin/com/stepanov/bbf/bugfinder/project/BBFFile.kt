@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.project
 
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
+import com.stepanov.bbf.bugfinder.util.getVariablesFromMain
 import com.stepanov.bbf.bugfinder.util.isSubTypeOf
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
@@ -59,9 +60,7 @@ class BBFFile(
 
     // returns name of found property in main
     fun findImplementation(type: KotlinType): String? {
-        val allDeclaredProperties = psiFile.getAllPSIChildrenOfType<KtProperty>().filter {
-            it.getParentOfType<KtClassOrObject>(true) == null
-        }
+        val allDeclaredProperties = psiFile.getVariablesFromMain()
         val applicableProperties = allDeclaredProperties.filter {
             getVariableDescriptor(it)?.type?.isSubTypeOf(type) ?: false
         }

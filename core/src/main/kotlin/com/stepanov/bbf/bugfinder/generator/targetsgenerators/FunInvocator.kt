@@ -12,6 +12,8 @@ class FunInvocator(val file: BBFFile) {
     fun invokeFunction(descriptor: FunctionDescriptor, depth: Int = 0): List<String> {
         if (!descriptor.visibility.isPublicAPI)
             return listOf()
+        if (descriptor.isSuspend)
+            return listOf()
         val invocations = invokeParameterBrackets(descriptor).map { valueParameters ->
             "${descriptor.name.asString()}$valueParameters"
         }

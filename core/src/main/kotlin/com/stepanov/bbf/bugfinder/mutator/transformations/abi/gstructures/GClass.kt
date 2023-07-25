@@ -33,8 +33,7 @@ data class GClass(
             if (supertypes.isEmpty()) ""
             else supertypes.joinToString(prefix = ": ", separator = ", ")
         val b =
-            if (body.isEmpty()) ""
-            else psiFactory.createBlock(body).text
+            psiFactory.createBlock(body).text
         return "$a$m $classWord $name$t$constructorWord$c$s$b"
     }
 

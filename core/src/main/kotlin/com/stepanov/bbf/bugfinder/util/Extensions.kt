@@ -27,9 +27,11 @@ import com.stepanov.bbf.bugfinder.util.kcheck.asCharSequence
 import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
 import com.stepanov.bbf.bugfinder.util.kcheck.nextString
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.ImportPath
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
@@ -536,6 +538,16 @@ fun KotlinType.getPublicProperties(): List<PropertyDescriptor> {
         .filter { it is PropertyDescriptor && it.visibility.isPublicAPI }
         .map { it as PropertyDescriptor }
 }
+
+fun KtFile.getVariablesFromMain() =
+    getAllPSIChildrenOfType<KtProperty>().filter {
+        val function = it.getParentOfType<KtFunction>(true)
+        if (function == null || function.name == null)
+            false
+        else
+            it.getParentOfType<KtClassOrObject>(true) == null &&
+                    function.name == "main"
+    }
 
 fun ClassDescriptor.getPublicConstructors() = constructors.filter {it.visibility.isPublicAPI }
 
