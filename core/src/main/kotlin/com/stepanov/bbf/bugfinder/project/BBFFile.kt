@@ -34,26 +34,33 @@ class BBFFile(
     }
 
     fun getDescriptorByKtClass(clazz: KtClassOrObject): ClassDescriptor? {
-        return ctx!![BindingContext.CLASS, clazz]
+        return try {
+            ctx!![BindingContext.CLASS, clazz]
+        } catch(e: Throwable) {
+            null
+        }
     }
 
     fun getDescriptorByKtFunction(function: KtFunction): FunctionDescriptor? {
-        return ctx!![BindingContext.FUNCTION, function]
-    }
-
-    fun getTypeOfExpression(expression: KtExpression): KotlinType? {
-        return ctx!![BindingContext.EXPECTED_EXPRESSION_TYPE, expression]
+        return try {
+            ctx!![BindingContext.FUNCTION, function]
+        } catch(e: Throwable) {
+            null
+        }
     }
 
     fun getVariableDescriptor(property: KtProperty): VariableDescriptor? {
-        return ctx!![BindingContext.VARIABLE, property]
+        return try {
+            ctx!!.get(BindingContext.VARIABLE, property)
+        } catch(e: Throwable) {
+            null
+        }
     }
 
     // returns name of found property in main
     fun findImplementation(type: KotlinType): String? {
         val allDeclaredProperties = psiFile.getAllPSIChildrenOfType<KtProperty>().filter {
-            it.getParentOfType<KtClassOrObject>(true) == null &&
-                    it.getParentOfType<KtFunction>(true) != null
+            it.getParentOfType<KtClassOrObject>(true) == null
         }
         val applicableProperties = allDeclaredProperties.filter {
             getVariableDescriptor(it)?.type?.isSubTypeOf(type) ?: false

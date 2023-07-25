@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
-import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isNullable
 import kotlin.collections.flatMap
@@ -67,7 +66,8 @@ object Invocator {
                 writeToMain(mainFile, invocations)
             }
         klibFile.psiFile.getAllPSIChildrenOfType<KtProperty>().filter {
-            it.getParentOfType<KtClassOrObject>(true) == null
+            it.getParentOfType<KtClassOrObject>(true) == null &&
+                    it.isPublic
         }.forEach { property ->
             val kotlinType =  property.getType(klibFile.ctx!!)
             val type = if (kotlinType == null)
@@ -119,7 +119,7 @@ object Invocator {
         }.filterNotNull().filter { it.first != null }
 
     fun invokeProperties(descriptor: ClassDescriptor, file: BBFFile): List<String> {
-        val properties = descriptor.defaultType.getProperties()
+        val properties = descriptor.defaultType.getPublicProperties()
         val parent = ClassInvocator(file).randomClassInvocation(descriptor)
         val invocations = mutableListOf<String>()
         properties.forEach { property ->

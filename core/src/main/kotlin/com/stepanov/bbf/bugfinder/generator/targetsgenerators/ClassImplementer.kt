@@ -7,6 +7,7 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerato
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.filterDuplicatesBy
 import com.stepanov.bbf.bugfinder.util.findPsi
+import com.stepanov.bbf.bugfinder.util.getPublicConstructors
 import com.stepanov.bbf.bugfinder.util.getRandomClassName
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -42,7 +43,7 @@ class ClassImplementer(val file: BBFFile) {
     fun callConstructors(supertypes: List<ClassDescriptor>, depth: Int = 0): List<List<String>>  {
         val abstractClassesInvocations =
             supertypes.firstOrNull { it.kind != ClassKind.INTERFACE }?.let { descriptor ->
-                descriptor.constructors.flatMap { constructor ->
+                descriptor.getPublicConstructors().flatMap { constructor ->
                     FunInvocator(file).invokeParameterBrackets(constructor, depth).map {
                         "${descriptor.name.asString()}$it"
                     }
@@ -78,7 +79,7 @@ class ClassImplementer(val file: BBFFile) {
     }
 
     private fun trivialConstructorCall(descriptor: ClassDescriptor): String =
-        descriptor.constructors.random().let {
+        descriptor.getPublicConstructors().random().let {
             descriptor.name.asString() +
                     it.valueParameters.joinToString(prefix = "(", postfix = ")", separator = ",") { "TODO()" }
         }

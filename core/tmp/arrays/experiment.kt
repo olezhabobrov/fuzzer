@@ -1,9 +1,4 @@
-class Foo(val x: String) {
-    var a = 5
-
-    lateinit var f: Foo
-
+class Foo(val a: String) {
+    private constructor(): this("a") {}
+    internal constructor(a: Int): this("a") {}
 }
-
-val aboba = 5
-var baobab: String = "A"

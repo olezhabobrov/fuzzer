@@ -530,12 +530,14 @@ fun KotlinType.isSubTypeOf(otherType: KotlinType): Boolean =
 fun KotlinType.getTypeName() = getJetTypeFqName(true) +
         if (isNullable()) "?" else ""
 
-fun KotlinType.getProperties(): List<PropertyDescriptor> {
+fun KotlinType.getPublicProperties(): List<PropertyDescriptor> {
     memberScope.computeAllNames()
     return memberScope.getDescriptorsFiltered {true}
-        .filter { it is PropertyDescriptor }
+        .filter { it is PropertyDescriptor && it.visibility.isPublicAPI }
         .map { it as PropertyDescriptor }
 }
+
+fun ClassDescriptor.getPublicConstructors() = constructors.filter {it.visibility.isPublicAPI }
 
 fun KotlinType.replaceTypeOrRandomSubtypeOnTypeParam(typeParams: List<String>): String {
     val typeParamsWithoutBounds = typeParams.map { it.substringBefore(':') }

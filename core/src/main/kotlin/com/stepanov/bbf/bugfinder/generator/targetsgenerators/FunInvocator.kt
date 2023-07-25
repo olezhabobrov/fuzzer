@@ -10,12 +10,14 @@ import org.jetbrains.kotlin.types.isNullable
 class FunInvocator(val file: BBFFile) {
 
     fun invokeFunction(descriptor: FunctionDescriptor, depth: Int = 0): List<String> {
+        if (!descriptor.visibility.isPublicAPI)
+            return listOf()
         val invocations = invokeParameterBrackets(descriptor).map { valueParameters ->
             "${descriptor.name.asString()}$valueParameters"
         }
         val parent = descriptor.containingDeclaration
         if (parent is ClassDescriptor) {
-            val parentInv = ClassInvocator(file).randomClassInvocation(parent)
+            val parentInv = ClassInvocator(file).randomClassInvocation(parent, depth + 1)
             return invocations.map { "${parentInv}.$it" }
         } else {
             return invocations

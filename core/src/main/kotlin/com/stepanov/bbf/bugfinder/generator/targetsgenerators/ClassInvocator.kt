@@ -2,6 +2,7 @@ package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.generateDefValuesAsString
+import com.stepanov.bbf.bugfinder.util.getPublicConstructors
 import org.jetbrains.kotlin.descriptors.*
 
 class ClassInvocator(val file: BBFFile) {
@@ -11,9 +12,11 @@ class ClassInvocator(val file: BBFFile) {
             ""
         else
             file.findImplementation(descriptor.defaultType) ?:
-            generateInstances(descriptor, depth).random()
+            generateInstances(descriptor, depth).randomOrNull() ?: ""
 
     fun generateInstances(descriptor: ClassDescriptor, depth: Int = 0): List<String> {
+        if (!descriptor.visibility.isPublicAPI)
+            return listOf()
         val type = descriptor.defaultType
         val primitiveValue = generateDefValuesAsString(type.toString())
         if (primitiveValue.isNotBlank())
@@ -64,7 +67,7 @@ class ClassInvocator(val file: BBFFile) {
     }
 
     private fun invokeAllConstructors(descriptor: ClassDescriptor, depth: Int): List<String> =
-        descriptor.constructors.filter { it.visibility == DescriptorVisibilities.PUBLIC }
+        descriptor.getPublicConstructors()
             .flatMap { invokeConstructor(descriptor, it, depth) }
 
     private fun invokeConstructor(descriptor: ClassDescriptor,
