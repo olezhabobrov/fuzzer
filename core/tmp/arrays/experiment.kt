@@ -1,7 +1,14 @@
-abstract class Foo(x: Int) {
+class Foo {
+    class Bar {
+        inner class BazInner {
 
+        }
+        class Baz
+    }
 }
 
-fun babab(x: Foo): Int? {
-    TODO()
+class AAA {
+    inner class AA {
+        inner class A
+    }
 }

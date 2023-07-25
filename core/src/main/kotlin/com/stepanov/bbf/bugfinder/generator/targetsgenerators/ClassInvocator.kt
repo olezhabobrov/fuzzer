@@ -19,6 +19,8 @@ class ClassInvocator(val file: BBFFile) {
         if (primitiveValue.isNotBlank())
             return listOf(primitiveValue)
 
+        val extensionReceiver = receiverCreator(descriptor)
+
         return when (descriptor.kind) {
             ClassKind.CLASS -> {
                 generateInstancesOfClass(descriptor, depth)
@@ -26,7 +28,23 @@ class ClassInvocator(val file: BBFFile) {
             ClassKind.OBJECT -> listOf(descriptor.name.asString())
             ClassKind.INTERFACE -> implementOpenMembers(descriptor, depth)
             else -> TODO()
+        }.map { "${extensionReceiver}$it" }
+    }
+
+    private fun receiverCreator(descriptor: ClassDescriptor): String {
+        val parent = descriptor.containingDeclaration
+        if (parent !is ClassDescriptor)
+            return ""
+        if (descriptor.isInner)
+            return randomClassInvocation(parent) + "."
+        var clazz: DeclarationDescriptor = descriptor.containingDeclaration
+        val allParents = mutableListOf<ClassDescriptor>()
+        while (clazz is ClassDescriptor) {
+            allParents.add(clazz)
+            clazz = clazz.containingDeclaration
         }
+        allParents.reverse()
+        return allParents.joinToString(separator = ".", postfix = ".") { it.name.asString() }
     }
 
     fun implementOpenMembers(descriptor: ClassDescriptor, depth: Int = 0): List<String> =

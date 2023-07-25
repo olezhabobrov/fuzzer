@@ -1,14 +1,18 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.util
 
 import com.intellij.psi.PsiElement
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.*
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInvocator
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocator
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.RandomInstancesGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.findPropertyByType
 import com.stepanov.bbf.bugfinder.util.getRandomVariableName
 import com.stepanov.bbf.bugfinder.util.getType
+import com.stepanov.bbf.bugfinder.util.getTypeName
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
@@ -30,30 +34,31 @@ object Invocator {
     }
 
     fun addInvocationOfAllCallable(target: FTarget) {
-//        val mainFile = target.project.mainFile
+        val mainFile = target.project.mainFile
         val klibFile = target.project.klib
+        mainFile.psiFile = psiFactory.createFile(klibFile.text)
 
 //        foo(klibFile)
 //        TODO()
         klibFile.psiFile.getAllPSIChildrenOfType<KtClassOrObject>().map {
             klibFile.getDescriptorByKtClass(it)
         }.filterNotNull().forEach { descriptor ->
-            val instances = ClassInvocator(klibFile).generateInstances(descriptor).map {
+            val instances = ClassInvocator(mainFile).generateInstances(descriptor).map {
                 "val ${Random.getRandomVariableName()}: " +
-                        "${descriptor.defaultType.getJetTypeFqName(true)} = $it"
+                        "${descriptor.defaultType.getTypeName()} = $it"
             }
-            writeToMain(klibFile, instances)
+            writeToMain(mainFile, instances)
         }
         klibFile.psiFile.getAllPSIChildrenOfType<KtFunction>()
             .filter { it !is KtConstructor<*> && it.name != "main"}
             .map {
                 klibFile.getDescriptorByKtFunction(it)
             }.filterNotNull().forEach { descriptor ->
-                val instances = FunInvocator(klibFile).invokeFunction(descriptor).map {
-                    val type = descriptor.returnType?.getJetTypeFqName(true) ?: "Nothing"
+                val instances = FunInvocator(mainFile).invokeFunction(descriptor).map {
+                    val type = descriptor.returnType?.getTypeName() ?: "Nothing"
                     "val ${Random.getRandomVariableName()}: $type = $it"
                 }
-                writeToMain(klibFile, instances)
+                writeToMain(mainFile, instances)
             }
         TODO()
 //        val classInvocations = invokeAllClasses(klibFile).map {
@@ -80,7 +85,7 @@ object Invocator {
         val mainText = text.substringAfter("fun main()")
             .substringAfter("{").substringBeforeLast("}")
         val fileText = invocations
-            .joinToString(separator = "\n", prefix = "${klib}\nfun main() {$mainText", postfix = "\n}")
+            .joinToString(separator = "\n", prefix = "${klib}fun main() {$mainText", postfix = "\n}")
         val newKtFile = psiFactory.createFile(fileText)
         file.psiFile = newKtFile
         file.updateCtx()

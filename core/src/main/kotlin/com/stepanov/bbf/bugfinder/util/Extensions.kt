@@ -526,6 +526,8 @@ fun KotlinType.isSubTypeOf(otherType: KotlinType): Boolean =
         it.getJetTypeFqName(false) == otherType.getJetTypeFqName(false)
     }
 
+fun KotlinType.getTypeName() = getJetTypeFqName(true) +
+        if (isNullable()) "?" else ""
 
 fun KotlinType.replaceTypeOrRandomSubtypeOnTypeParam(typeParams: List<String>): String {
     val typeParamsWithoutBounds = typeParams.map { it.substringBefore(':') }

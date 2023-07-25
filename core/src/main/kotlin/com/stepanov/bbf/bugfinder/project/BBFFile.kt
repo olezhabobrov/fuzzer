@@ -104,11 +104,4 @@ class BBFFile(
         return psiFile.getAllPSIChildrenOfType()
     }
 
-    fun addExpression(exprString: String) {
-        val mainText = text.substringAfter("{").substringBeforeLast("}")
-        val fileText = "fun main() {\n$mainText\n$exprString\n}"
-        val newKtFile = psiFactory.createFile(fileText)
-        psiFile = newKtFile
-        updateCtx()
-    }
 }

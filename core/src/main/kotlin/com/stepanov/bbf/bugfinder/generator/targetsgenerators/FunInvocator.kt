@@ -3,15 +3,24 @@ package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.containingPackage
 import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 import org.jetbrains.kotlin.types.isNullable
 
 class FunInvocator(val file: BBFFile) {
 
-    fun invokeFunction(descriptor: FunctionDescriptor, depth: Int = 0): List<String> =
-        invokeParameterBrackets(descriptor).map {  valueParameters ->
+    fun invokeFunction(descriptor: FunctionDescriptor, depth: Int = 0): List<String> {
+        val invocations = invokeParameterBrackets(descriptor).map { valueParameters ->
             "${descriptor.name.asString()}$valueParameters"
         }
+        val parent = descriptor.containingDeclaration
+        if (parent is ClassDescriptor) {
+            val parentInv = ClassInvocator(file).randomClassInvocation(parent)
+            return invocations.map { "${parentInv}.$it" }
+        } else {
+            return invocations
+        }
+    }
 
     fun invokeParameterBrackets(descriptor: FunctionDescriptor, depth: Int = 0): List<String> {
         val values = generateValueParameters(descriptor, depth)
