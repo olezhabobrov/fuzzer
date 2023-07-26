@@ -1,9 +1,5 @@
-open class Foo(val x: Int) {
-    var y: String = "a"
-
-    fun bar(x: Int): String { TODO() }
+class Foo(y: Int, z: String = "aboba") {
+    fun bar(y = 5) {}
 }
 
-interface FooInterface
-
-class Bar(y: String): Foo(3), FooInterface
+fun foo(x: Foo = Foo(5))

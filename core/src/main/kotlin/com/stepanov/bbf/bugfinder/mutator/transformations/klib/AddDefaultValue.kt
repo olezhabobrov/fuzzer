@@ -8,6 +8,8 @@ import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.psi.KtConstructor
+import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.resolve.BindingContext
 import kotlin.random.Random
 
@@ -58,6 +60,35 @@ class AddDefaultValue: BinaryCompatibleTransformation(1) {
         gfun.addDefaultToArg(parameter, generatedValue)
         val newFunction = gfun.toPsi()
         function.replaceThis(newFunction)
+    }
+}
+
+class RemoveDefaultValue: BinaryIncompatibleTransformation(1) {
+    override fun transform(target: FTarget) {
+        val file = target.file
+        val (func, gStructure) = file.psiFile.getAllPSIChildrenOfType<KtFunction>()
+            .filter { it.isPublic }
+            .map { it to (
+                if (it is KtConstructor<*>)
+                    GConstructor.fromPsi(it)
+                else
+                    GFunction.fromPsi(it))
+            }.filter {
+                val x = it.second
+                if (x is GFunction)
+                    x.argsParams.any { it.hasDefault() }
+                else if (x is GConstructor)
+                    x.argsParams.any { it.hasDefault() }
+                else false
+            }.randomOrNull() ?: return
+        if (gStructure is GFunction) {
+            gStructure.argsParams.filter { it.hasDefault() }.random().defaultValue = ""
+        }
+        if (gStructure is GConstructor) {
+            gStructure.argsParams.filter { it.hasDefault() }.random().defaultValue = ""
+        }
+        val newElement = gStructure.toPsi() ?: return
+        func.replaceThis(newElement)
     }
 
 }
