@@ -6,12 +6,15 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerato
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.KotlinTypeCreator.createType
 import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.builtins.UnsignedType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.psi.psiUtil.modalityModifierType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -141,37 +144,6 @@ class RandomTypeGenerator(val file: BBFFile) {
         val finalTypeParams = randomClass.typeParameters.map { typeParamToType[it.name]?.toString() ?: it.text }
         val strTypeParams =
             if (finalTypeParams.isEmpty()) "" else finalTypeParams.joinToString(prefix = "<", postfix = ">")
-//        val finalTypeParams =
-//            randomClass.typeParameters.map { typeParamToType[it.name]!! }
-//        val klassNames = file.getAllPSIChildrenOfType<KtClassOrObject>().map { it.name }.filterNotNull()
-//        val klassList =
-//            randomClass.typeParameters
-//                .map { typeParamToType[it.name]?.getNameWithoutError() ?: it.text }
-//                //.map { typeParamToType.getOrDefault(it.name, it.name) }
-//                .joinToString()
-//                .plus(",$name")
-//                .split(Regex("""[,<>]"""))
-//                .map { it.trim() }
-//                .filter { it in klassNames }
-//        val finalTypeParams = if (klassList.size == klassList.toSet().size)
-//            randomClass.typeParameters.map { typeParamToType[it.name]?.getNameWithoutError() ?: it.text }
-//        else
-//            randomClass.typeParameters.map { generateType(generatePrimitive())!!.getNameWithoutError() }
-//        //Helps for nested, but not inner classes
-//        val prefix =
-//            randomClass.parents
-//                .filter { it is KtClassOrObject }
-//                .map {
-//                    when (it) {
-//                        is KtClass -> it.name
-//                        is KtObjectDeclaration -> it.name
-//                        else -> null
-//                    }
-//                }
-//                .filterNotNull()
-//                .joinToString(separator = ".")
-//                .let { if (it.trim().isNotEmpty()) "$it." else "" }
-//        val klassToStr = prefix + randomClass.name + strTypeParams
         val klassToStr = randomClass.name + strTypeParams
         return generateType(klassToStr)
     }
@@ -213,10 +185,6 @@ class RandomTypeGenerator(val file: BBFFile) {
         return createType(file, name)?.let { if (it.isErrorType()) null else it }
     }
 
-
-
-
-
     private fun generateContainer1(depth: Int = 0): String {
         val container = containers.random()
         val descr = getDeclDescriptorOf(container) as? ClassDescriptor ?: return ""
@@ -257,6 +225,13 @@ class RandomTypeGenerator(val file: BBFFile) {
         if (t1.extendsBound == null && t2.extendsBound == null) 0
         else if (t1.getAllPSIChildrenOfType<KtTypeReference>().any { it.text == t2.name }) 1 else -1
     }
+
+    fun getPublicType(): String =
+        (file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+            .filter { it.isPublic && it.name != null }
+            .filter { it.getParentOfType<KtClassOrObject>(true) == null }
+            .map { it.name } + primitives).filterNotNull().random()
+
 
     companion object {
         fun generateRandomType(upperBounds: KotlinType? = null): String {

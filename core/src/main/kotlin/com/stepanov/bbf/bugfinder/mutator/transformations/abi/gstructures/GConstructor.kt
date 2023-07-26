@@ -32,6 +32,7 @@ class GConstructor(override var modifiers: MutableList<String> = mutableListOf()
         fun fromPsi(constructor: KtConstructor<*>): GConstructor {
             val gcon = GConstructor()
             with(gcon) {
+                modifiers = constructor.modifierList?.text?.split(" ")?.toMutableList() ?: mutableListOf()
                 argsParams = constructor.valueParameters.map { GParameter.fromPsi(it) }.toMutableList()
                 delegationCalls = constructor.getAllPSIChildrenOfType<KtConstructorDelegationCall>().map {
                     it.text

@@ -549,6 +549,8 @@ fun KtFile.getVariablesFromMain() =
                     function.name == "main"
     }
 
+fun KotlinType.classDescriptor() = constructor.declarationDescriptor as? ClassDescriptor
+
 fun ClassDescriptor.getPublicConstructors() = constructors.filter {it.visibility.isPublicAPI }
 
 fun KotlinType.replaceTypeOrRandomSubtypeOnTypeParam(typeParams: List<String>): String {

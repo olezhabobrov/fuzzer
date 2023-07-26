@@ -30,7 +30,7 @@ class ClassInvocator(val file: BBFFile) {
             }
             ClassKind.OBJECT -> listOf(descriptor.name.asString())
             ClassKind.INTERFACE -> implementOpenMembers(descriptor, depth)
-            else -> TODO()
+            else -> listOf()
         }.map { "${extensionReceiver}$it" }
     }
 
