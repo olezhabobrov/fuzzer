@@ -1,5 +1,10 @@
-class Foo(y: Int, z: String = "aboba") {
-    fun bar(y = 5) {}
+interface Foo {
+    fun foo(): String
 }
 
-fun foo(x: Foo = Foo(5))
+abstract class AbstractFoo: Foo {
+    abstract fun bar(x: Int)
+
+    open fun barOpen() {}
+}
+

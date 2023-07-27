@@ -1,10 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtTypeParameterListOwner
+import org.jetbrains.kotlin.psi.*
 
 abstract class GStructure {
     abstract var modifiers: MutableList<String>
@@ -16,10 +13,12 @@ abstract class GStructure {
     fun isInline() = modifiers.contains("inline")
 
     fun addOverride() {
+        modifiers.remove("override")
         modifiers.add("override")
     }
 
     fun addInline() {
+        modifiers.remove("inline")
         modifiers.add("inline")
     }
 
@@ -32,10 +31,12 @@ abstract class GStructure {
     }
 
     fun addAbstract() {
+        modifiers.remove("abstract")
         modifiers.add("abstract")
     }
 
     fun addOpen() {
+        modifiers.remove("open")
         modifiers.add("open")
     }
 
@@ -98,9 +99,10 @@ abstract class GStructure {
         fun fromPsi(entity: KtTypeParameterListOwner): GStructure {
             return when (entity) {
                 is KtClassOrObject -> GClass.fromPsi(entity)
+                is KtConstructor<*> -> GConstructor.fromPsi(entity)
                 is KtFunction -> GFunction.fromPsi(entity)
                 is KtProperty -> GProperty.fromPsi(entity)
-                else -> error("Not property, class or function, wtf is it then?")
+                else -> error("Not property, class, constructor or function, wtf is it then?")
             }
         }
     }

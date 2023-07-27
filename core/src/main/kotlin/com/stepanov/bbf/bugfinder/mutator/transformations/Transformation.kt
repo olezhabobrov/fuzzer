@@ -40,6 +40,7 @@ abstract class Transformation(
                 }
                 repeat(5) {
                     transform(ftarget)
+                    ftarget.file.updateCtx()
                 }
             } finally {
                 val newProjectMessage = project.createProjectMessage()
