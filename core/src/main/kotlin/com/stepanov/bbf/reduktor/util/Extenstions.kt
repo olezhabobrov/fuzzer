@@ -8,6 +8,8 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.stepanov.bbf.bugfinder.util.getAllChildrenOfCurLevel
 import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import org.jetbrains.kotlin.psi.psiUtil.children
@@ -190,6 +192,9 @@ fun PsiElement.replaceThis(replacement: PsiElement) {
 
 fun ASTNode.replaceThis(replacement: ASTNode) = this.psi.replaceThis(replacement.psi)
 
+fun DeclarationDescriptor.uniqueString() =
+    if (this is FunctionDescriptor) "${name}${valueParameters.map { name.asString() + returnType.toString() }}"
+    else name.asString()
 
 fun KtNamedFunction.getSignature(): String {
     val sign = StringBuilder()

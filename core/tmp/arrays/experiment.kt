@@ -1,10 +1,7 @@
-interface Foo {
-    fun foo(): String
-}
-
-abstract class AbstractFoo: Foo {
+abstract class AbstractFoo {
     abstract fun bar(x: Int)
 
     open fun barOpen() {}
 }
 
+class Bar {}

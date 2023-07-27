@@ -1,9 +1,15 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.bugfinder.project.BBFFile
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.descriptors.containingPackage
+import com.stepanov.bbf.bugfinder.util.addPsiToBody
+import com.stepanov.bbf.bugfinder.util.findPsi
+import com.stepanov.bbf.reduktor.parser.PSICreator
+import com.stepanov.bbf.reduktor.util.replaceThis
+import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtTypeParameterListOwner
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.calls.components.hasDefaultValue
 import org.jetbrains.kotlin.types.isNullable
 
@@ -68,5 +74,23 @@ class FunInvocator(val file: BBFFile) {
                 return mapOf()
             parameter.name.toString() to ClassInvocator(file).randomClassInvocation(descr, depth + 1)
         }
+
+    fun implementMember(member: DeclarationDescriptor, clazz: ClassDescriptor) {
+        val psi = member.findPsi() as? KtTypeParameterListOwner ?: return
+        val gmember = GStructure.fromPsi(psi)
+        gmember.addDefaultImplementation()
+        if (clazz.kind == ClassKind.CLASS)
+            gmember.addOpen()
+        if (psi.getParentOfType<KtClass>(true)?.name == clazz.name.asString()) {
+            val newPsi = gmember.toPsi() ?: return
+            psi.replaceThis(newPsi)
+        } else {
+            gmember.addOverride()
+            val classPsi = clazz.findPsi() as? KtClass ?: return
+            val newPsi = gmember.toPsi() ?: return
+            classPsi.addPsiToBody(PSICreator.psiFactory.createWhiteSpace("\n\n"))
+            classPsi.addPsiToBody(newPsi)
+        }
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
@@ -38,21 +39,7 @@ class AddImplementationOfMember: BinaryCompatibleTransformation(1) {
                 }
             }
             .randomOrNull() ?: return
-        val psi = member.findPsi() as? KtTypeParameterListOwner ?: return
-        val gmember = GStructure.fromPsi(psi)
-        gmember.addDefaultImplementation()
-        if (clazz.kind == ClassKind.CLASS)
-            gmember.addOpen()
-        if (psi.getParentOfType<KtClass>(true)?.name == clazz.name.asString()) {
-            val newPsi = gmember.toPsi() ?: return
-            psi.replaceThis(newPsi)
-        } else {
-            gmember.addOverride()
-            val classPsi = clazz.findPsi() as? KtClass ?: return
-            val newPsi = gmember.toPsi() ?: return
-            classPsi.addPsiToBody(psiFactory.createWhiteSpace("\n\n"))
-            classPsi.addPsiToBody(newPsi)
-        }
+        FunInvocator(file).implementMember(member, clazz)
     }
 }
 

@@ -7,6 +7,16 @@ import org.jetbrains.kotlin.descriptors.*
 
 class ClassInvocator(val file: BBFFile) {
 
+    fun randomConstructorInvocation(descriptor: ClassDescriptor, depth: Int = 0): String =
+        if (depth >= DEPTH)
+            ""
+        else
+            if (descriptor.kind == ClassKind.INTERFACE)
+                descriptor.name.asString()
+            else
+                invokeAllConstructors(descriptor, depth).randomOrNull() ?: ""
+
+
     fun randomClassInvocation(descriptor: ClassDescriptor, depth: Int = 0): String =
         if (depth >= DEPTH)
             ""
