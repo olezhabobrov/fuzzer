@@ -1,12 +1,22 @@
 package com.stepanov.bbf.bugfinder.project
 
+import com.stepanov.bbf.bugfinder.util.getRandomVariableName
+import com.stepanov.bbf.bugfinder.util.getVariablesFromMain
+import com.stepanov.bbf.bugfinder.util.isSubTypeOf
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.reduktor.parser.PSICreator
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.BindingContext
 import java.io.File
+import org.jetbrains.kotlin.types.KotlinType
+import kotlin.random.Random
 
 class BBFFile(
     var psiFile: KtFile,
@@ -22,6 +32,46 @@ class BBFFile(
             name.endsWith(".kt") -> LANGUAGE.KOTLIN
             else -> LANGUAGE.UNKNOWN
         }
+    }
+
+    fun getDescriptorByKtClass(clazz: KtClassOrObject): ClassDescriptor? {
+        return try {
+            ctx!![BindingContext.CLASS, clazz]
+        } catch(e: Throwable) {
+            null
+        }
+    }
+
+    fun getDescriptorByKtFunction(function: KtFunction): FunctionDescriptor? {
+        return try {
+            ctx!![BindingContext.FUNCTION, function]
+        } catch(e: Throwable) {
+            null
+        }
+    }
+
+    fun getVariableDescriptor(property: KtProperty): VariableDescriptor? {
+        return try {
+            ctx!!.get(BindingContext.VARIABLE, property)
+        } catch(e: Throwable) {
+            null
+        }
+    }
+
+    fun getAllClassDescriptors() = psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+        .map { getDescriptorByKtClass(it) }
+        .filterNotNull()
+
+    // returns name of found property in main
+    fun findImplementation(type: KotlinType): String? {
+        val allDeclaredProperties = psiFile.getVariablesFromMain()
+        val applicableProperties = allDeclaredProperties.filter {
+            getVariableDescriptor(it)?.type?.isSubTypeOf(type) ?: false
+        }
+        if (applicableProperties.isNotEmpty()) {
+            return applicableProperties.random().name
+        }
+        return null
     }
 
     override fun toString(): String =
@@ -64,4 +114,5 @@ class BBFFile(
     fun getAllProperties(): List<KtProperty> {
         return psiFile.getAllPSIChildrenOfType()
     }
+
 }

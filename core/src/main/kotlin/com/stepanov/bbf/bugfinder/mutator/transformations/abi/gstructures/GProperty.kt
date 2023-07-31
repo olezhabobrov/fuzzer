@@ -3,7 +3,11 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
+import com.stepanov.bbf.bugfinder.util.findPsi
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
+import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtProperty
 import kotlin.random.Random
 
@@ -60,6 +64,33 @@ class GProperty(
             }
             return gProperty
         }
+
+        fun fromDescriptor(property: PropertyDescriptor): GProperty {
+            val gProperty = GProperty()
+            with (gProperty) {
+                name = property.name.toString()
+                type = property.type.getJetTypeFqName(true)
+//                modifiers = property.modifierList?.text?.split(" ")?.toMutableList() ?: mutableListOf()
+//                getter = property.getter?.text ?: ""
+//                setter = property.setter?.text ?: ""
+                valOrVar = if (property.isVar) "var" else "val"
+//                initializer = property.initializer?.text ?: ""
+            }
+            return gProperty
+        }
+
+        private fun getModifiers(property: PropertyDescriptor): List<String> = TODO()
+//            sequence<String> {
+//
+//                if (property.isExternal)
+//                    yield("external")
+//                if (property.isConst)
+//                    yield("const")
+//                if (property.isLateInit)
+//                    yield("lateinit")
+//                if (property.is)
+//            }.toList()
+
     }
 
     fun isLateinit() = modifiers.contains("lateinit")

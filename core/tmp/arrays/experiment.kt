@@ -1,10 +1,22 @@
-class Foo {
-
-    class NestedFoo {
-        fun fooNested() {}
-    }
+interface Base {
+    fun base(): String
 }
 
-var x = "aboba"
+interface Foo1: Base {
+    fun foo1()
+}
 
-val y: Int = 5
+interface Foo2: Base {
+    fun foo2()
+}
+
+interface Bar: Foo1, Foo2 {
+    override fun base(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun foo1() {
+        TODO("Not yet implemented")
+    }
+    fun foo1(x: Int)
+}

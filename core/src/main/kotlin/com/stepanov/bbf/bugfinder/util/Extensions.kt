@@ -27,12 +27,16 @@ import com.stepanov.bbf.bugfinder.util.kcheck.asCharSequence
 import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
 import com.stepanov.bbf.bugfinder.util.kcheck.nextString
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
+import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.ImportPath
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getAbbreviatedTypeOrType
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
+import org.jetbrains.kotlin.resolve.scopes.computeAllNames
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import java.io.BufferedReader
 import java.io.File
@@ -363,7 +367,7 @@ fun getTrueWithProbability(probability: Int): Boolean = Random().nextInt(100) in
 fun Random.getRandomVariableName(length: Int = 5): String =
     this.nextString(('a'..'z').asCharSequence(), length, length + 1)
 
-fun Random.getRandomClassName(): String =
+fun kotlin.random.Random.getRandomClassName(): String =
     getRandomVariableName().capitalize()
 
 fun kotlin.random.Random.getRandomVariableName(length: Int = 5): String =
@@ -519,6 +523,40 @@ fun KotlinType.isKType(): Boolean =
 
 fun KotlinType.isAbstractClass(): Boolean =
     (this.constructor.declarationDescriptor as? ClassDescriptor)?.modality == Modality.ABSTRACT
+
+fun KotlinType.isSubTypeOf(otherType: KotlinType): Boolean =
+    (this.supertypes() + this).any {
+        it.getJetTypeFqName(false) == otherType.getJetTypeFqName(false)
+    }
+
+fun KotlinType.getTypeName() = getJetTypeFqName(true) +
+        if (isNullable()) "?" else ""
+
+fun KotlinType.getPublicProperties(): List<PropertyDescriptor> {
+    memberScope.computeAllNames()
+    return memberScope.getDescriptorsFiltered {true}
+        .filter { it is PropertyDescriptor && it.visibility.isPublicAPI }
+        .map { it as PropertyDescriptor }
+}
+
+fun KotlinType.getMembers(): List<DeclarationDescriptor> {
+    memberScope.computeAllNames()
+    return memberScope.getDescriptorsFiltered {true}.toList()
+}
+
+fun KtFile.getVariablesFromMain() =
+    getAllPSIChildrenOfType<KtProperty>().filter {
+        val function = it.getParentOfType<KtFunction>(true)
+        if (function == null || function.name == null)
+            false
+        else
+            it.getParentOfType<KtClassOrObject>(true) == null &&
+                    function.name == "main"
+    }
+
+fun KotlinType.classDescriptor() = constructor.declarationDescriptor as? ClassDescriptor
+
+fun ClassDescriptor.getPublicConstructors() = constructors.filter {it.visibility.isPublicAPI }
 
 fun KotlinType.replaceTypeOrRandomSubtypeOnTypeParam(typeParams: List<String>): String {
     val typeParamsWithoutBounds = typeParams.map { it.substringBefore(':') }

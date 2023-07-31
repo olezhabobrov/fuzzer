@@ -31,11 +31,10 @@ data class GClass(
             else typeParams.joinToString(prefix = "<", postfix = "> ")
         val s =
             if (supertypes.isEmpty()) ""
-            else supertypes.joinToString(prefix = ": ")
+            else supertypes.joinToString(prefix = ": ", separator = ", ")
         val b =
-            if (body.isEmpty()) ""
-            else psiFactory.createBlock(body).text
-        return "$a$m $classWord $name $t $constructorWord$c$s$b"
+            psiFactory.createBlock(body).text
+        return "$a$m $classWord $name$t$constructorWord$c$s$b"
     }
 
     companion object {
@@ -82,6 +81,9 @@ data class GClass(
             null
         }
 
+    fun removeSupertype(name: String?) {
+        supertypes.remove(name)
+    }
 
 
     fun toPsiThrowable(): PsiElement =

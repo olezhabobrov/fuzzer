@@ -7,7 +7,11 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import com.stepanov.bbf.bugfinder.util.getAllChildrenOfCurLevel
+import com.stepanov.bbf.bugfinder.util.replaceThis
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import org.jetbrains.kotlin.psi.psiUtil.children
@@ -190,6 +194,17 @@ fun PsiElement.replaceThis(replacement: PsiElement) {
 
 fun ASTNode.replaceThis(replacement: ASTNode) = this.psi.replaceThis(replacement.psi)
 
+fun PsiElement.remove() {
+    this.replaceThis(psiFactory.createWhiteSpace(""))
+}
+
+fun DeclarationDescriptor.uniqueString() =
+    if (this is FunctionDescriptor) "${name}${valueParameters.map { it.name.asString() + it.returnType.toString() }}"
+    else name.asString()
+
+fun KtCallableDeclaration.uniqueString() =
+    if (this is KtFunction) "${name}${valueParameters.map { it.name + it.typeReference.toString() }}"
+    else name
 
 fun KtNamedFunction.getSignature(): String {
     val sign = StringBuilder()

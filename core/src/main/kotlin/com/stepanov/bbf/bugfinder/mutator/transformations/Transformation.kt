@@ -24,7 +24,13 @@ abstract class Transformation(
             val file = project.klib
             file.updateCtx()
             val ftarget = FTarget(project, file)
-            Invocator.addInvocationOfAllCallable(ftarget)
+            try {
+                Invocator.addInvocationOfAllCallable(ftarget)
+            } catch (e: Throwable) {
+                println("Got exception in Invocator: ${e.message}")
+                println(file.text)
+                throw e
+            }
             val oldProjectMessage = project.createProjectMessage()
             oldProjectMessage.beforeTransformation()
             try {
@@ -32,7 +38,10 @@ abstract class Transformation(
                     log.debug("File is too big, returning back")
                     return@repeat
                 }
-                transform(ftarget)
+//                repeat(5) {
+                    transform(ftarget)
+//                    ftarget.file.updateCtx()
+//                }
             } finally {
                 val newProjectMessage = project.createProjectMessage()
                 if (newProjectMessage.klib.text != oldProjectMessage.klib.text) {

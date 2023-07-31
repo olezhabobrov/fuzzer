@@ -2,6 +2,9 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 
 import com.intellij.psi.PsiElement
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.descriptors.ParameterDescriptor
+import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
+import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtParameter
 
 class GParameter(
@@ -38,6 +41,19 @@ class GParameter(
                 defaultValue = property.defaultValue?.text ?: ""
             }
             return parameter
+        }
+
+        fun fromDescriptor(parameter: ValueParameterDescriptor): GParameter {
+            val gparameter = GParameter()
+            with (gparameter) {
+                name = parameter.name.asString()
+                type = parameter.type.getJetTypeFqName(true)
+//                modifiers = property.modifierList?.text?.split(" ")?.toMutableList() ?: mutableListOf()
+//                valOrVar
+//                parameter.def
+            //                defaultValue = property.defaultValue?.text ?: ""
+            }
+            return gparameter
         }
     }
 }
