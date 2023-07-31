@@ -81,6 +81,9 @@ data class GClass(
             null
         }
 
+    fun removeSupertype(name: String?) {
+        supertypes.remove(name)
+    }
 
 
     fun toPsiThrowable(): PsiElement =

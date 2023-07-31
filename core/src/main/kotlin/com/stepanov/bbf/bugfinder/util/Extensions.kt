@@ -539,6 +539,11 @@ fun KotlinType.getPublicProperties(): List<PropertyDescriptor> {
         .map { it as PropertyDescriptor }
 }
 
+fun KotlinType.getMembers(): List<DeclarationDescriptor> {
+    memberScope.computeAllNames()
+    return memberScope.getDescriptorsFiltered {true}.toList()
+}
+
 fun KtFile.getVariablesFromMain() =
     getAllPSIChildrenOfType<KtProperty>().filter {
         val function = it.getParentOfType<KtFunction>(true)

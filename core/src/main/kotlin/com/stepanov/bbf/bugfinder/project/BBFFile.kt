@@ -58,6 +58,10 @@ class BBFFile(
         }
     }
 
+    fun getAllClassDescriptors() = psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+        .map { getDescriptorByKtClass(it) }
+        .filterNotNull()
+
     // returns name of found property in main
     fun findImplementation(type: KotlinType): String? {
         val allDeclaredProperties = psiFile.getVariablesFromMain()

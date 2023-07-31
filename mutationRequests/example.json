@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["AddSupertype"]
+        "transformationsList": ["RemoveSupertypes"]
     },
     "mutationTarget": {
         "type": "klib"

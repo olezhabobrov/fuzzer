@@ -17,6 +17,10 @@ abstract class GStructure {
         modifiers.add("override")
     }
 
+    fun removeOverride() {
+        modifiers.remove("override")
+    }
+
     fun addInline() {
         modifiers.remove("inline")
         modifiers.add("inline")
@@ -94,6 +98,8 @@ abstract class GStructure {
             else -> error("Is not function or property, shouldn't be so...")
         }
     }
+
+
 
     companion object {
         fun fromPsi(entity: KtTypeParameterListOwner): GStructure {
