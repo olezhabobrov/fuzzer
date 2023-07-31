@@ -22,6 +22,7 @@ object FileReporter : Reporter {
         val resDir = CompilerArgs.resultsDir
 
         val info = StringBuilder()
+        info.appendLine("// After transformation ${bug.result.transformation}")
         info.appendLine("// ${bug.result.getDescription()}")
         bug.result.results.forEach {
             info.appendLine("// ${it.arguments}")

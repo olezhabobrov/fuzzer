@@ -176,6 +176,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     }
 
     private fun sendResultToBugManager(status: KotlincInvokeResult) {
+        status.transformation = lastTransformation.javaClass.simpleName
         eb.send(
             VertxAddresses.bugManager, status
         )
