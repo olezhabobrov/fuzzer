@@ -5,8 +5,43 @@
 // result:[-p, library, -o, lib.klib, projectTmp/newKlib.kt]
 // result:[-Xinclude=main.klib, -l, lib.klib, -Xpartial-linkage-loglevel=error]
 
-// files
-// main.kt
+// 
+// klib:
+     // isKlib=true
+     interface Base: Lxvnd{
+     
+         fun base(): String
+     
+     }
+     
+     interface Foo1: Base {
+         fun foo1()
+     }
+     
+old: interface Foo2: Base {
+new: interface Foo2: Base{
+new: 
+         fun  foo2(sgrkg: String)
+new: 
+     }
+     
+     interface Bar: Foo1, Foo2 {
+         override fun base(): String {
+             TODO("Not yet implemented")
+         }
+     
+         override fun foo1() {
+             TODO("Not yet implemented")
+         }
+         fun foo1(x: Int)
+     }
+     interface Lxvnd{
+     
+     }
+     tailrec internal fun  qyuwk(): Foo1 { TODO() }
+     
+new: 
+new: 
 // isKlib=false
 fun main() {
 val kdzfz: Base = 
@@ -57,70 +92,6 @@ val zldsw: kotlin.Unit = jehnp.foo1(-62)
 
 
 }
-// oldKlib.kt
-// isKlib=true
-interface Base: Lxvnd{
-
-    fun base(): String
-
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base {
-    fun  foo2(sgrkg: String)
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-interface Lxvnd{
-
-}
-tailrec internal fun  qyuwk(): Foo1 { TODO() }
-// newKlib.kt
-// isKlib=true
-interface Base: Lxvnd{
-
-    fun base(): String
-
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base{
-
-    fun  foo2(sgrkg: String)
-
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-interface Lxvnd{
-
-}
-tailrec internal fun  qyuwk(): Foo1 { TODO() }
-
-
 Combined output:
 ====================
 ====================

@@ -2,8 +2,48 @@
 // result:[-p, library, -o, lib.klib, projectTmp/oldKlib.kt]
 // result:[-p, library, -l, lib.klib, -o, main.klib, projectTmp/main.kt]
 
-// files
-// main.kt
+// 
+// klib:
+     // isKlib=true
+     interface Base {
+         fun base(): String
+     }
+     
+     interface Foo1: Base {
+         fun foo1()
+     }
+     
+     interface Foo2: Base {
+         fun foo2()
+     }
+     
+     interface Bar: Foo1, Foo2 {
+         override fun base(): String {
+             TODO("Not yet implemented")
+         }
+     
+         override fun foo1() {
+             TODO("Not yet implemented")
+         }
+         fun foo1(x: Int)
+     }
+old: class Vdxav: Base{
+new: open class Vdxav: Base{
+     
+     
+new: 
+     open override fun  base(): String { TODO() }
+     
+     protected var ikyl: Base?  
+     get() = object: Base {
+     override fun base(): String { TODO() }
+     }
+     set(value) = TODO()
+new: 
+     }
+     
+new: 
+new: 
 // isKlib=false
 fun main() {
 val bttbe: Base = 
@@ -52,80 +92,6 @@ val nbjxy: Base? = mnxat.ikyl
 mnxat.ikyl = TODO()
 
 }
-// oldKlib.kt
-// isKlib=true
-interface Base {
-    fun base(): String
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base {
-    fun foo2()
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-class Vdxav: Base{
-
-
-open override fun  base(): String { TODO() }
-
-protected var ikyl: Base?  
-get() = object: Base {
-override fun base(): String { TODO() }
-}
-set(value) = TODO()
-}
-// newKlib.kt
-// isKlib=true
-interface Base {
-    fun base(): String
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base {
-    fun foo2()
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-open class Vdxav: Base{
-
-
-
-open override fun  base(): String { TODO() }
-
-protected var ikyl: Base?  
-get() = object: Base {
-override fun base(): String { TODO() }
-}
-set(value) = TODO()
-
-}
-
-
 Combined output:
 ====================
 Expecting an expression

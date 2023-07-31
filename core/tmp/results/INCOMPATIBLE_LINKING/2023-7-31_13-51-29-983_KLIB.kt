@@ -5,8 +5,43 @@
 // result:[-p, library, -o, lib.klib, projectTmp/newKlib.kt]
 // result:[-Xinclude=main.klib, -l, lib.klib, -Xpartial-linkage-loglevel=error]
 
-// files
-// main.kt
+// 
+// klib:
+     // isKlib=true
+     interface Base: Lxvnd{
+     
+         fun  base(): String { TODO() }
+     
+     }
+     
+     interface Foo1: Base {
+         fun foo1()
+     }
+     
+     interface Foo2: Base {
+         fun  foo2(sgrkg: String)
+     }
+     
+old: interface Bar: Foo1, Foo2 {
+new: interface Bar: Foo1, Foo2{
+new: 
+         override fun base(): String {
+             TODO("Not yet implemented")
+         }
+     
+         override fun foo1() {
+             TODO("Not yet implemented")
+         }
+         fun foo1(x: Int)
+new: 
+     }
+     interface Lxvnd{
+     
+     }
+     tailrec internal fun  qyuwk(): Foo1 { TODO() }
+     
+new: 
+new: 
 // isKlib=false
 fun main() {
 val ghrux: Base = 
@@ -57,70 +92,6 @@ val ynysh: kotlin.Unit = eqwti.foo1(-77)
 
 
 }
-// oldKlib.kt
-// isKlib=true
-interface Base: Lxvnd{
-
-    fun  base(): String { TODO() }
-
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base {
-    fun  foo2(sgrkg: String)
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-interface Lxvnd{
-
-}
-tailrec internal fun  qyuwk(): Foo1 { TODO() }
-// newKlib.kt
-// isKlib=true
-interface Base: Lxvnd{
-
-    fun  base(): String { TODO() }
-
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base {
-    fun  foo2(sgrkg: String)
-}
-
-interface Bar: Foo1, Foo2{
-
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-
-}
-interface Lxvnd{
-
-}
-tailrec internal fun  qyuwk(): Foo1 { TODO() }
-
-
 Combined output:
 ====================
 ====================

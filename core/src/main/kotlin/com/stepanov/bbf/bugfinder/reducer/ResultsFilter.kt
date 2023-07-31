@@ -50,7 +50,31 @@ object ResultsFilter {
     }
 
     fun filter() {
-        
+        File(CompilerArgs.resultsDir).walkTopDown().forEach {file ->
+            if (file.name.contains("KLIB")) {
+                val text = file.readText()
+                if (text.contains("oldKlib.kt") && text.contains("newKlib.kt")) {
+                    val newKlibText = text.substringAfter("// newKlib.kt\n")
+                        .substringBefore("Combined output")
+                        .substringBefore("// oldKlib.kt")
+                        .substringBefore("// main.kt")
+                    val oldKlibText = text.substringAfter("// oldKlib.kt\n")
+                        .substringBefore("Combined output")
+                        .substringBefore("// newKlib.kt")
+                        .substringBefore("// main.kt")
+                    val mainText = text.substringAfter("// main.kt\n")
+                        .substringBefore("Combined output")
+                        .substringBefore("// oldKlib.kt")
+                        .substringBefore("// newKlib.kt")
+                    val prefix = text.substringBefore("files") + "\n"
+                    val postfix = "Combined output" + text.substringAfter("Combined output")
+                    val diff = highlightDifferences(oldKlibText, newKlibText)
+                    val newText = prefix + "// klib:\n" + diff + "\n" + mainText + postfix
+                    file.writeText(newText)
+                }
+            }
+
+        }
 
         File(CompilerArgs.resultsDir).walkTopDown().forEach { file ->
             if (file.exists() && file.isFile) {

@@ -5,32 +5,37 @@
 // result:[-p, library, -o, lib.klib, projectTmp/newKlib.kt]
 // result:[-Xinclude=main.klib, -l, lib.klib, -Xpartial-linkage-loglevel=error]
 
-// files
-// oldKlib.kt
-// isKlib=true
-interface Base {
-    fun base(): String
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base {
-    fun foo2()
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-// main.kt
+// 
+// klib:
+     // isKlib=true
+     interface Base {
+         fun base(): String
+     }
+     
+     interface Foo1: Base {
+         fun foo1()
+     }
+     
+old: interface Foo2: Base {
+new: interface Foo2: Base, Foo1{
+new: 
+         fun foo2()
+new: 
+     }
+     
+     interface Bar: Foo1, Foo2 {
+         override fun base(): String {
+             TODO("Not yet implemented")
+         }
+     
+         override fun foo1() {
+             TODO("Not yet implemented")
+         }
+         fun foo1(x: Int)
+     }
+     
+new: 
+new: 
 // isKlib=false
 fun main() {
 val ouijk: Base = 
@@ -71,34 +76,6 @@ val hjnrc: kotlin.Unit = pghtr.foo1(-46)
 
 
 }
-// newKlib.kt
-// isKlib=true
-interface Base {
-    fun base(): String
-}
-
-interface Foo1: Base {
-    fun foo1()
-}
-
-interface Foo2: Base, Foo1{
-
-    fun foo2()
-
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
-}
-
-
 Combined output:
 ====================
 ====================

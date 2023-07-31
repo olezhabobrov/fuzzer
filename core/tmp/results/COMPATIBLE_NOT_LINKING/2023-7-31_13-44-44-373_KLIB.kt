@@ -5,8 +5,49 @@
 // result:[-p, library, -o, lib.klib, projectTmp/newKlib.kt]
 // result:[-Xinclude=main.klib, -l, lib.klib, -Xpartial-linkage-loglevel=error]
 
-// files
-// main.kt
+// 
+// klib:
+     // isKlib=true
+     interface Base: Lbspg{
+     
+         fun base(): String
+     
+     }
+     
+     interface Foo1{
+     
+         fun foo1()
+     
+     }
+     
+     interface Foo2: Base {
+         fun  foo2(snxay: Byte)
+     }
+     
+     interface Bar: Foo1, Foo2 {
+         override fun base(): String {
+             TODO("Not yet implemented")
+         }
+     
+         override fun foo1() {
+             TODO("Not yet implemented")
+         }
+         fun  foo1(x: Int, iqgma: UByte)
+     }
+     interface Pkwku{
+     
+     
+     
+     }
+old: interface Lbspg{
+new: interface Lbspg: Foo1{
+     
+new: 
+new: 
+     }
+     
+new: 
+new: 
 // isKlib=false
 fun main() {
 val wynmc: Base = 
@@ -60,82 +101,6 @@ val wpldh: kotlin.Unit = ytnuv.foo1(-4,89.toUByte())
 
 
 }
-// oldKlib.kt
-// isKlib=true
-interface Base: Lbspg{
-
-    fun base(): String
-
-}
-
-interface Foo1{
-
-    fun foo1()
-
-}
-
-interface Foo2: Base {
-    fun  foo2(snxay: Byte)
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun  foo1(x: Int, iqgma: UByte)
-}
-interface Pkwku{
-
-
-
-}
-interface Lbspg{
-
-}
-// newKlib.kt
-// isKlib=true
-interface Base: Lbspg{
-
-    fun base(): String
-
-}
-
-interface Foo1{
-
-    fun foo1()
-
-}
-
-interface Foo2: Base {
-    fun  foo2(snxay: Byte)
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun  foo1(x: Int, iqgma: UByte)
-}
-interface Pkwku{
-
-
-
-}
-interface Lbspg: Foo1{
-
-
-
-}
-
-
 Combined output:
 ====================
 ====================

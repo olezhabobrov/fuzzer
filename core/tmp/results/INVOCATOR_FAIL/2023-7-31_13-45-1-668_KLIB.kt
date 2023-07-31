@@ -2,8 +2,50 @@
 // result:[-p, library, -o, lib.klib, projectTmp/oldKlib.kt]
 // result:[-p, library, -l, lib.klib, -o, main.klib, projectTmp/main.kt]
 
-// files
-// main.kt
+// 
+// klib:
+     // isKlib=true
+     interface Base: Lbspg{
+     
+         fun base(): String
+     
+     }
+     
+     interface Foo1{
+     
+         fun foo1()
+     
+     }
+     
+old: interface Foo2: Base {
+new: interface Foo2: Base{
+new: 
+         fun  foo2(snxay: Byte)
+new: 
+     }
+     
+     interface Bar: Foo1, Foo2 {
+         override fun base(): String {
+             TODO("Not yet implemented")
+         }
+     
+         override fun foo1() {
+             TODO("Not yet implemented")
+         }
+         fun  foo1(x: Int, iqgma: UByte)
+     }
+     interface Pkwku{
+     
+     
+     
+     }
+     interface Lbspg{
+     
+     }
+     public fun <T, S: Collection<ULong>>  sahqt(): Long { TODO() }
+     
+new: 
+new: 
 // isKlib=false
 fun main() {
 val keszq: Base = 
@@ -58,84 +100,6 @@ val fgydg: kotlin.Unit = vfubu.foo1(89,97.toUByte())
 
 
 }
-// oldKlib.kt
-// isKlib=true
-interface Base: Lbspg{
-
-    fun base(): String
-
-}
-
-interface Foo1{
-
-    fun foo1()
-
-}
-
-interface Foo2: Base {
-    fun  foo2(snxay: Byte)
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun  foo1(x: Int, iqgma: UByte)
-}
-interface Pkwku{
-
-
-
-}
-interface Lbspg{
-
-}
-public fun <T, S: Collection<ULong>>  sahqt(): Long { TODO() }
-// newKlib.kt
-// isKlib=true
-interface Base: Lbspg{
-
-    fun base(): String
-
-}
-
-interface Foo1{
-
-    fun foo1()
-
-}
-
-interface Foo2: Base{
-
-    fun  foo2(snxay: Byte)
-
-}
-
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun  foo1(x: Int, iqgma: UByte)
-}
-interface Pkwku{
-
-
-
-}
-interface Lbspg{
-
-}
-public fun <T, S: Collection<ULong>>  sahqt(): Long { TODO() }
-
-
 Combined output:
 ====================
 Not enough information to infer type variable T
