@@ -156,7 +156,7 @@ class KlibTarget: SingleSourceTarget() {
 
 
     private fun randomTmpFileName() =
-        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith("experiment.kt") }?.random()!!.name
+        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
 
 
     fun updateRandomFile() {
