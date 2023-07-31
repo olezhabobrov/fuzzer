@@ -1,18 +1,57 @@
 package com.stepanov.bbf.bugfinder.reducer
 
+import com.github.difflib.DiffUtils
+import com.github.difflib.patch.DeltaType
+import com.github.difflib.text.DiffRowGenerator
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.messages.CompilationDescription
 import java.io.File
 
+
 object ResultsFilter {
+    private fun highlightDifferences(originalText: String, changedText: String): String {
+        val originalLines = originalText.lines()
+        val changedLines = changedText.lines()
+        val patch = DiffUtils.diff(originalLines, changedLines)
+        val result = mutableListOf<String>()
+
+        var lastLine = 0
+        for (delta in patch.deltas) {
+            // Add unchanged lines before this delta
+            for (i in lastLine until delta.source.position) {
+                result.add("     ${originalLines[i]}")
+            }
+            lastLine = delta.source.position + delta.source.lines.size
+
+            when (delta.type) {
+                DeltaType.INSERT -> {
+                    delta.target.lines.forEach { result.add("new: $it") }
+                }
+                DeltaType.DELETE -> {
+                    delta.source.lines.forEach { result.add("old: $it") }
+                }
+                DeltaType.CHANGE -> {
+                    delta.source.lines.forEach { result.add("old: $it") }
+                    delta.target.lines.forEach { result.add("new: $it") }
+                }
+
+                else -> {
+                    TODO("WHY")
+                }
+
+            }
+        }
+
+        // Add remaining unchanged lines
+        for (i in lastLine until originalLines.size) {
+            result.add("     ${originalLines[i]}")
+        }
+        return result.joinToString("\n")
+    }
+
     fun filter() {
-//        File(CompilerArgs.resultsDir).listFiles()!!.filter { it.isFile }.forEach { file ->
-//            if (file.readText().contains("Exception while analyzing expression")) {
-//                file.renameTo(File("tmp/results/" + file.nameWithoutExtension + "_FRONTEND" + ".kt"))
-//            } else {
-//                file.renameTo(File("tmp/results/" + file.nameWithoutExtension + "_BACKEND" + ".kt"))
-//            }
-//        }
+        
+
         File(CompilerArgs.resultsDir).walkTopDown().forEach { file ->
             if (file.exists() && file.isFile) {
                 if (file.readLines().size > 1000) {
