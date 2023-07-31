@@ -59,8 +59,8 @@ class AddSupertype: BinaryCompatibleTransformation(1) {
                     }
                 }
             }.randomOrNull() ?: return
-        if (clazz.modality != Modality.ABSTRACT)
-            implementAbstractMembers(file, clazz, newSupertype)
+//        if (clazz.modality != Modality.ABSTRACT)
+        implementAbstractMembers(file, clazz, newSupertype)
         val oldPsi = clazz.findPsi() as? KtClassOrObject ?: return
         val gclass = GClass.fromPsi(oldPsi)
         val invocation = ClassInvocator(file).randomConstructorInvocation(newSupertype)

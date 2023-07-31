@@ -63,6 +63,8 @@ class RemoveDefaultImplementation: BinaryIncompatibleTransformation(1) {
             psi.remove()
         } else {
             gstructure.removeDefaultImplementation()
+            if (clazz.kind == ClassKind.CLASS)
+                gstructure.addAbstract()
             val newPsi = gstructure.toPsi() ?: return
             psi.replaceThis(newPsi)
         }

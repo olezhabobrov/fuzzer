@@ -22,7 +22,7 @@ class AddValueParameter: BinaryIncompatibleTransformation(1) {
     }
 }
 
-class AddValueParameterWithDefaultValue: BinaryCompatibleTransformation(1) {
+class AddValueParameterWithDefaultValue: BinaryIncompatibleTransformation(1) {
     override fun transform(target: FTarget) {
         addParameter(target.file, true)
     }
