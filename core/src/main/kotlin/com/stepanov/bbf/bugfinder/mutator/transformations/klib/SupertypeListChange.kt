@@ -98,11 +98,11 @@ class RemoveSupertypes: BinaryIncompatibleTransformation(1) {
         val toDelete = clazz.defaultType.getMembers().filter { declaration ->
             (declaration.uniqueString() in allMembersOfDeleted
                 && declaration.uniqueString() !in otherMembers)
-        }.map { it.name }
+        }.map { it.uniqueString() }
         val psi = clazz.findPsi() as? KtClassOrObject ?: return
         val psiToDelete = (psi.getAllPSIChildrenOfType<KtFunction>() +
                 psi.getAllPSIChildrenOfType<KtProperty>())
-            .filter {it.nameAsName in toDelete }
+            .filter { it.uniqueString() in toDelete }
         psiToDelete.forEach { member ->
             // either delete member or delete override modifier
             if (Random.nextBoolean()) {

@@ -8,11 +8,15 @@ import com.stepanov.bbf.bugfinder.util.addPsiToBody
 import com.stepanov.bbf.bugfinder.util.findPsi
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import com.stepanov.bbf.reduktor.util.remove
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTypeParameterListOwner
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
@@ -45,7 +49,22 @@ class AddImplementationOfMember: BinaryCompatibleTransformation(1) {
 
 class RemoveDefaultImplementation: BinaryIncompatibleTransformation(1) {
     override fun transform(target: FTarget) {
-        TODO("Not yet implemented")
+        val file = target.file
+        val clazz = file.getAllClassDescriptors()
+            .filter { it.modality == Modality.ABSTRACT }
+            .randomOrNull() ?: return
+        val clazzPsi = clazz.findPsi() as? KtClassOrObject ?: return
+        val (psi, gstructure) = (clazzPsi.getAllPSIChildrenOfType<KtFunction>() +
+                clazzPsi.getAllPSIChildrenOfType<KtProperty>())
+            .map { it to GStructure.fromPsi(it) }
+            .filter { it.second.isImplemented() }
+            .randomOrNull() ?: return
+        if (gstructure.modifiers.contains("override")) {
+            psi.remove()
+        } else {
+            gstructure.removeDefaultImplementation()
+            val newPsi = gstructure.toPsi() ?: return
+            psi.replaceThis(newPsi)
+        }
     }
-
 }
