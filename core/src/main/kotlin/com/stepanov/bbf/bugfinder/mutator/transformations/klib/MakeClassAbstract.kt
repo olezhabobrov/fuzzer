@@ -21,7 +21,7 @@ class MakeClassAbstract: BinaryIncompatibleTransformation(1) {
             gclass.classWord = "interface"
         } else {
             gclass.addAbstract()
-        }         
+        }
         val newPsi = gclass.toPsi() ?: return
         psi.replaceThis(newPsi)
     }
