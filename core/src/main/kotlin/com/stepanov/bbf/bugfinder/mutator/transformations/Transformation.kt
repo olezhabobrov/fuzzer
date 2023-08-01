@@ -24,13 +24,7 @@ abstract class Transformation(
             val file = project.klib
             file.updateCtx()
             val ftarget = FTarget(project, file)
-            try {
-                Invocator.addInvocationOfAllCallable(ftarget)
-            } catch (e: Throwable) {
-                println("Got exception in Invocator: ${e.message}")
-                println(file.text)
-                throw e
-            }
+            Invocator.addInvocationOfAllCallable(ftarget)
             val oldProjectMessage = project.createProjectMessage()
             oldProjectMessage.beforeTransformation()
             try {

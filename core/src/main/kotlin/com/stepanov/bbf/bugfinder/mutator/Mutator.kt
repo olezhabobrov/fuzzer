@@ -50,7 +50,9 @@ class Mutator: AbstractVerticle() {
             file.updateCtx()
             val ftarget = FTarget(project, file)
             Invocator.addInvocationOfAllCallable(ftarget)
-            msg.reply(project.createProjectMessage())
+            val newProject = project.createProjectMessage()
+            project.dispose()
+            msg.reply(newProject)
         }
     }
 
