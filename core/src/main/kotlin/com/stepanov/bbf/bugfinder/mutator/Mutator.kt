@@ -49,13 +49,7 @@ class Mutator: AbstractVerticle() {
             val file = project.klib
             file.updateCtx()
             val ftarget = FTarget(project, file)
-            try {
-                Invocator.addInvocationOfAllCallable(ftarget)
-            } catch (e: Throwable) {
-                println("Got exception in Invocator: ${e.message}")
-                println(file.text)
-                throw e
-            }
+            Invocator.addInvocationOfAllCallable(ftarget)
             msg.reply(project.createProjectMessage())
         }
     }

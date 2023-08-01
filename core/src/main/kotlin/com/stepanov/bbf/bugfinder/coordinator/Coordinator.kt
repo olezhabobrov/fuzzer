@@ -132,6 +132,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             } else {
                 println(amsg.cause())
                 error(amsg.cause())
+                startWithNewProject()
             }
         }
     }
