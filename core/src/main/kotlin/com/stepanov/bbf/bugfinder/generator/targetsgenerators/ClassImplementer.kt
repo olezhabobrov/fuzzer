@@ -69,8 +69,8 @@ class ClassImplementer(val file: BBFFile) {
                     else -> null
                 }
         }
-        if (allMembers.contains(null))
-            error("Shouldn't have null")
+//        if (allMembers.contains(null))
+//            error("Shouldn't have null")
         return allMembers.filterNotNull().map {
             it.addOverride()
             it.addDefaultImplementation()

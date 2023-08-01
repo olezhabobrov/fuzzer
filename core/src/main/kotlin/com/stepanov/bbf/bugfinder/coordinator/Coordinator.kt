@@ -126,8 +126,13 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         successfullyCompiledProjects.clear()
         checkedProjects.clear()
         eb.request<ProjectMessage>(VertxAddresses.addInvocations, newProject) { amsg ->
-            val project = amsg.result().body()
-            eb.send(VertxAddresses.checkCompile, project)
+            if (amsg.succeeded()) {
+                val project = amsg.result().body()
+                eb.send(VertxAddresses.checkCompile, project)
+            } else {
+                println(amsg.cause())
+                error(amsg.cause())
+            }
         }
     }
 
