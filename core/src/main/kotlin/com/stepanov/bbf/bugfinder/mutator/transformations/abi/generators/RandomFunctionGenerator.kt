@@ -153,12 +153,10 @@ class RandomFunctionGenerator(
     override fun simpleGeneration(): PsiElement {
         with(gFunc) {
             modifiers = generateModifiers()
-            val genTypeArgs = if (gClass?.isFunInterface() == true) listOf() else generateTypeParams(false)
-            val genTypeArgsWObounds = genTypeArgs.map { it.substringBefore(':').substringAfter("reified ").trim() }
-            typeArgs = genTypeArgs
+            typeArgs = listOf()
 //            extensionReceiver = generateExtension(genTypeArgsWObounds)
             name = generateName()
-            args = generateArgs((gClass?.typeParams ?: listOf()) + genTypeArgsWObounds)
+            args = generateArgs((gClass?.typeParams ?: listOf()))
             rtvType = generateRtv()
             body = generateBody()
         }

@@ -139,11 +139,15 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             } else {
                 println(amsg.cause())
                 println(newProject)
-                error(amsg.cause())
-                startWithNewProject()
+                if (failedTimes++ > 10)
+                    error(amsg.cause())
+                else
+                    startWithNewProject()
             }
         }
     }
+
+    var failedTimes = 0
 
     private fun saveStatistics() {
         if (statistics.appliedTransformations.isNotEmpty()) {
