@@ -5,6 +5,8 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.klib.BinaryCompatibleT
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
+import com.stepanov.bbf.bugfinder.util.getRandomVariableName
+import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.*
 import io.vertx.core.AbstractVerticle
@@ -12,7 +14,9 @@ import io.vertx.core.eventbus.EventBus
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.log4j.Logger
+import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticle() {
 
@@ -108,6 +112,8 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 } else {
                     log.debug("Binary incompatible transformation $transformationName breaks ABI")
                 }
+                statistics.resultedProject = result.projectMessage
+                statistics.addTransformation(lastTransformation)
                 successfullyCompiledProjects.add(result.projectMessage.getProjectMessageWithNewKlib())
             }
             CompilationDescription.UNKOWN_BEHAVIOUR -> {
@@ -123,6 +129,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     private fun startWithNewProject() {
         log.debug("Restarting with new initial project")
         val newProject = mutationProblem.getProjectMessage()
+        statistics = RoundStatistics(newProject)
         successfullyCompiledProjects.clear()
         checkedProjects.clear()
         eb.request<ProjectMessage>(VertxAddresses.addInvocations, newProject) { amsg ->
@@ -131,9 +138,17 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 eb.send(VertxAddresses.checkCompile, project)
             } else {
                 println(amsg.cause())
+                println(newProject)
                 error(amsg.cause())
                 startWithNewProject()
             }
+        }
+    }
+
+    private fun saveStatistics() {
+        if (statistics.appliedTransformations.isNotEmpty()) {
+            val fileName = CompilerArgs.statDir + Random.getRandomVariableName() + ".kt"
+            File(fileName).writeText(statistics.toString())
         }
     }
 
@@ -142,6 +157,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
             if (successfullyCompiledProjects.isEmpty() ||
                 successfullyCompiledProjects.size > LIMIT_OF_COMPILED_PROJECTS ||
                 checkedProjects.size > 1000) {
+                saveStatistics()
                 startWithNewProject()
                 return
             }
@@ -227,6 +243,25 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 //    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000
     private var checkedProjects = mutableSetOf<ProjectMessage>()
     private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
+    private lateinit var statistics: RoundStatistics
 
     private val log = Logger.getLogger("coordinatorLogger")
+
+    private class RoundStatistics(val initialProject: ProjectMessage) {
+        lateinit var resultedProject: ProjectMessage
+
+        val appliedTransformations = mutableListOf<String>()
+
+        fun addTransformation(t: Transformation) {
+            appliedTransformations.add(t.javaClass.simpleName)
+        }
+
+        override fun toString(): String = """
+            applied transformations: ${appliedTransformations.joinToString(", ")}
+            started with:
+            $initialProject
+            resulted project:
+            $resultedProject
+        """.trimIndent()
+    }
 }
