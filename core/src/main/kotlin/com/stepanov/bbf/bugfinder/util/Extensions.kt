@@ -535,7 +535,7 @@ fun KotlinType.getTypeName() = getJetTypeFqName(true) +
 fun KotlinType.getPublicProperties(): List<PropertyDescriptor> {
     memberScope.computeAllNames()
     return memberScope.getDescriptorsFiltered {true}
-        .filter { it is PropertyDescriptor && it.visibility.isPublicAPI }
+        .filter { it is PropertyDescriptor && it.visibility.delegate is Visibilities.Public }
         .map { it as PropertyDescriptor }
 }
 
