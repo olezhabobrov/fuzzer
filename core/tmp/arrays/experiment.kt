@@ -1,22 +1,46 @@
-interface Base {
-    fun base(): String
+// coroutinesBinary.kt
+
+// MODULE: lib
+// WITH_RUNTIME
+// WITH_COROUTINES
+// FILE: A.kt
+package a
+
+import kotlin.coroutines.*
+import kotlin.coroutines.intrinsics.*
+
+class Controller {
+    var callback: () -> Unit = {}
+    suspend fun suspendHere() = suspendCoroutine<String> { x ->
+        callback = {
+            x.resume("OK")
+        }
+    }
 }
 
-interface Foo1: Base {
-    fun foo1()
+fun builder(c: suspend Controller.() -> Unit) {
+    val controller = Controller()
+    c.startCoroutine(controller, object : helpers.ContinuationAdapter<Unit>() {
+        override val context: CoroutineContext = EmptyCoroutineContext
+        override fun resume(value: Unit) {}
+
+        override fun resumeWithException(exception: Throwable) {}
+    })
+
+    controller.callback()
 }
 
-interface Foo2: Base {
-    fun foo2()
-}
+// MODULE: main(lib)
+// WITH_RUNTIME
+// FILE: B.kt
+import a.builder
 
-interface Bar: Foo1, Foo2 {
-    override fun base(): String {
-        TODO("Not yet implemented")
+fun box(): String {
+    var result = ""
+
+    builder {
+        result = suspendHere()
     }
 
-    override fun foo1() {
-        TODO("Not yet implemented")
-    }
-    fun foo1(x: Int)
+    return result
 }
