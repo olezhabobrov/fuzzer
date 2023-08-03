@@ -19,7 +19,7 @@ class ClassInvocator(val file: BBFFile) {
 
     fun randomClassInvocation(descriptor: ClassDescriptor, depth: Int = 0): String =
         if (depth >= DEPTH)
-            ""
+            "TODO()"
         else
             file.findImplementation(descriptor.defaultType) ?:
             generateInstances(descriptor, depth).randomOrNull() ?: ""
@@ -68,7 +68,7 @@ class ClassInvocator(val file: BBFFile) {
             Modality.FINAL ->
                 invokeAllConstructors(descriptor, depth)
             Modality.ABSTRACT ->
-                implementOpenMembers(descriptor)
+                implementOpenMembers(descriptor, depth)
             Modality.OPEN ->
                 invokeAllConstructors(descriptor, depth) + implementOpenMembers(descriptor, depth)
             Modality.SEALED ->
@@ -88,5 +88,5 @@ class ClassInvocator(val file: BBFFile) {
     }
 
 
-    private val DEPTH = 10
+    private val DEPTH = 3
 }
