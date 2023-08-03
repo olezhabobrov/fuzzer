@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 import kotlin.random.Random
 
-class RandomFunctionGenerator(
+open class RandomFunctionGenerator(
     file: BBFFile,
     val gClass: GClass? = null
 ) : DSGenerator(file) {
@@ -136,6 +136,7 @@ class RandomFunctionGenerator(
             gFunc.modifiers.contains("external") || gFunc.isAbstract() -> ""
             gFunc.isPrivate() -> "{ TODO() }"
             gClass?.isInterface() == true -> if (Random.nextBoolean()) "" else "{ TODO() }"
+            gFunc.isAbstract() == true -> ""
             else -> "{ TODO() }"
         }
 
@@ -149,6 +150,47 @@ class RandomFunctionGenerator(
         }
     }
 
+    private fun generateModifiersForKlib(isBinaryCompatible: Boolean): MutableList<String> {
+        val modifiers = mutableListOf<String>()
+        if (gClass != null) {
+            if (gClass.isOpen() || gClass.isAbstract() || gClass.isInterface()) {
+                if (isBinaryCompatible && Random.getTrue(40)) {
+                    modifiers.add("open")
+                }
+                if (!isBinaryCompatible && !gClass.isOpen()) {
+                    modifiers.add("abstract")
+                }
+            }
+            if (Random.getTrue(25)) {
+                modifiers.add("inline")
+            }
+            if (Random.getTrue(10)) {
+                modifiers.add("tailrec")
+            }
+            if (Random.getTrue(10)) {
+                modifiers.add("infix")
+            }
+            if (Random.getTrue(10)) {
+                modifiers.add("operator")
+            }
+        }
+        return modifiers
+    }
+
+
+    fun generateForKlib(isBinaryCompatible: Boolean): PsiElement {
+        beforeGeneration()
+        with(gFunc) {
+            modifiers = generateModifiersForKlib(isBinaryCompatible)
+            typeArgs = listOf()
+//            extensionReceiver = generateExtension(genTypeArgsWObounds)
+            name = generateName()
+            args = generateArgs((gClass?.typeParams ?: listOf()))
+            rtvType = generateRtv()
+            body = generateBody()
+        }
+        return gFunc.toPsi()
+    }
 
     override fun simpleGeneration(): PsiElement {
         with(gFunc) {

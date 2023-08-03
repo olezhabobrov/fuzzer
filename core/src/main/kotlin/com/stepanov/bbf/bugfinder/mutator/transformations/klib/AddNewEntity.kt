@@ -16,10 +16,6 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
         val file = target.file
         val allClasses = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
-            .filter {
-                val gclass = GClass.fromPsi(it)
-                !gclass.isInterface()
-            }
         val outerEntity: KtClassOrObject?
         if (allClasses.isEmpty() || Random.nextInt(0, 100) < TOP_LEVEL_PROBABILITY) {
             outerEntity = null
@@ -37,7 +33,7 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
             "fun" ->
                 RandomFunctionGenerator(file,
                     GClass.fromPsiOrNull(outerEntity)
-                ).generate() ?: error("Couldn't generate function in AddNewEntity transformation")
+                ).generateForKlib(true)
             "class" -> GClass().also {
                 it.classWord = "class"
                 it.name = randomName.capitalize()
@@ -62,7 +58,22 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
 
     val TOP_LEVEL_PROBABILITY = 50
     val INTERFACE_PROB = 20.0
-    val CLASS_PROB = 50.0
+    val CLASS_PROB = 40.0
     val FUNCTION_PROB = 50.0
     val OBJECT_PROB = 20.0
+}
+
+class AddAbstractFunction: BinaryIncompatibleTransformation(1) {
+    override fun transform(target: FTarget) {
+        val file = target.file
+        val parentClass = file.psiFile.getAllPSIChildrenOfType<KtClassOrObject>()
+            .filter {
+                val gclass = GClass.fromPsi(it)
+                gclass.isInterface() || gclass.isAbstract()
+            }.randomOrNull() ?: return
+        val newFunc = RandomFunctionGenerator(file, GClass.fromPsiOrNull(parentClass))
+            .generateForKlib(true)
+        parentClass.addPsiToBody(newFunc)
+    }
+
 }
