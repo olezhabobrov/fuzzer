@@ -12,8 +12,11 @@ import com.stepanov.bbf.bugfinder.util.getRandomClassName
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.resolve.DeclarationsChecker.Companion.hasAccessorImplementation
 import kotlin.random.Random
 
 class ClassImplementer(val file: BBFFile) {
@@ -29,8 +32,9 @@ class ClassImplementer(val file: BBFFile) {
         return gclass.toString()
     }
 
-    fun allImplementationsOfClasses(supertypes: List<ClassDescriptor>, depth: Int = 0): List<String> =
-        callConstructors(supertypes, depth).map { constructors ->
+    fun allImplementationsOfClasses(supertypes: List<ClassDescriptor>, depth: Int = 0): List<String> {
+        var onlyAbstractImpl = false
+        return callConstructors(supertypes, depth).flatMap { constructors ->
             val gclass = GClass()
             with(gclass) {
                 classWord = "object"
@@ -38,7 +42,20 @@ class ClassImplementer(val file: BBFFile) {
                 body = implementAllMembers(supertypes).joinToString(separator = "\n")
             }
             gclass.toString()
+            val gclass2 = GClass()
+            with(gclass2) {
+                classWord = "object"
+                gclass2.supertypes = constructors.toMutableList()
+                body = implementAbstractMembers(supertypes).joinToString(separator = "\n")
+            }
+            if (gclass.toString() != gclass2.toString() && !onlyAbstractImpl) {
+                onlyAbstractImpl=true
+                listOf(gclass.toString(), gclass2.toString())
+            }
+            else
+                listOf(gclass.toString())
         }
+    }
 
     fun callConstructors(supertypes: List<ClassDescriptor>, depth: Int = 0): List<List<String>>  {
         val abstractClassesInvocations =
@@ -77,6 +94,30 @@ class ClassImplementer(val file: BBFFile) {
             it.toString()
         }
     }
+
+    fun implementAbstractMembers(supertypes: List<ClassDescriptor>): List<String> =
+        getAllMembers(supertypes).filter {
+            when(it) {
+                is FunctionDescriptor -> it.modality == Modality.ABSTRACT
+                is PropertyDescriptor -> !it.hasAccessorImplementation()
+                else -> error("is not function oder property")
+            }
+        }.map {
+            val psi = it.findPsi()
+            if (psi == null)
+                null
+            else
+                when (psi) {
+                    is KtFunction -> GFunction.fromPsi(psi)
+                    is KtProperty -> GProperty.fromPsi(psi)
+                    else -> null
+                }
+        }.filterNotNull().map {
+            it.addOverride()
+            it.addDefaultImplementation()
+            it.toString()
+        }
+
 
     private fun trivialConstructorCall(descriptor: ClassDescriptor): String =
         descriptor.getPublicConstructors().random().let {

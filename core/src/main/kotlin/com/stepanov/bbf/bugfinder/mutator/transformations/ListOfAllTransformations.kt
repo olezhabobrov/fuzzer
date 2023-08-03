@@ -31,7 +31,7 @@ object Constants {
         RemoveOpenModifier::class to 100.0,
 //        RenameTypeParameter::class to 100.0,
         AddSupertype::class to 300.0,
-        RemoveSupertypes::class to 300.0,
+//        RemoveSupertypes::class to 300.0,
     ).map { TransformationClass(it.first) to it.second })
 //    val allTransformations: WeightedList<TransformationClass> = WeightedList(listOf(
 //        AddArgumentToFunction::class to 100.0,
