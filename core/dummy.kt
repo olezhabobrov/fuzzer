@@ -3,16 +3,14 @@ import kotlin.*
 
 
 
-val abcq1: UShort = TODO()
+val abcq1: Boolean = TODO()
 
-fun  abcq(a: UShort){}
+fun  abcq(a: Boolean){}
 
-open class Foo(val x: Int) {
-    var y: String = "a"
-
-    fun bar(x: Int): String { TODO() }
+class A(val a: A?) {
+    val x: Int = 5
+constructor(a: Function2<MutableMap<Function2<Int, Double, A>, String>, Map<ULong, List<UInt>>, A> = {}, b: Short, c: Function2<A, Byte, Short>, d: Function2<UInt, Float?, A>): this(null)
+constructor(a: UShort, b: UShort = 21.toUShort(), c: LinkedHashMap<A, A>): this(null)
+constructor(a: A?): this(null)
+constructor(a: Boolean?, b: A, c: Float, d: A): this(null)
 }
-
-interface FooInterface
-
-class Bar(y: String, bywgl: Bar = Bar("fuitu"), ovuky: Float = -5.904297f): Foo(3), FooInterface

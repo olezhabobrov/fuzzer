@@ -5,6 +5,8 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.replaceThis
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.psi.*
 import kotlin.random.Random
 
@@ -74,4 +76,16 @@ class ClassifierCompatibleTransformations: BinaryCompatibleTransformation(1) {
             clazz.replaceThis(newClass)
         }
     }
+}
+
+class FromAbstractToOpen: BinaryCompatibleTransformation(1) {
+    override fun transform(target: FTarget) {
+        val file = target.file
+        val clazz = file.getAllClassDescriptors()
+            .filter { it.modality == Modality.ABSTRACT && it.kind == ClassKind.CLASS }
+            .randomOrNull() ?: return
+        val allAbstract = clazz.getAbstractMembers()
+        TODO()
+    }
+
 }
