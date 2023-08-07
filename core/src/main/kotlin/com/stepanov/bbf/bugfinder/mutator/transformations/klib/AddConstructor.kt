@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInvocator
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ConstructorGenerator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
@@ -23,34 +24,11 @@ class AddSecondaryConstructor: BinaryCompatibleTransformation(1) {
         val clazz = file.getAllClassDescriptors()
             .filter { it.kind == ClassKind.CLASS }
             .randomOrNull() ?: return
-        val gconstructor = GConstructor()
-        val classPsi = clazz.findPsi() as? KtClass ?: return
-        val hasPrimary = classPsi.getAllPSIChildrenOfType<KtPrimaryConstructor>().isNotEmpty()
-        if (hasPrimary) {
-            val primaryConstructor = clazz.constructors.find { it.isPrimary } ?: return
-            val primaryConstructorInvocation =
-                FunInvocator(file).invokeParameterBrackets(primaryConstructor).randomOrNull() ?: return
-            gconstructor.delegationCalls.add("this$primaryConstructorInvocation")
-        }
-        val args = generateArgs(file)
-        gconstructor.argsParams = args
-        val psi = gconstructor.toPsi()
-        classPsi.addPsiToBody(psi)
+        ConstructorGenerator(file).generateAndAddSecondaryConstructor(clazz)
     }
 }
 
-private fun generateArgs(file: BBFFile) =
-    MutableList(Random.nextInt(1, 5)) {
-        val t = RandomTypeGenerator(file).generateRandomTypeWithCtx() ?: return mutableListOf<GParameter>()
-        val param = GParameter()
-        param.name = "${'a' + it}"
-        param.type = t.toString()
-        val decCon = t.constructor.declarationDescriptor as? ClassDescriptor
-        if (Random.getTrue(10) && decCon != null) {
-            param.defaultValue = ClassInvocator(file).randomClassInvocation(decCon)
-        }
-        param
-    }
+
 
 class AddPrimaryConstructor: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
@@ -69,48 +47,7 @@ class AddPrimaryConstructor: BinaryCompatibleTransformation(1) {
                 }
             }
             .randomOrNull() ?: return
-        val classPsi = clazz.findPsi() as? KtClass ?: return
-        val hasPrimary = clazz.constructors.any { it.isPrimary }
-        if (hasPrimary) {
-            val primaryConstructor = clazz.constructors.find { it.isPrimary } ?: return
-            val primaryConstructorPsi = primaryConstructor.findPsi() as? KtConstructor<*>
-                ?: classPsi.createPrimaryConstructorIfAbsent()
-            val newPrimConstructor = GConstructor()
-            newPrimConstructor.argsParams = generateArgs(file)
-            newPrimConstructor.isPrimary = true
-
-            primaryConstructorPsi.replaceThis(newPrimConstructor.toPsi())
-
-            val oldPrimConstructor = GConstructor.fromPsi(primaryConstructorPsi)
-            oldPrimConstructor.isPrimary = false
-            val delegationCall = mutableListOf<String>().also {  params ->
-                newPrimConstructor.argsParams.forEach {
-                    params.add("TODO() as ${it.type}")
-                }
-            }.joinToString(separator = ", ", prefix = "this(", postfix = ")")
-            oldPrimConstructor.delegationCalls.add(delegationCall)
-            classPsi.addPsiToBody(oldPrimConstructor.toPsi())
-        } else {
-            val newPrimConstructor = GConstructor()
-            newPrimConstructor.argsParams = generateArgs(file)
-            newPrimConstructor.isPrimary = true
-            clazz.constructors.forEach { descr ->
-                val psi = descr.findPsi() as? KtConstructor<*>
-                if (psi != null) {
-                    val gcon = GConstructor.fromPsi(psi)
-                    if (gcon.delegationCalls.isEmpty()) {
-                        val delegationCall = mutableListOf<String>().also {  params ->
-                            newPrimConstructor.argsParams.forEach {
-                                params.add("TODO() as ${it.type}")
-                            }
-                        }.joinToString(separator = ", ", prefix = "this(", postfix = ")")
-                        gcon.delegationCalls.add(delegationCall)
-                        psi.replaceThis(gcon.toPsi())
-                    }
-                }
-            }
-            classPsi.createPrimaryConstructorIfAbsent().replaceThis(newPrimConstructor.toPsi())
-        }
+        ConstructorGenerator(file).generateAndAddPrimaryConstructor(clazz)
     }
 
 }
