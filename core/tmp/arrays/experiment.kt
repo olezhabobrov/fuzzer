@@ -1,3 +1,8 @@
-class A(val a: A?) {
-    constructor(x: Int): this(null)
+interface Foo
+
+
+class C: Foo {
+    constructor(x: Int)
+    constructor(y: String)
+    
 }

@@ -36,7 +36,7 @@ class GConstructor(override var modifiers: MutableList<String> = mutableListOf()
                 argsParams = constructor.valueParameters.map { GParameter.fromPsi(it) }.toMutableList()
                 delegationCalls = constructor.getAllPSIChildrenOfType<KtConstructorDelegationCall>().map {
                     it.text
-                }.toMutableList()
+                }.filter { it.isNotBlank() }.toMutableList()
                 body = constructor.bodyBlockExpression?.text ?: ""
                 if (constructor is KtPrimaryConstructor)
                     isPrimary = true
