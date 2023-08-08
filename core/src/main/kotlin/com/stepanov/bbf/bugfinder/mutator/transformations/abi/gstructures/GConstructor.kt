@@ -28,6 +28,15 @@ class GConstructor(override var modifiers: MutableList<String> = mutableListOf()
         return "$constructorWord($args)$delegations $body"
     }
 
+    fun addCallToConstructor(gConstructor: GConstructor) {
+        val delegationCall = mutableListOf<String>().also { params ->
+            gConstructor.argsParams.forEach {
+                params.add("TODO() as ${it.type}")
+            }
+        }.joinToString(separator = ", ", prefix = "this(", postfix = ")")
+        delegationCalls.add(delegationCall)
+    }
+
     companion object {
         fun fromPsi(constructor: KtConstructor<*>): GConstructor {
             val gcon = GConstructor()

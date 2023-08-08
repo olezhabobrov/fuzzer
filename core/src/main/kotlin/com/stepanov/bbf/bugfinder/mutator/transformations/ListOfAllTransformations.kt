@@ -7,6 +7,9 @@ import com.stepanov.bbf.util.WeightedList
 object Constants {
     // TODO: all transformation classes should be here
     val allTransformations: WeightedList<TransformationClass> = WeightedList(listOf(
+        AddSecondaryConstructor::class to 100.0,
+        AddPrimaryConstructor::class to 100.0,
+        ChangePrimaryAndSecondaryConstructors::class to 100.0,
         AddDefaultValue::class to 100.0,
         RemoveDefaultValue::class to 100.0,
         AddImplToAbstract::class to 100.0,

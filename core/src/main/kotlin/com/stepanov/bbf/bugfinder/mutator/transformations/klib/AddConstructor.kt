@@ -1,22 +1,16 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInvocator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ConstructorGenerator
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocator
-import com.stepanov.bbf.bugfinder.generator.targetsgenerators.typeGenerators.RandomTypeGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GConstructor
-import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GParameter
-import com.stepanov.bbf.bugfinder.project.BBFFile
-import com.stepanov.bbf.bugfinder.util.addPsiToBody
 import com.stepanov.bbf.bugfinder.util.findPsi
-import com.stepanov.bbf.bugfinder.util.getTrue
 import com.stepanov.bbf.bugfinder.util.replaceThis
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import com.sun.jna.platform.unix.X11.GC
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.psi.*
-import kotlin.random.Random
+import org.jetbrains.kotlin.psi.KtConstructor
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 
 class AddSecondaryConstructor: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
@@ -27,8 +21,6 @@ class AddSecondaryConstructor: BinaryCompatibleTransformation(1) {
         ConstructorGenerator(file).generateAndAddSecondaryConstructor(clazz)
     }
 }
-
-
 
 class AddPrimaryConstructor: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
@@ -49,5 +41,32 @@ class AddPrimaryConstructor: BinaryCompatibleTransformation(1) {
             .randomOrNull() ?: return
         ConstructorGenerator(file).generateAndAddPrimaryConstructor(clazz)
     }
+}
 
+class ChangePrimaryAndSecondaryConstructors: BinaryCompatibleTransformation(1) {
+    override fun transform(target: FTarget) {
+        val file = target.file
+        val clazz = file.getAllClassDescriptors().filter { descr ->
+            val prim = descr.constructors.find { it.isPrimary }?.findPsi() as? KtConstructor<*>
+            if (prim == null)
+                false
+            else {
+                descr.constructors.size >= 2 && GConstructor.fromPsi(prim).argsParams.all { it.valOrVar == "" }
+            }
+        }.randomOrNull() ?: return
+        val primaryConstructor = clazz.constructors.find { it.isPrimary }!!
+        val secondaryConstructor = clazz.constructors.filter { !it.isPrimary }.random()
+        val primPsi = primaryConstructor.findPsi() as? KtConstructor<*> ?: return
+        val secondPsi = secondaryConstructor.findPsi() as? KtConstructor<*> ?: return
+        val gprim = GConstructor.fromPsi(primPsi)
+        val gsec = GConstructor.fromPsi(secondPsi)
+        gprim.isPrimary = false
+        gsec.isPrimary = true
+        gprim.addCallToConstructor(gsec)
+        gsec.delegationCalls.clear()
+        val newPrim = gsec.toPsi()
+        val newSec = gprim.toPsi()
+        primPsi.replaceThis(newPrim)
+        secondPsi.replaceThis(newSec)
+    }
 }
