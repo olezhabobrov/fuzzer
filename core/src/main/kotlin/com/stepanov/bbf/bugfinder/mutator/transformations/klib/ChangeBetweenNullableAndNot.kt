@@ -19,7 +19,7 @@ class MakeParameterNotNullable: BinaryIncompatibleTransformation(1) {
     }
 }
 
-class MakeParameterNullable: BinaryCompatibleTransformation(1) {
+class MakeParameterNullable: BinaryIncompatibleTransformation(1) {
     override fun transform(target: FTarget) {
         val file = target.file
         val parameter = file.psiFile.getAllPSIChildrenOfType<KtParameter>()

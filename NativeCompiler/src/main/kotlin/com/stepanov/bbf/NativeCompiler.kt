@@ -57,7 +57,7 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
     override fun checkCompiling(project: ProjectMessage): KotlincInvokeResult {
         return KotlincInvokeResult(project, listOf(
             compile(
-                CompilationArgs(0).addFile(project.klib.name).addFile(project.mainFile.name)
+                CompilationArgs(0).addFile(project.klib.name).addFile(project.mainFile.name).createOutputName("program")
             )))
     }
 

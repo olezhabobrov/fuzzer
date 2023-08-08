@@ -48,11 +48,11 @@ data class CompilationArgs(
     }
 
     fun addKlib(klibName: String) = also {
-        klib = klibName
+        klib = dir + klibName
     }
 
     fun addXinclude(incl: String) = also {
-        xinclude = incl
+        xinclude = dir + incl
     }
 
     fun useK2(): CompilationArgs = also {
@@ -72,11 +72,7 @@ data class CompilationArgs(
     }
 
     fun createOutputName(output: String) = also {
-        outputName = output
+        outputName = dir + output
     }
-
-    fun withOldKlib() = klib != null && klib!! == "oldKlib.kt"
-
-    fun withNewKlib() = klib != null && klib!! == "newKlib.kt"
 
 }

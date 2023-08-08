@@ -40,14 +40,13 @@ class RandomTypeGenerator(val file: BBFFile) {
             upperBounds != null && !upperBounds.isAnyOrNullableAny() -> {
                 resRandomType = generateWithUpperBounds(upperBounds)
             }
-            Random.getTrue(5) -> {
-                resRandomType = generateType(generateFunType())
-            }
+//            Random.getTrue(5) -> {
+//                resRandomType = generateType(generateFunType())
+//            }
             else -> {
                 val type = when (Random.nextInt(0, 10)) {
-                    in 0..(3 + depth) -> generateType(primitives.random())
-                    in (4 + depth)..(6 + depth) -> getTypeFromFile(depth = depth)
-                    else -> generateType(generateContainer1(depth))
+                    in 0..3  -> generateType(primitives.random())
+                    else -> getTypeFromFile(depth = depth)
                 }
                 resRandomType =
                     when {

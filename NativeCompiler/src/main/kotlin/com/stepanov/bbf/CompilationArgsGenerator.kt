@@ -15,7 +15,7 @@ object CompilationArgsGenerator {
         val args2 = CompilationArgs(2).addFile(mainFile).addKlib(libName).makeKlib().createOutputName(mainName)
         val args3 = CompilationArgs(3).addXinclude(mainName).addKlib(libName).addPartialLinkage()
         val args4 = CompilationArgs(4).addFile(newKlib).makeKlib().createOutputName(libName)
-        val args5 = CompilationArgs(5).addXinclude(mainName).addKlib(libName).addPartialLinkage()
+        val args5 = CompilationArgs(5).addXinclude(mainName).addKlib(libName).addPartialLinkage().createOutputName("program")
 
         return listOf(args1, args2, args3, args4, args5)
     }
