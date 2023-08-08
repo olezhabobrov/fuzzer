@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["ChangePrimaryAndSecondaryConstructors"]
+        "transformationsList": ["MakeParameterNullable"]
     },
     "mutationTarget": {
         "type": "klib"

@@ -544,6 +544,8 @@ fun KotlinType.getMembers(): List<DeclarationDescriptor> {
     return memberScope.getDescriptorsFiltered {true}.toList()
 }
 
+
+
 fun KtFile.getVariablesFromMain() =
     getAllPSIChildrenOfType<KtProperty>().filter {
         val function = it.getParentOfType<KtFunction>(true)

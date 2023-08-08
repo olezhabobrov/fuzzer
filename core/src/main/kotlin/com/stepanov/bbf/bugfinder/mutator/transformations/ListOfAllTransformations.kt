@@ -18,6 +18,8 @@ object Constants {
         AddProperty::class to 100.0,
         AddValueParameter:: class to 100.0,
         AddValueParameterWithDefaultValue::class to 100.0,
+        MakeParameterNotNullable::class to 100.0,
+        MakeParameterNullable::class to 100.0,
 //        ClassifierCompatibleTransformations::class to 100.0,
 //        ClassifierIncompatibleChanges::class to 100.0,
 //        FunctionCompatibleChanges::class to 100.0,
