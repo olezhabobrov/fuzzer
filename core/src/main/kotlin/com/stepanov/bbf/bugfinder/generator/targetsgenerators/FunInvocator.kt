@@ -79,7 +79,7 @@ class FunInvocator(val file: BBFFile) {
         val psi = member.findPsi() as? KtTypeParameterListOwner ?: return
         val gmember = GStructure.fromPsi(psi)
         gmember.addDefaultImplementation()
-        if (clazz.kind == ClassKind.CLASS)
+        if (clazz.kind == ClassKind.CLASS && clazz.modality != Modality.FINAL)
             gmember.addOpen()
         if (psi.getParentOfType<KtClass>(true)?.name == clazz.name.asString()) {
             val newPsi = gmember.toPsi() ?: return

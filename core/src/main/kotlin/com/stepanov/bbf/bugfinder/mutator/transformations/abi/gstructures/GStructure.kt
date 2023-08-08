@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import org.jetbrains.kotlin.psi.*
 
 abstract class GStructure {
@@ -97,6 +98,10 @@ abstract class GStructure {
             is GParameter -> defaultValue = ""
             else -> error("Is not function or property, shouldn't be so...")
         }
+    }
+
+    open fun generateRandom(file: BBFFile) {
+        TODO()
     }
 
 

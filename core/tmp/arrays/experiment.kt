@@ -1,8 +1,10 @@
-interface Foo
+interface Foo {
+    fun foo(): String
+}
 
 
-class C: Foo {
+abstract class C: Foo {
     constructor(x: Int)
     constructor(y: String)
-    
+
 }

@@ -1,6 +1,8 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.KlibClassGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomClassGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomFunctionGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
 import com.stepanov.bbf.bugfinder.util.addPsiToBody
@@ -34,10 +36,7 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
                 RandomFunctionGenerator(file,
                     GClass.fromPsiOrNull(outerEntity)
                 ).generateForKlib(true)
-            "class" -> GClass().also {
-                it.classWord = "class"
-                it.name = randomName.capitalize()
-            }.toPsiThrowable()
+            "class" -> KlibClassGenerator(file).generate()!!
             "interface" -> GClass().also {
                 it.classWord = "interface"
                 it.name = randomName.capitalize()
@@ -58,7 +57,7 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
 
     val TOP_LEVEL_PROBABILITY = 50
     val INTERFACE_PROB = 20.0
-    val CLASS_PROB = 40.0
+    val CLASS_PROB = 4000000.0
     val FUNCTION_PROB = 50.0
     val OBJECT_PROB = 20.0
 }

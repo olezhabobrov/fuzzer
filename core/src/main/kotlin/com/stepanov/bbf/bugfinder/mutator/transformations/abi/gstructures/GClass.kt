@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -80,6 +81,10 @@ data class GClass(
         } catch (e: Exception) {
             null
         }
+
+    override fun generateRandom(file: BBFFile) {
+        super.generateRandom(file)
+    }
 
     fun removeSupertype(name: String?) {
         supertypes.remove(name)

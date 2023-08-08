@@ -27,7 +27,7 @@ class ConstructorGenerator(val file: BBFFile) {
                 FunInvocator(file).invokeParameterBrackets(primaryConstructor).randomOrNull() ?: return
             gconstructor.delegationCalls.add("this$primaryConstructorInvocation")
         }
-        val args = generateArgs(file)
+        val args = generateArgs()
         gconstructor.argsParams = args
         val psi = gconstructor.toPsi()
         classPsi.addPsiToBody(psi)
@@ -41,7 +41,7 @@ class ConstructorGenerator(val file: BBFFile) {
             val primaryConstructorPsi = primaryConstructor.findPsi() as? KtConstructor<*>
                 ?: classPsi.createPrimaryConstructorIfAbsent()
             val newPrimConstructor = GConstructor()
-            newPrimConstructor.argsParams = generateArgs(file)
+            newPrimConstructor.argsParams = generateArgs(true)
             newPrimConstructor.isPrimary = true
 
             primaryConstructorPsi.replaceThis(newPrimConstructor.toPsi())
@@ -57,7 +57,7 @@ class ConstructorGenerator(val file: BBFFile) {
             classPsi.addPsiToBody(oldPrimConstructor.toPsi())
         } else {
             val newPrimConstructor = GConstructor()
-            newPrimConstructor.argsParams = generateArgs(file)
+            newPrimConstructor.argsParams = generateArgs(true)
             newPrimConstructor.isPrimary = true
             clazz.constructors.forEach { descr ->
                 val psi = descr.findPsi() as? KtConstructor<*>
@@ -78,7 +78,7 @@ class ConstructorGenerator(val file: BBFFile) {
         }
     }
 
-    private fun generateArgs(file: BBFFile) =
+    fun generateArgs(isPrimary: Boolean = false) =
         MutableList(Random.nextInt(1, 5)) {
             val t = RandomTypeGenerator(file).generateRandomTypeWithCtx() ?: return mutableListOf<GParameter>()
             val param = GParameter()
@@ -89,5 +89,15 @@ class ConstructorGenerator(val file: BBFFile) {
                 param.defaultValue = ClassInvocator(file).randomClassInvocation(decCon)
             }
             param
+        }.also { if (isPrimary) {
+            it.forEach {
+                if (Random.getTrue(60)) {
+                    if (Random.nextBoolean())
+                        it.valOrVar = "var"
+                    else
+                        it.valOrVar = "val"
+                }
+            }
+        }
         }
 }

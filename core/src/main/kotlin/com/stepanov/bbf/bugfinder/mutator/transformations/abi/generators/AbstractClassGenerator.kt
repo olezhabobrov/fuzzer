@@ -8,6 +8,7 @@ import com.stepanov.bbf.bugfinder.util.*
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import com.stepanov.bbf.bugfinder.util.ModifierSets
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import kotlin.random.Random
 
 abstract class AbstractClassGenerator(
@@ -73,4 +74,5 @@ abstract class AbstractClassGenerator(
         gClass.modifiers.replaceAll { if (it in modList) mod else it }
         randomTypeGenerator.minVisibility = mod
     }
+
 }

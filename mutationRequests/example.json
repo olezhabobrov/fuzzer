@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["AddPrimaryConstructor"]
+        "transformationsList": ["AddNewEntity"]
     },
     "mutationTarget": {
         "type": "klib"
