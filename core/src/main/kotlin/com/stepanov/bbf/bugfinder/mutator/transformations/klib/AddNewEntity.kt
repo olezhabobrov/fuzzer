@@ -27,24 +27,13 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
         val entityToCreate = WeightedList(listOf(
             "fun" to FUNCTION_PROB,
             "class" to CLASS_PROB,
-            "interface" to INTERFACE_PROB,
-            "object" to OBJECT_PROB,
         )).getRandom()
-        val randomName = Random.getRandomVariableName()
         val newEntity = when(entityToCreate) {
             "fun" ->
                 RandomFunctionGenerator(file,
                     GClass.fromPsiOrNull(outerEntity)
                 ).generateForKlib(true)
             "class" -> KlibClassGenerator(file).generate()!!
-            "interface" -> GClass().also {
-                it.classWord = "interface"
-                it.name = randomName.capitalize()
-            }.toPsiThrowable()
-            "object" -> GClass().also {
-                it.classWord = "object"
-                it.name = randomName.capitalize()
-            }.toPsiThrowable()
             else -> error("shouldn't be here: AddNewEntity")
         }
         if (outerEntity != null) {
@@ -56,10 +45,8 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
     }
 
     val TOP_LEVEL_PROBABILITY = 50
-    val INTERFACE_PROB = 20.0
-    val CLASS_PROB = 4000000.0
+    val CLASS_PROB = 50.0
     val FUNCTION_PROB = 50.0
-    val OBJECT_PROB = 20.0
 }
 
 class AddAbstractFunction: BinaryIncompatibleTransformation(1) {

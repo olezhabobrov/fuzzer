@@ -19,13 +19,19 @@ class KlibClassGenerator(val file: BBFFile) {
     fun generate(): PsiElement? {
         val gclass = GClass()
         with (gclass) {
-            modifiers = generateModifiers()
-            classWord = "class"
+            classWord = WeightedList(listOf(
+                "class" to 50.0,
+                "interface" to 40.0,
+                "object" to 20.0
+            )).getRandom()!!
+            modifiers = generateModifiers(gclass)
             name = Random.getRandomClassName()
-            val params = ConstructorGenerator(file).generateArgs(true)
-            constructorArgs = params.map { it.toString() }
-            generateSecondaryConstructors(params).forEach {
-                body += it + "\n\n"
+            if (isClass()) {
+                val params = ConstructorGenerator(file).generateArgs(true)
+                constructorArgs = params.map { it.toString() }
+                generateSecondaryConstructors(params).forEach {
+                    body += it + "\n\n"
+                }
             }
             val mySupertypes = getRandomSupertypes()
             supertypes = mySupertypes.map {
@@ -43,7 +49,7 @@ class KlibClassGenerator(val file: BBFFile) {
             .filterDuplicatesBy { it.uniqueString() }
         val result = mutableListOf<String>()
         members.forEach { member ->
-            if (gClass.isAbstract() && Random.getTrue(70))
+            if ((gClass.isInterface() || gClass.isAbstract()) && Random.getTrue(70))
                 return@forEach
             val psi = member.findPsi() as? KtTypeParameterListOwner ?: return@forEach
             val gmember = GStructure.fromPsi(psi)
@@ -89,7 +95,9 @@ class KlibClassGenerator(val file: BBFFile) {
         }
     }
 
-    private fun generateModifiers(): MutableList<String> {
+    private fun generateModifiers(gClass: GClass): MutableList<String> {
+        if (!gClass.isClass())
+            return mutableListOf()
         val modality = WeightedList(listOf(
             "open" to 60.0,
             "abstract" to 50.0,
