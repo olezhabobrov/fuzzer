@@ -2,33 +2,30 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
-import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
+import com.stepanov.bbf.bugfinder.util.findPsi
+import com.stepanov.bbf.bugfinder.util.getMembers
 import com.stepanov.bbf.reduktor.util.replaceThis
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtParameter
-import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.psi.KtTypeParameterListOwner
 
 class RemoveOpenModifier: BinaryIncompatibleTransformation(1) {
     override fun transform(target: FTarget) {
-        val randomEntity = target.file.getAllEntities().filter {
-            val gStructure = GStructure.fromPsi(it)
-            gStructure.isOpen()
-        }.randomOrNull() ?: return
-        if (randomEntity !is KtClass) {
-            removeOpen(randomEntity)
-        } else {
-            val openNestedEntities = (randomEntity.getAllPSIChildrenOfType<KtProperty>() +
-                    randomEntity.getAllPSIChildrenOfType<KtFunction>()).filter {
-                        val gStructure = GStructure.fromPsi(it)
-                        gStructure.isOpen()
-            }
-            openNestedEntities.forEach {
-                removeOpen(it)
-            }
-            removeOpen(randomEntity)
-        }
+        val clazz = target.file.getAllClassDescriptors()
+            .filter { it.modality != Modality.FINAL && it.kind != ClassKind.INTERFACE }
+            .filter { descriptor ->
+                descriptor.defaultType.getMembers().any {
+                (it is FunctionDescriptor && it.modality == Modality.OPEN) ||
+                        (it is PropertyDescriptor && it.modality == Modality.OPEN)
+                }
+            }.randomOrNull() ?: return
+        val memberPsi = clazz.defaultType.getMembers().find {
+            (it is FunctionDescriptor && it.modality == Modality.OPEN) ||
+                    (it is PropertyDescriptor && it.modality == Modality.OPEN) }
+            ?.findPsi() as? KtTypeParameterListOwner?: return
+        removeOpen(memberPsi)
     }
 
     private fun removeOpen(entity: KtTypeParameterListOwner) {
