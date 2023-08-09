@@ -64,7 +64,8 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
 //                log.debug("MUTATION PROBLEM IS COMPLETED")
 //                eb.send(VertxAddresses.mutationProblemCompleted, coordinatorNumber)
 //            }
-            if (descrs.any { it == CompilationDescription.INVOCATOR_FAIL })
+            if (descrs.any { it == CompilationDescription.INVOCATOR_FAIL
+                        || it == CompilationDescription.NOT_COMPILING })
                 startWithNewProject()
             else
                 sendNextTransformation()
@@ -116,7 +117,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 statistics.addTransformation(lastTransformation)
                 successfullyCompiledProjects.add(result.projectMessage.getProjectMessageWithNewKlib())
             }
-            CompilationDescription.UNKOWN_BEHAVIOUR -> {
+            CompilationDescription.NOT_COMPILING -> {
                 log.debug("Fail to understand compilation result")
             }
         }

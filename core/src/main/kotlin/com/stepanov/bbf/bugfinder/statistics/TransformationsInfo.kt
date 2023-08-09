@@ -34,7 +34,7 @@ internal data class TransformationFullStat(
                 CompilationDescription.INCOMPATIBLE_LINKING -> incompatibleLinking++
                 CompilationDescription.COMPILER_CRASHED -> compilerCrashed++
                 CompilationDescription.EXPECTED_BEHAVIOUR -> expectedBehaviour++
-                CompilationDescription.UNKOWN_BEHAVIOUR -> unkownBehaviour++
+                CompilationDescription.NOT_COMPILING -> unkownBehaviour++
             }
         }
 

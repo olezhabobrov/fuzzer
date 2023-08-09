@@ -34,11 +34,11 @@ class KotlincInvokeResult(
             return CompilationDescription.COMPILER_CRASHED
 
         if (getById(1).failed())
-            return CompilationDescription.UNKOWN_BEHAVIOUR
+            return CompilationDescription.NOT_COMPILING
         if (getById(2).failed())
             return CompilationDescription.INVOCATOR_FAIL
         if (getById(3).failed())
-            return CompilationDescription.UNKOWN_BEHAVIOUR
+            return CompilationDescription.NOT_COMPILING
         if (getById(4).failed())
             return CompilationDescription.KLIB_INVALID
         if (getById(5).failed()) {
@@ -74,5 +74,5 @@ enum class CompilationDescription {
     INCOMPATIBLE_LINKING,
     COMPILER_CRASHED,
     EXPECTED_BEHAVIOUR,
-    UNKOWN_BEHAVIOUR,
+    NOT_COMPILING,
 }

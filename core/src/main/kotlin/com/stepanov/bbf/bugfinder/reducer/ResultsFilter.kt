@@ -2,7 +2,6 @@ package com.stepanov.bbf.bugfinder.reducer
 
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
-import com.github.difflib.text.DiffRowGenerator
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.messages.CompilationDescription
 import java.io.File
@@ -134,8 +133,8 @@ object ResultsFilter {
                 if (text.contains(CompilationDescription.COMPILER_CRASHED.toString())) {
                     moveFile(file, CompilationDescription.COMPILER_CRASHED.toString())
                 }
-                if (text.contains(CompilationDescription.UNKOWN_BEHAVIOUR.toString())) {
-                    moveFile(file, CompilationDescription.UNKOWN_BEHAVIOUR.toString())
+                if (text.contains(CompilationDescription.NOT_COMPILING.toString())) {
+                    moveFile(file, CompilationDescription.NOT_COMPILING.toString())
                 }
             }
         }
