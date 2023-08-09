@@ -135,8 +135,8 @@ open class RandomFunctionGenerator(
         when {
             gFunc.modifiers.contains("external") || gFunc.isAbstract() -> ""
             gFunc.isPrivate() -> "{ TODO() }"
+            gFunc.isAbstract() -> ""
             gClass?.isInterface() == true -> if (Random.nextBoolean()) "" else "{ TODO() }"
-            gFunc.isAbstract() == true -> ""
             else -> "{ TODO() }"
         }
 

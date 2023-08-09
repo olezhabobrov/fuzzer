@@ -58,7 +58,7 @@ class AddAbstractFunction: BinaryIncompatibleTransformation(1) {
                 gclass.isInterface() || gclass.isAbstract()
             }.randomOrNull() ?: return
         val newFunc = RandomFunctionGenerator(file, GClass.fromPsiOrNull(parentClass))
-            .generateForKlib(true)
+            .generateForKlib(false)
         parentClass.addPsiToBody(newFunc)
     }
 
