@@ -16,6 +16,7 @@ object Constants {
         AddNewEntity::class to 150.0,
         AddAbstractFunction::class to 150.0,
         AddProperty::class to 100.0,
+        AddAbstractProperty::class to 100.0,
         AddValueParameter:: class to 100.0,
         AddValueParameterWithDefaultValue::class to 100.0,
         MakeParameterNotNullable::class to 100.0,

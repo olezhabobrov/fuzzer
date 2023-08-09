@@ -1,7 +1,9 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInvocator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GProperty
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
@@ -193,6 +195,43 @@ class RandomPropertyGenerator(
         else "$modifiers $p"
     }
 
+    fun generateProperty(isAbstract: Boolean = false): String {
+        val gprop = GProperty()
+        with(gprop) {
+            name = Random.getRandomVariableName(1)
+            val kotlinType = randomTypeGenerator.generateRandomTypeWithCtx() ?: return ""
+            type = kotlinType.getTypeName()
+            valOrVar = if (Random.nextBoolean()) "val" else "var"
+            if (isVar() && Random.getTrue(10))
+                addLateinit()
+            if (isAbstract) {
+                addAbstract()
+            } else {
+                if (!isLateinit()) {
+                    val descr = kotlinType.constructor.declarationDescriptor as? ClassDescriptor
+                    if (descr == null)
+                        addDefaultValue()
+                    else {
+                        val init = ClassInvocator(file).randomClassInvocation(descr)
+                        if (Random.nextBoolean())
+                            initializer = init
+                        else
+                            getter = "get() = init"
+                    }
+                }
+                if (isVar()) {
+                    if (Random.getTrue(70)) {
+                        if (Random.nextBoolean()) {
+                            setter = "set(value) = TODO()"
+                        } else {
+                            setter = "private set"
+                        }
+                    }
+                }
+            }
+        }
+        return gprop.toString()
+    }
 
     override fun simpleGeneration(): PsiElement? =
         try {

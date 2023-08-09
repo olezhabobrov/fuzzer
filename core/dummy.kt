@@ -1,64 +1,14 @@
-import kotlin.*
 
 
 
 
-val abcq1: ULong = TODO()
+val abcq1: Bar = TODO()
 
-fun  abcq(a: ULong){}
+fun  abcq(a: Bar){}
 
-class FinalClass(val name: String?): AbstractClass(){
+abstract class Foo
 
-    fun sayHello() {}
-
-override fun  abstractMethod(): String { TODO() }
-
-object Tlqej: AbstractClass(), MyInterface{
-override fun  abstractMethod(): String { TODO() }
-
-override fun  interfaceMethod(): String { TODO() }
-
-
-}
-}
-
-open class OpenClass(val id: Int?) {
-    open fun displayId() {}
-}
-
-abstract class AbstractClass {
-    abstract fun abstractMethod(): String
-}
-
-interface MyInterface {
-    fun interfaceMethod(): String
-}
-
-object MyObject {
-    const val CONSTANT = "I'm a constant in an object."
-
-    fun objectMethod() {}
-}
-
-class ChildClass(id: Int) : OpenClass(id), MyInterface {
-    override fun interfaceMethod(): String {
-        TODO()
-    }
-
-    override fun displayId() {
-        TODO()
-    }
-}
-
-open class ConcreteClass: AbstractClass(){
-
-    override fun abstractMethod(): String {
-        TODO()
-    }
-
-}
-object Nzkrr: MyInterface{
-override fun  interfaceMethod(): String { TODO() }
-
-
+interface Bar {
+    fun foo()
+abstract val m : kotlin.UShort
 }
