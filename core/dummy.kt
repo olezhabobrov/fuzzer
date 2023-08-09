@@ -1,14 +1,12 @@
+import kotlin.*
 
 
 
 
-val abcq1: Bar = TODO()
+val abcq1: ULong? = TODO()
 
-fun  abcq(a: Bar){}
+fun  abcq(a: ULong?){}
 
-abstract class Foo
+abstract class Foo() {
 
-interface Bar {
-    fun foo()
-abstract val m : kotlin.UShort
 }

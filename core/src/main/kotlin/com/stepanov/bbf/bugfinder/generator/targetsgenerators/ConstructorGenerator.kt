@@ -20,8 +20,9 @@ class ConstructorGenerator(val file: BBFFile) {
     fun generateAndAddSecondaryConstructor(clazz: ClassDescriptor) {
         val gconstructor = GConstructor()
         val classPsi = clazz.findPsi() as? KtClass ?: return
-        val hasPrimary = classPsi.getAllPSIChildrenOfType<KtPrimaryConstructor>().isNotEmpty()
+        val hasPrimary = clazz.constructors.any { it.isPrimary }
         if (hasPrimary) {
+            classPsi.createPrimaryConstructorIfAbsent()
             val primaryConstructor = clazz.constructors.find { it.isPrimary } ?: return
             val primaryConstructorInvocation =
                 FunInvocator(file).invokeParameterBrackets(primaryConstructor).randomOrNull() ?: return

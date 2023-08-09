@@ -6,11 +6,9 @@ import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GConst
 import com.stepanov.bbf.bugfinder.util.findPsi
 import com.stepanov.bbf.bugfinder.util.replaceThis
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
-import com.sun.jna.platform.unix.X11.GC
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtParameter
-import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 
 class AddSecondaryConstructor: BinaryCompatibleTransformation(1) {
     override fun transform(target: FTarget) {
