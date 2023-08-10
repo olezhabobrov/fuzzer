@@ -3,8 +3,7 @@
         "NativeCompiler"
     ],
     "allowedTransformations": {
-        "type": "Some",
-        "transformationsList": ["AddSecondaryConstructor"]
+        "type": "All"
     },
     "mutationTarget": {
         "type": "klib"

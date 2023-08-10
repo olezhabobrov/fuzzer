@@ -28,8 +28,8 @@ class TransformationStatistics: AbstractVerticle() {
             val currentStatistics: TransformationFullStat = if (file.exists()) {
                 val statisticsText = file.readText()
                 Json.decodeFromString(statisticsText)
-
             } else {
+                file.createNewFile()
                 TransformationFullStat(transformation)
             }
             currentStatistics.add(compilationResult)
