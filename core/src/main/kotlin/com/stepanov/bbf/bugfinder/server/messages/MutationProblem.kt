@@ -113,6 +113,7 @@ sealed class MutationTarget {
 
 @Serializable
 sealed class SingleSourceTarget: MutationTarget() {
+    protected val TMP_DIR = "tmp/klibSeeds/"
 
     override fun createProjectMessage(): ProjectMessage {
         if (this is RandomFileTarget)
@@ -146,7 +147,7 @@ class KlibTarget: SingleSourceTarget() {
     private var tmpFileName = randomTmpFileName()
 
     private val code
-        get() = File("tmp/arrays/$tmpFileName").readText()
+        get() = File("$TMP_DIR$tmpFileName").readText()
     private val name
         get() = "projectTmp/$tmpFileName"
 
@@ -156,7 +157,7 @@ class KlibTarget: SingleSourceTarget() {
 
 
     private fun randomTmpFileName() =
-        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith("experiment.kt") }?.random()!!.name
+        File(TMP_DIR).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
 
 
     fun updateRandomFile() {
@@ -170,7 +171,7 @@ class RandomFileTarget: SingleSourceTarget() {
     private var tmpFileName = randomTmpFileName()
 
     private val code
-        get() = File("tmp/arrays/$tmpFileName").readText()
+        get() = File("$TMP_DIR$tmpFileName").readText()
     private val name
         get() = "projectTmp/$tmpFileName"
 
@@ -180,7 +181,7 @@ class RandomFileTarget: SingleSourceTarget() {
 
 
     private fun randomTmpFileName() =
-        File("tmp/arrays/").listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
+        File(TMP_DIR).listFiles()?.filter { it.path.endsWith(".kt") }?.random()!!.name
 
 
     fun updateRandomFile() {
