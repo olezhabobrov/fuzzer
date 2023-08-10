@@ -3,6 +3,7 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.klib
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.bugfinder.util.findPsi
+import com.stepanov.bbf.bugfinder.util.getDeclaredMembers
 import com.stepanov.bbf.bugfinder.util.getMembers
 import com.stepanov.bbf.reduktor.util.replaceThis
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -21,7 +22,7 @@ class RemoveOpenModifier: BinaryIncompatibleTransformation(1) {
                         (it is PropertyDescriptor && it.modality == Modality.OPEN)
                 }
             }.randomOrNull() ?: return
-        val memberPsi = clazz.defaultType.getMembers().find {
+        val memberPsi = clazz.defaultType.getDeclaredMembers().find {
             (it is FunctionDescriptor && it.modality == Modality.OPEN) ||
                     (it is PropertyDescriptor && it.modality == Modality.OPEN) }
             ?.findPsi() as? KtTypeParameterListOwner?: return

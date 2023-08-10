@@ -8,9 +8,8 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
+import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.LANGUAGE
-import com.stepanov.bbf.reduktor.util.getAllChildren
-import com.stepanov.bbf.reduktor.util.getAllChildrenOfCurLevel
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
@@ -27,6 +26,9 @@ import com.stepanov.bbf.bugfinder.util.kcheck.asCharSequence
 import com.stepanov.bbf.bugfinder.util.kcheck.nextInRange
 import com.stepanov.bbf.bugfinder.util.kcheck.nextString
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import com.stepanov.bbf.reduktor.util.*
+import com.stepanov.bbf.reduktor.util.getAllChildren
+import com.stepanov.bbf.reduktor.util.getAllChildrenOfCurLevel
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import com.stepanov.bbf.reduktor.util.getAllParentsWithoutNode
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
@@ -544,7 +546,12 @@ fun KotlinType.getMembers(): List<DeclarationDescriptor> {
     return memberScope.getDescriptorsFiltered {true}.toList()
 }
 
-
+fun KotlinType.getDeclaredMembers(): List<DeclarationDescriptor> {
+    val declaredInSupertypes = supertypes().flatMap {
+        StdLibraryGenerator.getMembersToOverride(it).map { it.uniqueString() }
+    }
+    return getMembers().filter { it.uniqueString() !in declaredInSupertypes }
+}
 
 fun KtFile.getVariablesFromMain() =
     getAllPSIChildrenOfType<KtProperty>().filter {
