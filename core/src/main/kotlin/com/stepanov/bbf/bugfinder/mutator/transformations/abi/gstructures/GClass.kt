@@ -107,6 +107,14 @@ data class GClass(
     fun isClass() = classWord == "class"
     fun isValue() = modifiers.contains("value")
 
+    fun addFun() {
+        modifiers.add("fun")
+    }
+
+    fun removeFun() {
+        modifiers.remove("fun")
+    }
+
     fun removeSealed() {
         modifiers.remove("sealed")
     }
