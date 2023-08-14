@@ -76,6 +76,14 @@ object Invocator {
             }
             writeToMain(mainFile, invocations)
         }
+        // Create SAM conversions for fun interfaces
+        klibFile.getAllClassDescriptors().filter { descr ->
+            descr.isFunInterface()
+        }.forEach { descr ->
+            val sam = "val ${Random.getRandomVariableName()}: ${descr.name.asString()} = " +
+                    "${descr.name.asString()} { TODO() }"
+            writeToMain(mainFile, listOf(sam))
+        }
 
         mainFile.psiFile =
             psiFactory.createFile("fun main()${mainFile.text.substringAfter("fun main()")}")
