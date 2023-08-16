@@ -36,7 +36,7 @@ object Constants {
         AddImplementationOfMember::class to 100.0,
         RemoveDefaultImplementation::class to 100.0,
 //        RemoveExistingEntity::class to 50.0,
-        RemoveOpenModifier::class to 100.0,
+//        RemoveOpenModifier::class to 100.0,
 //        RenameTypeParameter::class to 100.0,
         AddSupertype::class to 300.0,
 //        RemoveSupertypes::class to 300.0,
