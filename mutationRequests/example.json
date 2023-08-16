@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["FunInterfaceChange"]
+        "transformationsList": ["AddAbstractFunction"]
     },
     "mutationTarget": {
         "type": "klib"

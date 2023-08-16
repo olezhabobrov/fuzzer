@@ -150,18 +150,18 @@ open class RandomFunctionGenerator(
         }
     }
 
-    private fun generateModifiersForKlib(isBinaryCompatible: Boolean): MutableList<String> {
+    private fun generateModifiersForKlib(isAbstract: Boolean): MutableList<String> {
         val modifiers = mutableListOf<String>()
         if (gClass != null) {
             if (gClass.isOpen() || gClass.isAbstract() || gClass.isInterface()) {
-                if (isBinaryCompatible && Random.getTrue(40)) {
+                if (!isAbstract && Random.getTrue(40)) {
                     modifiers.add("open")
                 }
-                if (!isBinaryCompatible && !gClass.isOpen()) {
+                if (isAbstract && !gClass.isOpen()) {
                     modifiers.add("abstract")
                 }
             }
-            if (Random.getTrue(25)) {
+            if (!isAbstract && Random.getTrue(25)) {
                 modifiers.add("inline")
             }
             if (Random.getTrue(10)) {
@@ -170,7 +170,7 @@ open class RandomFunctionGenerator(
             if (Random.getTrue(10)) {
                 modifiers.add("infix")
             }
-            if (Random.getTrue(10)) {
+            if (Random.getTrue(5)) {
                 modifiers.add("operator")
             }
         }
@@ -178,10 +178,10 @@ open class RandomFunctionGenerator(
     }
 
 
-    fun generateForKlib(isBinaryCompatible: Boolean): PsiElement {
+    fun generateForKlib(isAbstract: Boolean): PsiElement {
         beforeGeneration()
         with(gFunc) {
-            modifiers = generateModifiersForKlib(isBinaryCompatible)
+            modifiers = generateModifiersForKlib(isAbstract)
             typeArgs = listOf()
 //            extensionReceiver = generateExtension(genTypeArgsWObounds)
             name = generateName()

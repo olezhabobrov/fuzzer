@@ -1,5 +1,4 @@
-
-interface Bar {
-    fun bar(x: Int): String
+abstract class Foo {
+    abstract fun foo()
 }
 

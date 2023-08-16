@@ -32,7 +32,7 @@ class AddNewEntity: BinaryCompatibleTransformation(1) {
             "fun" ->
                 RandomFunctionGenerator(file,
                     GClass.fromPsiOrNull(outerEntity)
-                ).generateForKlib(true)
+                ).generateForKlib(false)
             "class" -> KlibClassGenerator(file).generate()!!
             else -> error("shouldn't be here: AddNewEntity")
         }
@@ -58,7 +58,7 @@ class AddAbstractFunction: BinaryIncompatibleTransformation(1) {
                 gclass.isInterface() || gclass.isAbstract()
             }.randomOrNull() ?: return
         val newFunc = RandomFunctionGenerator(file, GClass.fromPsiOrNull(parentClass))
-            .generateForKlib(false)
+            .generateForKlib(true)
         parentClass.addPsiToBody(newFunc)
     }
 

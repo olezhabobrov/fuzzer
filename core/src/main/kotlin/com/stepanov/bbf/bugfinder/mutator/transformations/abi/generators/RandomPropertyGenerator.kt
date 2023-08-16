@@ -202,7 +202,9 @@ class RandomPropertyGenerator(
             val kotlinType = randomTypeGenerator.generateRandomTypeWithCtx() ?: return ""
             type = kotlinType.getTypeName()
             valOrVar = if (Random.nextBoolean()) "val" else "var"
-            if (isVar() && Random.getTrue(10))
+            if (isVar() && Random.getTrue(10) &&
+                !kotlinType.isPrimitiveTypeOrNullablePrimitiveTypeOrString() &&
+                !isAbstract)
                 addLateinit()
             if (isAbstract) {
                 addAbstract()
