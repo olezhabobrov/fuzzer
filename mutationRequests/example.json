@@ -4,7 +4,7 @@
     ],
     "allowedTransformations": {
         "type": "Some",
-        "transformationsList": ["AddValueClass"]
+        "transformationsList": ["ChangeValueClass"]
     },
     "mutationTarget": {
         "type": "klib"
