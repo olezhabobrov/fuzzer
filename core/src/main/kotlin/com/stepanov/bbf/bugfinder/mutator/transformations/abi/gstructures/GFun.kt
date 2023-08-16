@@ -14,7 +14,6 @@ data class GFunction(
     var typeArgs: List<String> = listOf(),
     var extensionReceiver: String = "",
     var name: String = Random.getRandomVariableName(5),
-    var args: List<String> = listOf(),
     var argsParams: MutableList<GParameter> = mutableListOf(),
     var rtvType: String = "",
     var body: String = ""
@@ -43,7 +42,6 @@ data class GFunction(
                 typeArgs = function.typeParameters.let { if (it.isEmpty()) listOf() else it.map { it.text } }
                 // TODO: extensionReceiver = function.????
                 name = function.name ?: ""
-                args = function.valueParameters.let { if (it.isEmpty()) listOf() else it.map { it.text } }
                 argsParams = function.valueParameters.let { it.map { GParameter.fromPsi(it) } }.toMutableList()
                 rtvType = function.typeReference?.text ?: ""
                 body =
@@ -61,7 +59,6 @@ data class GFunction(
                 name = function.name.asString()
 //                modifiers = function.modifierList?.text?.split(" ")?.toMutableList() ?: mutableListOf()
                 typeArgs = function.typeParameters.map { it.name.asString() }
-                args = function.valueParameters.map { it.name.asString() }
 //                argsParams = function.valueParameters.let { it.map { GParameter.fromPsi(it) } }.toMutableList()
 //                rtvType = function.typeReference?.text ?: ""
 //                body =
@@ -74,13 +71,14 @@ data class GFunction(
         }
     }
 
-    fun addDefaultToArg(parameter: KtParameter, defaultValue: String) {
-        argsParams.find { it.name == parameter.name }!!.defaultValue = defaultValue
-        updateArgs()
+    fun setArgs(args: List<String>) {
+        argsParams = args
+            .map { GParameter.fromString(it) }
+            .toMutableList()
     }
 
-    fun updateArgs() {
-        args = argsParams.map { it.toString() }
+    fun addDefaultToArg(parameter: KtParameter, defaultValue: String) {
+        argsParams.find { it.name == parameter.name }!!.defaultValue = defaultValue
     }
 
     fun isTailrec() = modifiers.contains("tailrec")

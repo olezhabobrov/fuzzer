@@ -43,6 +43,35 @@ class GParameter(
             return parameter
         }
 
+        fun fromString(parameter: String): GParameter {
+            val gparam = GParameter()
+            with (gparam) {
+                name = parameter
+                    .substringBefore(":")
+                    .substringAfterLast(" ")
+                type = parameter
+                    .substringAfterLast(":")
+                    .replace(" ", "")
+                modifiers = parameter
+                    .substringBefore(":")
+                    .split(" ")
+                    .filter {
+                        it.isNotBlank() &&
+                                !it.contains("var") &&
+                                !it.contains("val")
+                    }.dropLast(1).toMutableList()
+                valOrVar = when {
+                    parameter.contains("val") -> "val"
+                    parameter.contains("var") -> "var"
+                    else -> ""
+                }
+                defaultValue = parameter
+                    .substringAfterLast("=")
+                    .replace(" ", "")
+            }
+            return gparam
+        }
+
         fun fromDescriptor(parameter: ValueParameterDescriptor): GParameter {
             val gparameter = GParameter()
             with (gparameter) {

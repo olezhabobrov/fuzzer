@@ -98,14 +98,14 @@ class RenameTypeParameter: BinaryCompatibleTransformation(1) {
         gfun.typeArgs = gfun.typeArgs.map {
             changeParameterInType(it, oldTypePar, newTypePar)
         }
-        gfun.args = function.valueParameters.map {
+        gfun.setArgs(function.valueParameters.map {
             if (it.typeReference != null) {
                 val newType = changeParameterInType(it.typeReference!!.text, oldTypePar, newTypePar)
                 "${it.name}: $newType"
             } else {
                 it.text
             }
-        }
+        })
         gfun.rtvType = changeParameterInType(gfun.rtvType, oldTypePar, newTypePar)
         val newFunction = gfun.toPsi()
         function.replaceThis(newFunction)

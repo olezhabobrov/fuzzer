@@ -35,7 +35,7 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
             !MsgCollector.hasCompileError,
             MsgCollector.hasException,
             hasTimeout,
-            CompilationArgs()
+            CompilationArgs(TODO())
         )
         return KotlincInvokeResult(project, listOf(status))
     }

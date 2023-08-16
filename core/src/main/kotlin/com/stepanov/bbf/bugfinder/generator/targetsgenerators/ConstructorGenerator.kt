@@ -101,4 +101,17 @@ class ConstructorGenerator(val file: BBFFile) {
             }
         }
         }
+
+    fun generateArgsForValueClass() = MutableList(1) {
+        val t = RandomTypeGenerator(file).generateRandomTypeWithCtx() ?: return mutableListOf<GParameter>()
+        val param = GParameter()
+        param.name = "${'a' + it}"
+        param.type = t.toString()
+        val decCon = t.constructor.declarationDescriptor as? ClassDescriptor
+        if (Random.getTrue(50) && decCon != null) {
+            param.defaultValue = ClassInvocator(file).randomClassInvocation(decCon)
+        }
+        param.valOrVar = "val"
+        param
+    }
 }

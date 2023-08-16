@@ -23,7 +23,7 @@ import kotlin.random.Random
 
 //TODO make generation through GProperty
 class RandomPropertyGenerator(
-    private val file: BBFFile,
+    override val file: BBFFile,
     private val gClass: GClass = GClass()
 ) : DSGenerator(file) {
 

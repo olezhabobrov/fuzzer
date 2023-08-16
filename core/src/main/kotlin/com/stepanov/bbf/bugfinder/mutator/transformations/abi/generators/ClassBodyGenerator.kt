@@ -17,7 +17,7 @@ import kotlin.collections.flatMap
 import kotlin.random.Random
 
 internal open class ClassBodyGenerator(
-    private val file: BBFFile,
+    override val file: BBFFile,
     private val gClass: GClass,
     private val depth: Int = 0
 ) : DSGenerator(file) {

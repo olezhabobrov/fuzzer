@@ -63,3 +63,13 @@ class AddAbstractFunction: BinaryIncompatibleTransformation(1) {
     }
 
 }
+
+class AddValueClass: BinaryCompatibleTransformation(1) {
+    override fun transform(target: FTarget) {
+        val file = target.file
+        val classPsi = KlibClassGenerator(file).generateValueClass() ?: return
+        file.psiFile.add(psiFactory.createWhiteSpace("\n"))
+        file.psiFile.add(classPsi)
+    }
+
+}

@@ -16,6 +16,25 @@ import kotlin.random.Random
 
 class KlibClassGenerator(val file: BBFFile) {
 
+    fun generateValueClass(): PsiElement? {
+        val gclass = GClass()
+        with (gclass) {
+            classWord = "class"
+            name = Random.getRandomClassName()
+            addValue()
+            val params = ConstructorGenerator(file).generateArgsForValueClass()
+            constructorArgs = params.map { it.toString() }
+            generateSecondaryConstructors(params).forEach {
+                body += it + "\n\n"
+            }
+            val mySupertypes = getRandomSupertypes().filter { it.kind == ClassKind.INTERFACE }
+            supertypes = mySupertypes
+                .map { it.name.asString() }.toMutableList()
+            body += implementMembers(mySupertypes, gclass).joinToString(separator = "\n\n")
+        }
+        return gclass.toPsi()
+    }
+
     fun generate(): PsiElement? {
         val gclass = GClass()
         with (gclass) {

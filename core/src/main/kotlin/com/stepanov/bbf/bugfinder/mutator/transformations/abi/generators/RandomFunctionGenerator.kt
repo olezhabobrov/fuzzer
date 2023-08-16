@@ -1,13 +1,17 @@
 package com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInvocator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GClass
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GFunction
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GParameter
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.GStructure
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
 import org.jetbrains.kotlin.lexer.KtTokens
 import com.stepanov.bbf.bugfinder.util.ModifierSets
+import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 import kotlin.random.Random
@@ -74,6 +78,21 @@ open class RandomFunctionGenerator(
         return strT
     }
 
+    fun generateArgsForConstructor(amount: Int): List<String> = List(amount) {
+        randomTypeGenerator.generateRandomTypeWithCtx()
+    }.filterNotNull().map { type ->
+        val valOrVar = if (Random.getTrue(50)) "val" else "var"
+        val default = if (Random.getTrue(50)) {
+            val descr = type.constructor.declarationDescriptor as? ClassDescriptor
+            if (descr != null) {
+                val instance = ClassInvocator(file).randomClassInvocation(descr)
+                " = $instance"
+            } else
+                ""
+        } else ""
+        "$valOrVar ${Random.getRandomVariableName(1)}: $type$default"
+    }
+
     private fun generateArgs(typeArgs: List<String>): List<String> {
         var rightBound = if (gFunc.modifiers.contains("infix")) 2 else 5
         if (gFunc.modifiers.contains("operator")) rightBound = getNumOfArgsAndRTVForOperator(gFunc.name).first + 1
@@ -82,7 +101,7 @@ open class RandomFunctionGenerator(
                 mutableListOf()
             else
                 MutableList(Random.nextInt(1, rightBound)) {
-                    val t = randomTypeGenerator.generateRandomTypeWithCtx() ?: return listOf()
+                    val t = randomTypeGenerator.generateRandomTypeWithCtx() ?: return mutableListOf()
                     if ("$t".startsWith("Function") && gFunc.isInline() && Random.getTrue(50))
                         "crossinline ${'a' + it}: $t"
                     else "${'a' + it}: $t"
@@ -185,7 +204,7 @@ open class RandomFunctionGenerator(
             typeArgs = listOf()
 //            extensionReceiver = generateExtension(genTypeArgsWObounds)
             name = generateName()
-            args = generateArgs((gClass?.typeParams ?: listOf()))
+            setArgs(generateArgs((gClass?.typeParams ?: listOf())))
             rtvType = generateRtv()
             body = generateBody()
         }
@@ -198,7 +217,7 @@ open class RandomFunctionGenerator(
             typeArgs = listOf()
 //            extensionReceiver = generateExtension(genTypeArgsWObounds)
             name = generateName()
-            args = generateArgs((gClass?.typeParams ?: listOf()))
+            setArgs(generateArgs((gClass?.typeParams ?: listOf())))
             rtvType = generateRtv()
             body = generateBody()
         }
@@ -216,7 +235,7 @@ open class RandomFunctionGenerator(
             val genTypeArgsWObounds = typeArgs.map { it.substringBefore(':').substringAfter("reified ").trim() }
             if (extensionReceiver.isEmpty()) extensionReceiver = generateExtension(genTypeArgsWObounds)
             if (name.isEmpty()) name = generateName()
-            if (args.isEmpty()) args = generateArgs(genTypeArgsWObounds)
+            if (argsParams.isEmpty()) setArgs(generateArgs(genTypeArgsWObounds))
             if (rtvType.isEmpty()) rtvType = generateRtv()
             if (body.isEmpty()) body = generateBody()
         }

@@ -12,7 +12,7 @@ import com.stepanov.bbf.bugfinder.util.getTrue
 import kotlin.random.Random
 
 abstract class DSGenerator(
-    private val file: BBFFile
+    protected open val file: BBFFile
 ) {
     val randomTypeGenerator = RandomTypeGenerator(file)
     val randomInstancesGenerator = RandomInstancesGenerator(file)

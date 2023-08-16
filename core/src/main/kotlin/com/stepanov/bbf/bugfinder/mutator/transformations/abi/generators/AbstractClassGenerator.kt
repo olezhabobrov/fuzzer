@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import kotlin.random.Random
 
 abstract class AbstractClassGenerator(
-    open val file: BBFFile,
+    override val file: BBFFile,
     open val depth: Int = 0
 ) : DSGenerator(file) {
 

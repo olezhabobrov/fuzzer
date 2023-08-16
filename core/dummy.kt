@@ -1,16 +1,18 @@
-import kotlin.*
 
 
 
 
-val abcq1: ULong = TODO()
+val abcq1: Bar? = TODO()
 
-fun  abcq(a: ULong){}
+fun  abcq(a: Bar?){}
 
 abstract class Foo {
     abstract fun foo()
-abstract fun  oispi(): Foo
-abstract fun  rhzre(): Foo
-abstract fun  xtxma(): Foo
+}
+
+interface Bar {
+    val x: Foo
+
+    fun foo(): String
 }
 
