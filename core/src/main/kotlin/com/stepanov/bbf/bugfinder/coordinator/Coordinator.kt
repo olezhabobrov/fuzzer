@@ -121,7 +121,10 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 log.debug("Fail to understand compilation result")
             }
         }
-        if (descr != CompilationDescription.EXPECTED_BEHAVIOUR && descr != CompilationDescription.KLIB_INVALID) {
+//        if (descr != CompilationDescription.EXPECTED_BEHAVIOUR && descr != CompilationDescription.KLIB_INVALID) {
+        if (descr == CompilationDescription.COMPILER_CRASHED ||
+            descr == CompilationDescription.COMPATIBLE_NOT_LINKING ||
+            descr == CompilationDescription.INCOMPATIBLE_LINKING) {
             sendResultToBugManager(result)
         }
         return descr
@@ -244,7 +247,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
     private lateinit var lastTransformation: Transformation
     private val MAX_PROJECTS_TO_MUTATE = 1
     private val MAX_PROJECTS_TO_COMPILERS = 500
-    private val LIMIT_OF_COMPILED_PROJECTS = 10
+    private val LIMIT_OF_COMPILED_PROJECTS = 30
 //    private val LIMIT_OF_CHECKED_PROJECTS = 1_000_000
     private var checkedProjects = mutableSetOf<ProjectMessage>()
     private var successfullyCompiledProjects = mutableSetOf<ProjectMessage>()
