@@ -4,6 +4,6 @@ abstract class Foo {
 interface Bar {
 }
 
-class Baz(val z: Int): Bar {
+value class Baz(val z: Foo): Bar {
 
 }

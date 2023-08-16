@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
+import org.jetbrains.kotlin.resolve.isInlineClass
 import org.jetbrains.kotlin.types.isNullable
 import kotlin.random.Random
 
@@ -83,6 +84,25 @@ object Invocator {
             val sam = "val ${Random.getRandomVariableName()}: ${descr.name.asString()} = " +
                     "${descr.name.asString()} { TODO() }"
             writeToMain(mainFile, listOf(sam))
+        }
+
+        // Declare and call local functions with inline parameters as value parameters :)
+        klibFile.getAllClassDescriptors().filter { descr ->
+            descr.isInlineClass()
+        }.forEach { descr ->
+            val funcName = Random.getRandomVariableName()
+            val func = "fun $funcName(a: ${descr.name.asString()}) {}"
+            val funcWithNullableName = Random.getRandomVariableName()
+            val funcWithNullable = "fun $funcWithNullableName(a: ${descr.name.asString()}?) {}"
+            val invocation = ClassInvocator(klibFile).randomClassInvocation(descr)
+            val funcInv = "$funcName($invocation)"
+            val funcWithNullableInv = "$funcWithNullableName($invocation)"
+            writeToMain(mainFile, listOf(
+                func,
+                funcWithNullable,
+                funcInv,
+                funcWithNullableInv
+            ))
         }
 
         mainFile.psiFile =
