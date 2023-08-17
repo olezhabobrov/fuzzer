@@ -14,6 +14,7 @@ core/java-agent/build
 client
 /JVMCompiler/tmp/build/
 NativeCompiler/tmp/
+NativeCompiler/program.kexe
 /core/projectTmp/
 /NativeCompiler/projectTmp/
 /core/tmp/stats/

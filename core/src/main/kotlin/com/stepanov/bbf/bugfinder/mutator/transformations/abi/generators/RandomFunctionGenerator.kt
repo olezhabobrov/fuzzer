@@ -197,7 +197,8 @@ open class RandomFunctionGenerator(
     }
 
 
-    fun generateForKlib(isAbstract: Boolean): PsiElement {
+    fun generateForKlib(isAbstract: Boolean,
+                        withBody: Boolean = true): PsiElement {
         beforeGeneration()
         with(gFunc) {
             modifiers = generateModifiersForKlib(isAbstract)
@@ -206,7 +207,9 @@ open class RandomFunctionGenerator(
             name = generateName()
             setArgs(generateArgs((gClass?.typeParams ?: listOf())))
             rtvType = generateRtv()
-            body = generateBody()
+            if (withBody) {
+                body = generateBody()
+            }
         }
         return gFunc.toPsi()
     }

@@ -2,17 +2,20 @@
 
 
 
-val abcq1: Bar? = TODO()
+val abcq1: KeySpan? = TODO()
 
-fun  abcq(a: Bar?){}
+fun  abcq(a: KeySpan?){}
 
-abstract class Foo {
-    abstract fun foo()
+class KeySpan(val left: String) {
+
+    public fun matches(value : String) : Boolean {
+
+        return left > value && left > value
+    }
+
 }
 
-interface Bar {
-    val x: Foo
-
-    fun foo(): String
+fun box() : String {
+  KeySpan("1").matches("3")
+  return "OK"
 }
-

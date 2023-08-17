@@ -3,11 +3,13 @@ package com.stepanov.bbf.bugfinder.mutator.transformations.util
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.ClassInvocator
 import com.stepanov.bbf.bugfinder.generator.targetsgenerators.FunInvocator
 import com.stepanov.bbf.bugfinder.mutator.transformations.FTarget
+import com.stepanov.bbf.bugfinder.mutator.transformations.klib.getAbstractMembers
 import com.stepanov.bbf.bugfinder.project.BBFFile
 import com.stepanov.bbf.bugfinder.util.*
 import com.stepanov.bbf.reduktor.parser.PSICreator.psiFactory
 import com.stepanov.bbf.reduktor.util.getAllPSIChildrenOfType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtConstructor
@@ -84,8 +86,10 @@ object Invocator {
         klibFile.getAllClassDescriptors().filter { descr ->
             descr.isFunInterface()
         }.forEach { descr ->
+            val func = descr.getAbstractMembers().firstOrNull() as? FunctionDescriptor ?: return@forEach
+            val receivers = func.valueParameters.joinToString(separator = ", ", postfix = "->") { "_" }
             val sam = "val ${Random.getRandomVariableName()}: ${descr.name.asString()} = " +
-                    "${descr.name.asString()} { TODO() }"
+                    "${descr.name.asString()} { $receivers TODO() }"
             writeToMain(mainFile, listOf(sam))
         }
 

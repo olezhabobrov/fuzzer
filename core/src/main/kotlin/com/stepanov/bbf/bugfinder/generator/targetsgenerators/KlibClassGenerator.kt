@@ -1,6 +1,7 @@
 package com.stepanov.bbf.bugfinder.generator.targetsgenerators
 
 import com.intellij.psi.PsiElement
+import com.stepanov.bbf.bugfinder.mutator.transformations.abi.generators.RandomFunctionGenerator
 import com.stepanov.bbf.bugfinder.mutator.transformations.abi.gstructures.*
 import com.stepanov.bbf.bugfinder.mutator.transformations.tce.StdLibraryGenerator
 import com.stepanov.bbf.bugfinder.project.BBFFile
@@ -31,6 +32,23 @@ class KlibClassGenerator(val file: BBFFile) {
             supertypes = mySupertypes
                 .map { it.name.asString() }.toMutableList()
             body += implementMembers(mySupertypes, gclass).joinToString(separator = "\n\n")
+        }
+        return gclass.toPsi()
+    }
+
+    fun generateFunInterface(supertype: String?): PsiElement? {
+        val gclass = GClass()
+        with (gclass) {
+            classWord = "interface"
+            addFun()
+            name = Random.getRandomClassName()
+            if (supertype != null) {
+                supertypes = mutableListOf(supertype)
+            } else {
+                val func = RandomFunctionGenerator(file)
+                    .generateForKlib(isAbstract = true, withBody = false).text
+                body = func
+            }
         }
         return gclass.toPsi()
     }
