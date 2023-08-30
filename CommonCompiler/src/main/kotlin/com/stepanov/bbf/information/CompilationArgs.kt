@@ -50,7 +50,7 @@ data class CompilationArgs(
         artifactType = "library"
     }
 
-    private fun addFile(file: String) = also {
+    fun addFile(file: String) = also {
         files.add(dir + file)
     }
 

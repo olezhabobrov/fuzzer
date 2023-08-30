@@ -53,6 +53,13 @@ class NativeCompiler: CommonCompiler(VertxAddresses.NativeCompiler) {
         return status
     }
 
+    override fun checkCompiling(project: ProjectMessage): KotlincInvokeResult {
+        return KotlincInvokeResult(project, listOf(
+            compile(
+                CompilationArgs().addFiles(project.files.map { it.name })
+            )))
+    }
+
     private val kotlinHome = System.getenv("kotlin-home")
         ?: error("kotlin-home not specified in environment variables (should be in build.gradle)")
 

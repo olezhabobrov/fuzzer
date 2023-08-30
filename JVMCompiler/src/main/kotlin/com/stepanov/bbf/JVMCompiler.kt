@@ -40,6 +40,9 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
         return KotlincInvokeResult(project, listOf(status))
     }
 
+    override fun checkCompiling(project: ProjectMessage): KotlincInvokeResult =
+        executeCompilationCheck(project)
+
     // TODO: add some additional arguments maybe
     private fun prepareArgs(project: ProjectMessage, destination: String): K2JVMCompilerArguments {
         val destFile = File(destination)

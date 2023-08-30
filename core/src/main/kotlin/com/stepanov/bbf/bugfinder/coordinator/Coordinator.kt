@@ -3,7 +3,6 @@ package com.stepanov.bbf.bugfinder.coordinator
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationRequest
 import com.stepanov.bbf.bugfinder.mutator.vertxMessages.MutationResult
 import com.stepanov.bbf.bugfinder.server.messages.MutationProblem
-import com.stepanov.bbf.information.MutationStat
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationRequest
 import com.stepanov.bbf.messages.CompilationResult
@@ -27,13 +26,29 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         log.debug("Coordinator deployed with mutation problem:")
         val projectToCompile = mutationProblem.getProjectMessage()
         log.debug(json.encodeToString(mutationProblem))
-//        sendNextTransformation(listOf(mutationProblem.getProjectMessage())) // TODO: only for debug
-        sendProjectToCompilers(MutationResult(
-            setOf(projectToCompile),
-            MutationStat.emptyStat))
+        startWithNewProject()
+    }
+
+    private fun startWithNewProject() {
+        log.debug("Restarting with new initial project")
+        val newProject = mutationProblem.getProjectMessage()
+        successfullyCompiledProjects.clear()
+        checkedProjects.clear()
+        eb.send(VertxAddresses.checkCompile, newProject)
     }
 
     private fun establishConsumers() {
+        // when checking the initial project
+        eb.consumer<KotlincInvokeResult>(VertxAddresses.checkCompileResult) { msg ->
+            val result = msg.body()
+            if (result.isCompileSuccess) {
+                successfullyCompiledProjects.add(result.projectMessage)
+                sendNextTransformation(listOf(result.projectMessage))
+            } else {
+                startWithNewProject()
+            }
+        }
+
 
         eb.consumer<CompilationResult>(VertxAddresses.compileResult) { msg ->
             log.debug("Got compilation result")
@@ -65,7 +80,11 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         eb.consumer<MutationResult>(VertxAddresses.mutationResult) { result ->
             val mutationResult = result.body()
             log.debug("Got mutationResult with ${mutationResult.projects.size} results")
-            sendProjectToCompilers(mutationResult)
+            if (mutationResult.projects.isEmpty()){
+                sendNextTransformation(listOf())
+            } else {
+                sendProjectToCompilers(mutationResult)
+            }
         }
     }
 

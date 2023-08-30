@@ -5,6 +5,7 @@ import com.stepanov.bbf.bugfinder.util.StatisticCollector
 import com.stepanov.bbf.information.CompilerArgs
 import com.stepanov.bbf.information.VertxAddresses
 import com.stepanov.bbf.messages.CompilationResult
+import com.stepanov.bbf.messages.KotlincInvokeResult
 import com.stepanov.bbf.messages.KotlincInvokeStatus
 import com.stepanov.bbf.messages.ProjectMessage
 import io.vertx.core.AbstractVerticle
@@ -28,8 +29,8 @@ internal fun bugType(result: KotlincInvokeStatus): BugType =
     else
         BugType.BACKEND
 
-data class Bug(val result: CompilationResult) {
-    val project = result.results.first().projectMessage
+data class Bug(val result: KotlincInvokeResult) {
+    val project = result.projectMessage
 }
 
 
@@ -63,12 +64,12 @@ class BugManager: AbstractVerticle() {
     }
 
     private fun establishConsumers() {
-        vertx.eventBus().consumer<CompilationResult>(VertxAddresses.bugManager) { msg ->
+        vertx.eventBus().consumer<KotlincInvokeResult>(VertxAddresses.bugManager) { msg ->
             processCompilationResults(msg.body())
         }
     }
 
-    private fun processCompilationResults(result: CompilationResult) {
+    private fun processCompilationResults(result: KotlincInvokeResult) {
 //        if (isUnusualResult(results)) {
 //            log.debug("FOUND SOME INTERESTING RESULT")
 //        }
