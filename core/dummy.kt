@@ -1,29 +1,30 @@
+import kotlin.collections.*
 import kotlin.*
 
 
 
 
-val abcq1: UByte = TODO()
+val abcq1: MutableMap<Pair<Map<ULong, Double>, Outer>, Byte>? = TODO()
 
-fun  abcq(a: UByte){}
+fun  abcq(a: MutableMap<Pair<Map<ULong, Double>, Outer>, Byte>?){}
 
+// !LANGUAGE: +ProperVisibilityForCompanionObjectInstanceField
 
-fun <T> assertEquals(a: T, b: T) { if (a != b) throw AssertionError("$a != $b") }
+class Outer {
+    private companion object {
+        fun xo() = "O"
+        fun xk() = "K"
+    }
 
-fun Char.Companion.MAX() = MAX_SURROGATE
-fun Char.Companion.MIN() = MIN_SURROGATE
+    class Nested1 {
+        fun foo() = xo()
+    }
 
-fun <T> test(o: T) { assertEquals(o === Char.Companion, true) }
+    class Nested2 {
+        fun bar() = xk()
+    }
 
-fun box(): String {
-
-    assertEquals('\uDFFF', Char.MAX_SURROGATE)
-
-    assertEquals(Char.MIN_SURROGATE, Char.MIN())
-    assertEquals(Char.MAX_SURROGATE, Char.Companion.MAX())
-
-    test(Char)
-    test(Char.Companion)
-
-    return "OK"
+    fun test() = Nested1().foo() + Nested2().bar()
 }
+
+fun box() = Outer().test()

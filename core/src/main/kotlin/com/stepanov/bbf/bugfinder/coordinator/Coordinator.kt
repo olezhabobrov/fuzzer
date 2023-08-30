@@ -63,7 +63,7 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
                 }
                 if (result.hasCompilerCrash) {
                     log.debug("Found some bug")
-                    sendResultToBugManager(compileResult, result)
+                    sendResultToBugManager(result)
                 }
             }
             log.debug("Got ${projectsToSend.size} projects, successfully compiled")
@@ -115,13 +115,9 @@ class Coordinator(private val mutationProblem: MutationProblem): AbstractVerticl
         }
     }
 
-    private fun sendResultToBugManager(result: CompilationResult, status: KotlincInvokeResult) {
+    private fun sendResultToBugManager(status: KotlincInvokeResult) {
         eb.send(
-            VertxAddresses.bugManager, CompilationResult(
-                result.compiler,
-                listOf(status),
-                result.mutationStat
-            )
+            VertxAddresses.bugManager, status
         )
     }
 

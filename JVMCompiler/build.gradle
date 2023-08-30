@@ -70,5 +70,5 @@ run {
 }
 
 run.doFirst {
-    environment 'kotlin_jvm_compiler_version', kotlin_jvm_compiler_version
+    environment 'kotlin_jvm_version', kotlin_jvm_version
 }

@@ -45,10 +45,6 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
 
     // TODO: add some additional arguments maybe
     private fun prepareArgs(project: ProjectMessage, destination: String): K2JVMCompilerArguments {
-        val destFile = File(destination)
-        if (destFile.isFile) destFile.delete()
-        else if (destFile.isDirectory) FileUtils.cleanDirectory(destFile)
-        else destFile.mkdir()
         val projectArgs = K2JVMCompilerArguments()
         val compilerArgs = "${getAllPathsInLine(project)} -d $destination".split(" ")
         projectArgs.apply { K2JVMCompiler().parseArguments(compilerArgs.toTypedArray(), this) }
