@@ -2,8 +2,8 @@ buildscript {
     //Do not forget to update intellij core
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:1.8.20"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_native_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_native_version"
     }
 }
 
@@ -18,6 +18,8 @@ group rootProject.group
 version rootProject.version
 
 dependencies {
+    implementation group: 'com.android.tools.external.com-intellij', name: 'intellij-core', version: intellij_core_version
+
     // ACHTUNHG!!! Local file!
     implementation files("/home/olezhka/.konan/kotlin-native-linux-x86_64-1.9.0-Beta/konan/lib/kotlin-native-compiler-embeddable.jar")
 

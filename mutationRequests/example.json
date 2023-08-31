@@ -1,6 +1,6 @@
 {
     "compilers": [
-        "JVMCompiler"
+        "NativeCompiler"
     ],
     "allowedTransformations": {
         "type": "All"

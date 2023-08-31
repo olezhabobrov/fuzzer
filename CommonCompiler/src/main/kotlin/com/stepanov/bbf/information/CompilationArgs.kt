@@ -28,7 +28,7 @@ data class CompilationArgs(
             result.addAll(listOf("-l", klib!!.outputName))
         }
         if (isXPartialLinkage)
-            result.add("-Xpartial-linkage")
+            result.add("-Xpartial-linkage=enable")
         if (isK2)
             error("Kotlin/Native doesn't support K2")
         if (outputName.isNotBlank())
