@@ -42,5 +42,6 @@ application {
 
 run.doFirst {
     environment 'kotlin_native_version', kotlin_native_version
+    // ACHTUNHG!!! Local file!
     environment 'kotlin-home', "/home/olezhka/.konan/kotlin-native-linux-x86_64-1.9.0-Beta"
 }

@@ -1,23 +1,21 @@
-# Kotlin compiler fuzzer and reduktor
-Requirements:
-* NodeJS
-   * npm install kotlin
-   * npm install kotlin-test
+# Kotlin Fuzzer
+## How to launch
 
-Usage:
-* Compile
-  * ./compile.sh
-* Start
-  * gradlew runBBF - to start fuzzing
-  
-All options (backends, dir for results, etc.) specifies in bbf.conf file
+`gradlew core:runCoordinator` -- launches central verticle `com.stepanov.bbf.bugfinder.coordinator.Coordinator` 
+managing all the fuzzing process.
 
-### Instrumentation notes
+Then you should launch the compiler verticle, you want to fuzz: 
+either `gradlew JVMCompiler:run` or `gradlew NativeCompiler:run`
 
-* The class `CompilerInstrumentation` is duplicated in both the Java agent module and in the main project. Their contents should be kept identical.
-* `-javaagent:<path-to-instrumenter-jar>` VM option should be present in order for the compiler to be instrumented.
-* A new instrumenter jar can be assembled with the `kotlinc-instrumenter/jar` Gradle task. The new jar's default new position is the main project's `src/main/resources`.
+Now the server is started and you can start fuzzing by sending request with fuzzing settings. Examples of that you can see at `mutationRequests` 
 
-Performance mode
+You can also send request to `http://localhost:8888/filter-results` address to filter (deduplicate) results
 
-//-javaagent:/home/zver/IdeaProjects/bbfgradle/src/main/resources/kotlinc-instrumenter.jar
+### NativeCompiler
+
+To launch NativeCompiler verticle you should specify at `NativeCompiler/build.gradle` a path to local JAR with Kotlin/Native API (you can download it from Kotlin Github)
+
+## To future developers
+
+
+If you have any questions, feel free to reach me at [Telegram](https://t.me/olezhkabobrov) or at `olezhkabobrov@gmail.com`
