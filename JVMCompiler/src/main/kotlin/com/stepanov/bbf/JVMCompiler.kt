@@ -49,7 +49,7 @@ open class JVMCompiler: CommonCompiler(VertxAddresses.JVMCompiler) {
         val compilerArgs = "${getAllPathsInLine(project)} -d $destination".split(" ")
         projectArgs.apply { K2JVMCompiler().parseArguments(compilerArgs.toTypedArray(), this) }
         projectArgs.classpath =
-            "${CompilerArgs.jvmStdLibPaths.joinToString(
+            "${CompilerArgs.jvmStdLibPaths().joinToString(
                 separator = ":"
             )}:${System.getProperty("java.class.path")}"
                 .split(":")

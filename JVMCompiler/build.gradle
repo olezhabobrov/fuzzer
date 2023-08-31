@@ -52,6 +52,8 @@ dependencies {
     toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-js', version: "${kotlin_jvm_compiler_version}"
     toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-test-js', version: "${kotlin_jvm_compiler_version}"
     toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: "${kotlin_jvm_compiler_version}"
+    toCopy group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "${kotlin_jvm_compiler_version}"
+
 }
 
 task download(type: Copy) {
@@ -70,5 +72,5 @@ run {
 }
 
 run.doFirst {
-    environment 'kotlin_jvm_version', kotlin_jvm_version
+    environment 'kotlin_jvm_version', kotlin_jvm_compiler_version
 }

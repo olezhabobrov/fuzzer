@@ -121,7 +121,7 @@ object CompilerArgs {
     val classpath = ""
 
     //STDLIB
-    val jvmStdLibPaths = listOf(
+    fun jvmStdLibPaths() = listOf(
         getStdLibPath("kotlin-stdlib"),
         getStdLibPath("kotlin-stdlib-common"),
         getStdLibPath("kotlin-test"),
@@ -129,7 +129,8 @@ object CompilerArgs {
         getStdLibPath("kotlin-reflect"),
         getStdLibPath("kotlin-script-runtime"),
         getStdLibPath("kotlin-stdlib-jdk8"),
-        getStdLibPath("kotlin-stdlib-jdk7")
+        getStdLibPath("kotlin-stdlib-jdk7"),
+        getStdLibPath("kotlin-gradle-plugin"),
     )
 
     //Vert.x
